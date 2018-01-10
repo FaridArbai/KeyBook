@@ -1,0 +1,8 @@
+#include "adduser.h"
+
+AddUser::AddUser() : public 
+{
+
+    
+    
+}
