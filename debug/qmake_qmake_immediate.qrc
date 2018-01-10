@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+<file alias="icons/default.png">C:/Users/Faraday/Desktop/chatclient/icons/default.png</file>
+<file alias="icons/whitesendicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitesendicon.png</file>
+<file alias="icons/whiteprofileicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whiteprofileicon.png</file>
+<file alias="icons/whitebackicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitebackicon.png</file>
+<file alias="icons/whitechangestatusicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitechangestatusicon.png</file>
+<file alias="icons/whiteplusicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whiteplusicon.png</file>
+<file alias="icons/whitechaticon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitechaticon.png</file>
+<file alias="icons/whitegroupicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitegroupicon.png</file>
+<file alias="icons/whiteforbiddenicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whiteforbiddenicon.png</file>
+<file alias="icons/whitetrashicon.png">C:/Users/Faraday/Desktop/chatclient/icons/whitetrashicon.png</file>
+</qresource>
+</RCC>
