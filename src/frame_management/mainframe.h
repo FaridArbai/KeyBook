@@ -87,6 +87,8 @@ private:
 
     PM_addContactCom* current_add_com = nullptr;
     QWaitCondition FINISHED_ADDING_FOREIGN;
+
+    QMutex foreign_contact_mutex;
 };
 
 #endif // MAINFRAME_H

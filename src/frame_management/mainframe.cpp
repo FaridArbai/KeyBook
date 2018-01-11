@@ -139,7 +139,7 @@ QString MainFrame::getCurrentUsername(){
 }
 
 QString MainFrame::getCurrentStatus(){
-    QString status_gui = QString::fromStdString(this->user->getStatus().toString());
+    QString status_gui = QString::fromStdString(this->user->getStatus().getText());
     return status_gui;
 }
 
@@ -185,13 +185,18 @@ void MainFrame::refreshMessagesGUI(){
 }
 
 void MainFrame::handleMessage(string sender, string recipient, string date_str, string text){
+    this->foreign_contact_mutex.lock();
     bool in_conversation = this->getInConversation();
 
     if(current_add_com!=nullptr){
         QMutex finished_adding_foreign_mutex;
         finished_adding_foreign_mutex.lock();
+        this->foreign_contact_mutex.unlock();
         FINISHED_ADDING_FOREIGN.wait(&finished_adding_foreign_mutex);
         finished_adding_foreign_mutex.unlock();
+    }
+    else{
+        this->foreign_contact_mutex.unlock();
     }
 
     this->user->addMessage(sender,recipient,date_str,text);
@@ -229,6 +234,7 @@ void MainFrame::handleNewContact(PM_addContactCom* add_com){
 }
 
 void MainFrame::addForeignContact(){
+    this->foreign_contact_mutex.lock();
     string username = current_add_com->getContact();
     string status_text = current_add_com->getStatus();
     string status_date = current_add_com->getStatusDate();
@@ -245,6 +251,7 @@ void MainFrame::addForeignContact(){
     delete current_add_com;
     current_add_com = nullptr;
     FINISHED_ADDING_FOREIGN.notify_all();
+    this->foreign_contact_mutex.unlock();
 }
 
 

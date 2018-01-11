@@ -1,7 +1,7 @@
 #include "registerframe.h"
 
 const string RegisterFrame::DEFAULT_STATUS = "This app is hilarious! :D";
-const string RegisterFrame::PATH_TO_DEFAULT_IMAGE = "./data/common/images/default.png";
+const string RegisterFrame::PATH_TO_DEFAULT_IMAGE = "../data/common/images/default.png";
 
 RegisterFrame::RegisterFrame(QObject *parent) : QObject(parent) {
 }

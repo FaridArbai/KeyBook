@@ -1,7 +1,7 @@
 #include "iomanager.h"
 
-const string IOManager::ROOT_TO_USERS   = "./data/users/";
-const string IOManager::ROOT_TO_IMAGES  = "./data/images/";
+const string IOManager::ROOT_TO_USERS   = "/data/users/";
+const string IOManager::ROOT_TO_IMAGES  = "/data/images/";
 
 IOManager::IOManager(){
 }
