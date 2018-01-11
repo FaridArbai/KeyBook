@@ -1,0 +1,10 @@
+
+	
+To install the app for Windows you will have to download the installer and execute 
+it. The link to the installer is the following :
+
+https://drive.google.com/file/d/10XhNjGjl1bVU93sxXVVfErg-_rGsHupQ/view?usp=sharing
+
+Once you have installed the app move to the installation path which you previously
+selected. You can execute the chatclient.exe directly or create a shortcut in your
+Desktop.
