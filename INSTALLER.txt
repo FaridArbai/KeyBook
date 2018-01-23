@@ -1,10 +1,6 @@
 
-	
-To install the app for Windows you will have to download the installer and execute 
-it. The link to the installer is the following :
+* Windows Installer
+  URL : https://drive.google.com/file/d/1bW8tzhKzjC_5ZnP5mxHhmF27vP-IxPJ3/view
 
-https://drive.google.com/file/d/10XhNjGjl1bVU93sxXVVfErg-_rGsHupQ/view?usp=sharing
-
-Once you have installed the app move to the installation path which you previously
-selected. You can execute the chatclient.exe directly or create a shortcut in your
-Desktop.
+* Android application 
+  https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta1&hl=en
