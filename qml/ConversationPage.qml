@@ -5,20 +5,6 @@ import QtQuick.Controls 2.1
 Page {
     id: root
 
-    var toolbar_Colour = "#206d75"
-    var contact_Name_Colour = "#206d75"
-    var contact_Status_Colour = "#626665"
-    var contact_Presence_Colour = "white"
-    var contact_Presence_LastConnection_Colour = "white"
-    var message_Own_Background_Colour = "#f1f2ff"
-    var message_Other_Background_Colour = "#16323d"
-    var message_Own_Text_Colour = "black"
-    var message_Other_Text_Colour =  "white"
-    var timestamp_Colour = "lightgrey"
-    var write_Field_Background_Colour = "#e3ebee"
-
-
-
     Connections{
         target: main_frame
 
@@ -34,7 +20,7 @@ Page {
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -78,7 +64,7 @@ Page {
         Label{
             id: presencenametext
             text: contact.username_gui
-            color: contact_Presence_Colour
+            color: "white"
             anchors.left: presenceimage.right
             anchors.leftMargin: 20
             anchors.top: parent.top
@@ -91,12 +77,12 @@ Page {
         Label{
             id:presencelastconnectiontext
             text: contact.presence_gui
-            color: contact_Presence_LastConnection_Colour
+            color: "white"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: (parent.height/2 - height)/2
             anchors.left: presenceimage.right
             anchors.leftMargin: 20
-            font.pixelSize: 10
+            font.pixelSize: 15
 
         }
     }
@@ -129,13 +115,13 @@ Page {
                         width: Math.min(messageText.implicitWidth + 24,
                                 listView.width - (!sentByMe ? messageRow.spacing : 0))
                         height: messageText.implicitHeight + 24
-                        color: sentByMe ? message_Own_Background_Colour : message_Other_Background_Colour
+                        color: sentByMe ? "#f1f2ff" : "#16323d"
                         radius: 4
 
                         Label {
                             id: messageText
                             text: model.modelData.text_gui
-                            color: sentByMe ? message_Own_Text_Colour : message_Other_Text_Colour
+                            color: sentByMe ? "black" : "white"
                             anchors.fill: parent
                             anchors.margins: 12
                             wrapMode: Label.Wrap
@@ -148,7 +134,7 @@ Page {
                 Label {                   
                        id: timestampText
                        text: model.modelData.date_gui
-                       color: timestamp_Colour
+                       color: "lightgrey"
                        anchors.right: sentByMe ? parent.right : undefined
                 }
 
@@ -167,7 +153,7 @@ Page {
                 Rectangle{
                     height:parent.height
                     width: parent.width-sendbutton.width
-                    color: write_Field_Background_Colour
+                    color: "#e3ebee"
                     radius: 6
                 }
 

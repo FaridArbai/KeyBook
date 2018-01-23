@@ -10,12 +10,9 @@ Page {
       al igual que se haría en la contact page y listo.
      */
 
+
     id: root
     visible:true
-
-    var toolbar_Colour = "#206d75"
-    var profile_Name_Colour = "white"
-    var presence_Text_Colour = "white"
 
     header: ToolBar{
 
@@ -24,7 +21,7 @@ Page {
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -153,7 +150,7 @@ Page {
             anchors.left: parent.left
             anchors.leftMargin: 10
             text: contact.username_gui
-            color: profile_Name_Colour
+            color: "white"
             font.bold: true
             font.pixelSize: 40
         }
@@ -165,7 +162,7 @@ Page {
             anchors.left: parent.left
             anchors.leftMargin: (parent.width-width-10)
             text: contact.presence_gui
-            color: presence_Text_Colour
+            color: "white"
             font.bold: false
             font.pixelSize: 20
             font.italic: true

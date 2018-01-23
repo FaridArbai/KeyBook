@@ -5,10 +5,6 @@ Page {
 
     id: root
 
-    var toolbar_Colour = "#206d75"
-    var toolbar_Text_Colour = "white"
-    var building_Text_Colour = "#16323d"
-
     header: ToolBar {
 
         id: toolbar
@@ -17,7 +13,7 @@ Page {
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -45,7 +41,7 @@ Page {
         Label {
             id: pageTitle
             text: qsTr("Add group")
-            color: toolbar_Text_Colour
+            color: "white"
             font.bold: true
             font.pixelSize: 25
             anchors.centerIn: parent
@@ -56,7 +52,7 @@ Page {
         text:qsTr("Building...")
         font.bold: true
         font.pixelSize: 70
-        color: building_Text_Colour
+        color: "#16323d"
         anchors.left: parent.left
         anchors.leftMargin: (parent.width-width)/2
         anchors.top: parent.top

@@ -6,15 +6,6 @@ Page {
     id: root
     visible:true
 
-    var toolbar_Colour = "#206d75"
-    var toolbar_Text_Colour = "white"
-    var username_Text_Colour = "#16323d"
-    var username_Rectangle_BorderColour = "#021400"
-    var add_Button_BorderColour = "#26282a"
-    var button_Colour = "#f6f6f6"
-    var pressed_Button_Colour = "#eefdff"
-    var error_Text_Colour = "red"
-
     Connections{   
         target: main_frame
         onFinishedAddingContact:{
@@ -23,7 +14,7 @@ Page {
             }
             else{
                 errorlabeladd.text = err_msg;
-                errorlabeladd.color = error_Text_Colour;
+                errorlabeladd.color = "red";
                 errorlabeladd.visible = true;
             }
 
@@ -37,7 +28,7 @@ Page {
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -65,7 +56,7 @@ Page {
 
         Label{
             text: qsTr("Add User")
-            color: toolbar_Text_Colour
+            color: "white"
             font.pixelSize: 25
             font.bold: true
             anchors.centerIn: parent
@@ -83,7 +74,7 @@ Page {
             text: "New contact:"
             font.bold: true
             font.pixelSize: 17
-            color: username_Text_Colour
+            color: "#16323d"
         }
 
         Rectangle {
@@ -94,7 +85,7 @@ Page {
             anchors.topMargin: 10
             border.width: 2
             radius: 4
-            border.color: username_Rectangle_BorderColour
+            border.color: "#021400"
 
 
             MouseArea{
@@ -121,7 +112,7 @@ Page {
                     if(contactinput.text == ""){
                         errorlabeladd.visible = true
                         errorlabeladd.text = "Set a valid name"
-                        errorlabeladd.color = error_Text_Colour
+                        errorlabeladd.color = "red"
                     }else{
                         main_frame.addContact(contactinput.text);
                     }
@@ -154,8 +145,8 @@ Page {
             background: Rectangle {
                 implicitWidth: 100
                 implicitHeight: 40
-                color: addcontactbutton.down ? pressed_Button_Colour : button_Colour
-                border.color: add_Button_BorderColour
+                color: addcontactbutton.down ? "#eefdff" : "#f6f6f6"
+                border.color: "#26282a"
                 border.width: 1
                 radius: 4
             }
@@ -163,7 +154,7 @@ Page {
                 if(contactinput.text == ""){
                     errorlabeladd.visible = true
                     errorlabeladd.text = "Set a valid name"
-                    errorlabeladd.color = error_Text_Colour
+                    errorlabeladd.color = "red"
                 }
                 else{
                     main_frame.addContact(contactinput.text);

@@ -6,17 +6,6 @@ Page{
         id: root
         visible:true
 
-        var toolbar_Colour = "#206d75"
-        var toolbar_Text_Colour = "white"
-        var username_Text_Colour = "#16323d"
-        var password_Text_Colour = "#16323d"
-        var username_Rectangle_BorderColour = "#021400"
-        var password_Rectangle_BorderColour = "#021400"
-        var signup_Button_BorderColour = "#26282a"
-        var button_Colour = "#f6f6f6"
-        var pressed_Button_Colour = "#eefdff"
-
-
         Connections{          
             target: register_frame
 
@@ -38,7 +27,7 @@ Page{
 
             Rectangle{
                 anchors.fill: parent
-                color: toolbar_Colour
+                color: "#206d75"
             }
 
             ToolButton {
@@ -62,8 +51,8 @@ Page{
                 onClicked: root.StackView.view.pop()
             }
             Label{
-                text: qsTr("Register")
-                color: toolbar_Text_Colour
+                text: "Register"
+                color: "white"
                 font.bold: true
                 font.pixelSize: 25
                 anchors.centerIn: parent
@@ -82,7 +71,7 @@ Page{
                 text: "Enter User"
                 font.pixelSize: 17
                 font.bold: true
-                color: username_Text_Colour
+                color: "#16323d"
             }
 
             Text {
@@ -92,7 +81,7 @@ Page{
                 anchors.top: rectuserreg.bottom
                 anchors.topMargin: 10
                 font.bold: true
-                color: password_Text_Colour
+                color: "#16323d"
             }
 
             Rectangle {
@@ -103,7 +92,7 @@ Page{
                 anchors.topMargin: 2
                 anchors.leftMargin: 20
                 border.width: 2
-                border.color: username_Rectangle_BorderColour
+                border.color: "#021400"
                 radius: 4
 
 
@@ -116,7 +105,7 @@ Page{
                 TextInput {                 
                     id: userinputreg
                     anchors.fill: parent
-                    font.bold: true
+                    font.bold: false
                     maximumLength: 16
                     font.pixelSize: 16
                     anchors.topMargin: 2
@@ -179,7 +168,7 @@ Page{
                 anchors.topMargin: 2
                 anchors.leftMargin: 20
                 border.width: 2
-                border.color: password_Rectangle_BorderColour
+                border.color: "#021400"
                 radius: 4
                 KeyNavigation.tab: userinputreg
 
@@ -192,6 +181,7 @@ Page{
                     id: passwordreg
                     anchors.fill: parent
                     font.pixelSize: 16
+                    font.bold: false
                     anchors.topMargin: 2
                     anchors.leftMargin: 2
                     maximumLength: 10
@@ -276,8 +266,8 @@ Page{
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: signupbuttonreg.down ? pressed_Button_Colour : button_Colour
-                    border.color: signup_Button_BorderColour
+                    color: signupbuttonreg.down ? "#eefdff" : "#f6f6f6"
+                    border.color: "#26282a"
                     border.width: 1
                     radius: 4
                 }

@@ -6,21 +6,13 @@ Page {
     id: root
     visible:true
 
-    var toolbar_Colour = "#206d75"
-    var toolbar_Text_Colour = "white"
-    var status_Text_Colour = "#16323d"
-    var status_Rectangle_BorderColour = "#021400"
-    var button_BorderColour = "#26282a"
-    var button_Colour = "#f6f6f6"
-    var pressed_Button_Colour = "#eefdff"
-
         header: ToolBar{
 
             height: 48
 
             Rectangle{
                 anchors.fill: parent
-                color: toolbar_Colour
+                color: "#206d75"
             }
 
             ToolButton {
@@ -61,7 +53,7 @@ Page {
                 text: "Enter a new status"
                 font.pixelSize: 17
                 font.bold: true
-                color: status_Text_Colour
+                color: "#16323d"
             }
 
             Rectangle {
@@ -71,7 +63,7 @@ Page {
                 anchors.top: enterstatus.bottom
                 anchors.topMargin: 10
                 border.width: 2
-                border.color: status_Rectangle_BorderColour
+                border.color: "#021400"
                 radius: 4
                 MouseArea{
                     anchors.fill: parent
@@ -123,8 +115,8 @@ Page {
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: changestatusbutton.down ? pressed_Button_Colour : button_Colour
-                    border.color: button_BorderColour
+                    color: changestatusbutton.down ? "#eefdff" : "#f6f6f6"
+                    border.color: "#26282a"
                     border.width: 1
                     radius: 4
                 }

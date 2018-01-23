@@ -4,18 +4,7 @@ import QtQuick.Controls 2.1
 Page{
 
         id: root
-        visible:true
-
-        var toolbar_Colour = "#206d75"
-        var toolbar_Text_Colour = "white"
-        var username_Text_Colour = "#16323d"
-        var password_Text_Colour = "#16323d"
-        var username_Rectangle_BorderColour = "#021400"
-        var password_Rectangle_BorderColour = "#021400"
-        var signup_Button_BorderColour = "#26282a"
-        var signin_Button_BorderColour = "#26282a"
-        var button_Colour = "#f6f6f6"
-        var pressed_Button_Colour = "#eefdff"
+        visible:true 
 
         Connections{
             target: log_frame
@@ -38,13 +27,13 @@ Page{
 
             Rectangle{
                 anchors.fill: parent
-                color: toolbar_Colour
+                color: "#206d75"
             }
 
             Label{
                 text: "EncrypTalk"
                 font.bold: true
-                color: toolbar_Text_Colour
+                color: "white"
                 font.pixelSize: 25
                 anchors.centerIn: parent
             }
@@ -62,7 +51,7 @@ Page{
                 text: "Username"
                 font.pixelSize: 17
                 font.bold: true
-                color: username_Text_Colour
+                color: "#16323d"
             }
 
             Text {
@@ -72,7 +61,7 @@ Page{
                 anchors.top: username_input_container.bottom
                 anchors.topMargin: 10
                 font.bold: true
-                color: password_Text_Colour
+                color: "#16323d"
 
             }
 
@@ -85,7 +74,7 @@ Page{
                 anchors.leftMargin: 20
                 border.width: 2
                 radius: 4
-                border.color: username_Rectangle_BorderColour
+                border.color: "#021400"
 
                 MouseArea{
                     anchors.fill: parent
@@ -94,7 +83,7 @@ Page{
 
                 TextInput {
                     id: username_input
-                    font.bold: true
+                    font.bold: false
                     maximumLength: 10
                     font.pixelSize: 16
                     anchors.fill: parent
@@ -151,7 +140,7 @@ Page{
                 anchors.topMargin: 2
                 anchors.leftMargin: 20
                 border.width: 2
-                border.color: password_Rectangle_BorderColour
+                border.color: "#021400"
                 radius: 4
 
                 MouseArea{
@@ -163,6 +152,7 @@ Page{
                     id: password_input
                     anchors.fill: parent
                     font.pixelSize: 16
+                    font.bold: false
                     maximumLength: 10
                     echoMode: TextInput.Password
                     anchors.topMargin: 3
@@ -275,8 +265,8 @@ Page{
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: signin_button.down ? pressed_Button_Colour : button_Colour
-                    border.color: signin_Button_BorderColour
+                    color: signin_button.down ? "#eefdff" : "#f6f6f6"
+                    border.color: "#26282a"
                     border.width: 1
                     radius: 4
                 }
@@ -306,8 +296,8 @@ Page{
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: signup_button.down ? pressed_Button_Colour : button_Colour
-                    border.color: signup_Button_BorderColour
+                    color: signup_button.down ? "#eefdff" : "#f6f6f6"
+                    border.color: "#26282a"
                     border.width: 1
                     radius: 4
                 }

@@ -4,22 +4,13 @@ import QtQuick.Controls 2.1
 Page{
     id: root
 
-    var toolbar_Colour = "#206d75"
-    var contact_Name_Colour = "#206d75"
-    var contact_Status_Colour = "#626665"
-    var concact_LastMessage_Colour = "#626665"
-    var contact_Presence_Colour = "#626665"
-    var contact_Messages_Background_Colour = "#206d75"
-    var contact_Messages_Background_Border_Colour = "black"
-    var contact_Messages_Text_Colour = "white"
-
     header: ToolBar {
         id: toolbar
         height: 60
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -189,7 +180,7 @@ Page{
                 text: model.modelData.username_gui
                 font.bold: true
                 font.pixelSize: 15
-                color: contact_Name_Colour
+                color: "#206d75"
             }
 
             Label{
@@ -198,10 +189,10 @@ Page{
                 anchors.leftMargin: 10
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin:(parent.height/2 - height)/2
-                text: (model.modelData.status_gui.length>10)?(model.modelData.status_gui.substr(0,9)+"..."):(model.modelData.status_gui)
-                font.pixelSize: 11
+                text: (model.modelData.status_gui.length>20)?(model.modelData.status_gui.substr(0,19)+"..."):(model.modelData.status_gui)
+                font.pixelSize: 12
                 font.italic: true
-                color: contact_Status_Colour
+                color: "#626665"
             }
 
             Label{
@@ -210,9 +201,9 @@ Page{
                 anchors.rightMargin: (messagesnotread.text == "0")?(15):(25+buttonmessagesnotread.width)
                 anchors.bottom:  parent.bottom
                 anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
-                text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
-                font.pixelSize: 10
-                color: concact_LastMessage_Colour
+                text: (model.modelData.last_message_gui.length>20)?(model.modelData.last_message_gui.substr(0,19)+"..."):(model.modelData.last_message_gui)
+                font.pixelSize: 12
+                color: "#626665"
             }
 
             Label{
@@ -221,10 +212,10 @@ Page{
                 anchors.rightMargin: 15
                 anchors.top: parent.top
                 anchors.topMargin: (parent.height/2 - height)/2
-                color: contact_Presence_Colour
+                color: "#626665"
                 text: model.modelData.presence_gui
                 horizontalAlignment: Text.AlignRight
-                font.pixelSize: 10
+                font.pixelSize: 12
 
             }
 
@@ -241,14 +232,14 @@ Page{
                     implicitWidth: 10
                     implicitHeight: 10
                     anchors.rightMargin: 20
-                    color: contact_Messages_Background_Colour
-                    border.color: contact_Messages_Background_Border_Colour
+                    color: "#206d75"
+                    border.color: "black"
                     border.width: 0
                     radius: 10
 
                     Text{
                         id: messagesnotread
-                        color: contact_Messages_Text_Colour
+                        color: "white"
                         anchors.centerIn: parent
                         text: model.modelData.unread_messages_gui
                         font.bold: true

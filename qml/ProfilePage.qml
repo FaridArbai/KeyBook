@@ -16,10 +16,6 @@ Page {
     id: root
     visible:true
 
-    var toolbar_Colour = "#206d75"
-    var toolbar_Text_Colour = "white"
-    var profile_Name_Colour = "white"
-
     Connections{
         target: main_frame
 
@@ -35,7 +31,7 @@ Page {
 
         Rectangle{
             anchors.fill: parent
-            color: toolbar_Colour
+            color: "#206d75"
         }
 
         ToolButton {
@@ -62,7 +58,7 @@ Page {
 
         Label{
             text: qsTr("Profile")
-            color: toolbar_Text_Colour
+            color: "white"
             font.pixelSize: 20
             font.bold: true
             anchors.centerIn: parent
@@ -102,7 +98,7 @@ Page {
             }
 
             onClicked: {
-                //profileimagefiledialog.open()
+                profileimagefiledialog.open()
             }
 
         }
@@ -117,7 +113,7 @@ Page {
             font.bold: true
             font.pixelSize: 35
             text: main_frame.getCurrentUsername()
-            color: profile_Name_Colour
+            color: "white"
         }
 
         Rectangle{
