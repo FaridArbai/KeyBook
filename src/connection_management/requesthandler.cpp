@@ -25,7 +25,6 @@ ProtocolMessage* RequestHandler::recvResponseFor(ProtocolMessage* request){
     response = this->server_message->getProtocolMessage();
 
     return response;
-
 }
 
 void RequestHandler::setServerConn(Connection* server_conn){
@@ -39,3 +38,4 @@ void RequestHandler::setServerMessage(ServerMessage* server_message){
 void RequestHandler::setResponseCondition(QWaitCondition* RESPONSE_CONDITION){
     this->RESPONSE_CONDITION = RESPONSE_CONDITION;
 }
+

@@ -2,6 +2,7 @@
 #define REQUESTHANDLER_H
 
 #include "src/protocol_messages/ProtocolMessage.h"
+#include "src/protocol_messages/PM_logReq.h"
 #include "servermessage.h"
 #include "connection.h"
 

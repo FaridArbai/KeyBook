@@ -16,3 +16,4 @@ void ServerMessage::setProtocolMessage(ProtocolMessage* pm){
 ProtocolMessage* ServerMessage::getProtocolMessage(){
     return this->pm;
 }
+
