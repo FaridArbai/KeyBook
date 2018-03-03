@@ -6,21 +6,21 @@
 #include <QWaitCondition>
 #include <QMutex>
 
-#include "../frame_management/requestingframe.h"
+#include "src/frame_management/requestingframe.h"
 
-#include "../connection_management/requesthandler.h"
+#include "src/connection_management/requesthandler.h"
 
-#include "../user_management/privateuser.h"
-#include "../user_management/iomanager.h"
+#include "src/user_management/privateuser.h"
+#include "src/user_management/iomanager.h"
 
-#include "../src/protocol_messages/PM_addContactReq.h"
-#include "../src/protocol_messages/PM_addContactCom.h"
-#include "../src/protocol_messages/PM_addContactRep.h"
-#include "../src/protocol_messages/PM_updateStatus.h"
-#include "../src/protocol_messages/PM_msg.h"
-#include "../src/protocol_messages/PM_logOutReq.h"
-#include "../src/protocol_messages/PM_logOutCom.h"
-#include "../src/protocol_messages/PM_logOutRep.h"
+#include "src/protocol_messages/PM_addContactReq.h"
+#include "src/protocol_messages/PM_addContactCom.h"
+#include "src/protocol_messages/PM_addContactRep.h"
+#include "src/protocol_messages/PM_updateStatus.h"
+#include "src/protocol_messages/PM_msg.h"
+#include "src/protocol_messages/PM_logOutReq.h"
+#include "src/protocol_messages/PM_logOutCom.h"
+#include "src/protocol_messages/PM_logOutRep.h"
 
 #include <string>
 
@@ -33,10 +33,12 @@ public:
 
     Q_INVOKABLE void addContact(QString entered_username);
     Q_INVOKABLE void updateUserStatus(QString entered_status);
+    Q_INVOKABLE void updateImagePath(QString entered_image_path);
 
     Q_INVOKABLE QString getCurrentUsername();
     Q_INVOKABLE QString getCurrentStatus();
     Q_INVOKABLE QString getCurrentStatusDate();
+    Q_INVOKABLE QString getCurrentImagePath();
 
     Q_INVOKABLE void refreshContactsGUI();
 
@@ -71,6 +73,7 @@ signals:
     void statusChanged(QString new_status_gui, QString new_date_gui, QString err_msg = "");
     void receivedMessageForCurrentConversation();
     void receivedForeignContact();
+    void receivedNewMessage();
 
 private:
     PrivateUser* user;
@@ -87,8 +90,6 @@ private:
 
     PM_addContactCom* current_add_com = nullptr;
     QWaitCondition FINISHED_ADDING_FOREIGN;
-
-    QMutex foreign_contact_mutex;
 };
 
 #endif // MAINFRAME_H

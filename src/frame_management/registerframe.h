@@ -1,8 +1,8 @@
 #ifndef REGWINDOW_H
 #define REGWINDOW_H
 
-#include "../connection_management/connection.h"
-#include "../connection_management/servermessage.h"
+#include "src/connection_management/connection.h"
+#include "src/connection_management/servermessage.h"
 
 #include <QObject>
 #include <QString>
@@ -10,20 +10,20 @@
 #include <QWaitCondition>
 #include <QMutex>
 
-#include "../frame_management/requestingframe.h"
-#include "../connection_management/requesthandler.h"
-#include "../src/protocol_messages/PM_regReq.h"
-#include "../src/protocol_messages/PM_regRep.h"
+#include "src/frame_management/requestingframe.h"
+#include "src/connection_management/requesthandler.h"
+#include "src/protocol_messages/PM_regReq.h"
+#include "src/protocol_messages/PM_regRep.h"
 
-#include "../src/protocol_messages/PM_logReq.h"
-#include "../src/protocol_messages/PM_logRep.h"
-#include "../src/protocol_messages/PM_updateStatus.h"
-#include "../src/protocol_messages/PM_logOutReq.h"
-#include "../src/protocol_messages/PM_logOutRep.h"
-#include "../src/protocol_messages/ProtocolMessage.h"
+#include "src/protocol_messages/PM_logReq.h"
+#include "src/protocol_messages/PM_logRep.h"
+#include "src/protocol_messages/PM_updateStatus.h"
+#include "src/protocol_messages/PM_logOutReq.h"
+#include "src/protocol_messages/PM_logOutRep.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 
-#include "../user_management/iomanager.h"
-#include "../user_management/privateuser.h"
+#include "src/user_management/iomanager.h"
+#include "src/user_management/privateuser.h"
 
 using namespace std;
 
@@ -42,7 +42,7 @@ signals:
 
 private:
     static const string DEFAULT_STATUS;
-    static const string PATH_TO_DEFAULT_IMAGE;
+    static const string DEFAULT_IMAGE_NAME;
 
     PrivateUser* createDefaultUser(string username, string password);
     void sendDefaultParams(string username, string password);

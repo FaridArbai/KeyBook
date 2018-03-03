@@ -6,15 +6,15 @@
 #include <string>
 
 
-#include "../src/protocol_messages/ProtocolMessage.h"
-#include "../src/protocol_messages/PM_logReq.h"
-#include "../src/protocol_messages/PM_logRep.h"
-#include "../connection_management/servermessage.h"
-#include "../connection_management/requesthandler.h"
-#include "../frame_management/requestingframe.h"
-#include "../frame_management/mainframe.h"
-#include "../user_management/privateuser.h"
-#include "../user_management/iomanager.h"
+#include "src/protocol_messages/ProtocolMessage.h"
+#include "src/protocol_messages/PM_logReq.h"
+#include "src/protocol_messages/PM_logRep.h"
+#include "src/connection_management/servermessage.h"
+#include "src/connection_management/requesthandler.h"
+#include "src/frame_management/requestingframe.h"
+#include "src/frame_management/mainframe.h"
+#include "src/user_management/privateuser.h"
+#include "src/user_management/iomanager.h"
 
 using namespace std;
 

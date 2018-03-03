@@ -55,9 +55,9 @@ void MainFrame::addContact(QString entered_username){
             string status_date = ((PM_addContactRep*)add_rep)->getStatusDate();
             string presence_text = ((PM_addContactRep*)add_rep)->getPresence();
             string presence_date = ((PM_addContactRep*)add_rep)->getPresenceDate();
-            string image_str = ((PM_addContactRep*)add_rep)->getImage();
+            Avatar avatar = ((PM_addContactRep*)add_rep)->getAvatar(username);
 
-            Contact* new_contact = new Contact(username,status_text,status_date,presence_text,presence_date,image_str);
+            Contact* new_contact = new Contact(username,status_text,status_date,presence_text,presence_date,avatar);
 
             this->user->addContact(new_contact);
 
@@ -81,9 +81,7 @@ void MainFrame::updateUserStatus(QString entered_status){
     this->request_handler->sendTrap(&update);
 
     QString new_status_gui = entered_status;
-    QString new_date_gui = QString::fromStdString(this->user->getStatus().getDate().toString()); // more readable
-
-    new_status_gui += "@" + new_date_gui;
+    QString new_date_gui = QString::fromStdString(this->user->getStatus().getDate().toHumanReadable());
 
     emit statusChanged(new_status_gui, new_date_gui);
 }
@@ -144,7 +142,7 @@ QString MainFrame::getCurrentStatus(){
 }
 
 QString MainFrame::getCurrentStatusDate(){
-    QString status_date_gui = QString::fromStdString(this->user->getStatus().getDate().toString());
+    QString status_date_gui = QString::fromStdString(this->user->getStatus().getDate().toHumanReadable());
     return status_date_gui;
 }
 
@@ -185,25 +183,14 @@ void MainFrame::refreshMessagesGUI(){
 }
 
 void MainFrame::handleMessage(string sender, string recipient, string date_str, string text){
-    this->foreign_contact_mutex.lock();
     bool in_conversation = this->getInConversation();
-
-    if(current_add_com!=nullptr){
-        QMutex finished_adding_foreign_mutex;
-        finished_adding_foreign_mutex.lock();
-        this->foreign_contact_mutex.unlock();
-        FINISHED_ADDING_FOREIGN.wait(&finished_adding_foreign_mutex);
-        finished_adding_foreign_mutex.unlock();
-    }
-    else{
-        this->foreign_contact_mutex.unlock();
-    }
 
     this->user->addMessage(sender,recipient,date_str,text);
 
     if(in_conversation){
         emit receivedMessageForCurrentConversation();
     }
+    emit receivedNewMessage();
 }
 
 void MainFrame::sendMessage(QString conversation_recipient, QString entered_text){
@@ -218,6 +205,7 @@ void MainFrame::sendMessage(QString conversation_recipient, QString entered_text
     this->user->addMessage(sender,recipient,date_str,text);
 
     this->refreshMessagesGUI();
+    this->refreshContactsGUI();
 }
 
 void MainFrame::setInConversation(bool in_conversation){
@@ -229,20 +217,23 @@ bool MainFrame::getInConversation(){
 }
 
 void MainFrame::handleNewContact(PM_addContactCom* add_com){
+    QMutex handle_finished_mtx;
+    handle_finished_mtx.lock();
     this->current_add_com = new PM_addContactCom(*add_com);
     emit receivedForeignContact();
+    this->FINISHED_ADDING_FOREIGN.wait(&handle_finished_mtx);
+    handle_finished_mtx.unlock();
 }
 
 void MainFrame::addForeignContact(){
-    this->foreign_contact_mutex.lock();
     string username = current_add_com->getContact();
     string status_text = current_add_com->getStatus();
     string status_date = current_add_com->getStatusDate();
     string presence_text = current_add_com->getPresence();
     string presence_date = current_add_com->getPresenceDate();
-    string image_str = current_add_com->getImage();
+    Avatar avatar = current_add_com->getAvatar();
 
-    Contact* new_contact = new Contact(username,status_text,status_date,presence_text,presence_date,image_str);
+    Contact* new_contact = new Contact(username,status_text,status_date,presence_text,presence_date,avatar);
 
     this->user->addContact(new_contact);
 
@@ -250,13 +241,24 @@ void MainFrame::addForeignContact(){
 
     delete current_add_com;
     current_add_com = nullptr;
-    FINISHED_ADDING_FOREIGN.notify_all();
-    this->foreign_contact_mutex.unlock();
+    this->FINISHED_ADDING_FOREIGN.notify_all();
 }
 
+QString MainFrame::getCurrentImagePath(){
+    string image_path = IOManager::FILE_HEADER + (this->user->getAvatar()).getImagePath();
+    QString image_path_gui = QString::fromStdString(image_path);
+    return image_path_gui;
+}
 
+void MainFrame::updateImagePath(QString entered_image_path){
+    string new_image_path = entered_image_path.toStdString();
+    Avatar new_avatar(new_image_path);
+    this->user->setAvatar(new_avatar);
+    string username = this->user->getUsername();
+    PM_updateStatus update_avatar(username,new_avatar);
 
-
+    this->request_handler->sendTrap(&update_avatar);
+}
 
 
 
