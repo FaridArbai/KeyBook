@@ -1,6 +1,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
-
+import "Constants.js" as Constants
 
 Page{
         id: root
@@ -31,6 +31,7 @@ Page{
             }
 
             ToolButton {
+                id: backbutton
 
                 MouseArea{
                     anchors.fill: parent
@@ -38,11 +39,17 @@ Page{
                     acceptedButtons: backicon | signupbuttonreg
                 }
 
-                BorderImage {
-                    id: backicon
-                    source: "icons/whitebackicon.png"
-                    height: 40
-                    width: 40
+                Rectangle{
+                    color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+
+                    Image {
+                        id: backicon
+                        source: "icons/whitebackicon.png"
+                        height: Constants.TOOLBUTTON_SIZE
+                        width: Constants.TOOLBUTTON_SIZE
+                    }
                 }
 
                 anchors.left: parent.left
@@ -50,6 +57,7 @@ Page{
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: root.StackView.view.pop()
             }
+
             Label{
                 text: "Register"
                 color: "white"
@@ -105,7 +113,7 @@ Page{
                 TextInput {                 
                     id: userinputreg
                     anchors.fill: parent
-                    font.bold: false
+                    font.bold: true
                     maximumLength: 16
                     font.pixelSize: 16
                     anchors.topMargin: 2
@@ -181,7 +189,6 @@ Page{
                     id: passwordreg
                     anchors.fill: parent
                     font.pixelSize: 16
-                    font.bold: false
                     anchors.topMargin: 2
                     anchors.leftMargin: 2
                     maximumLength: 10

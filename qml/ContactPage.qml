@@ -1,8 +1,26 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
+import QtGraphicalEffects 1.0
+import "Constants.js" as Constants
 
 Page{
     id: root
+
+    property bool buttons_blocked : false;
+
+    Connections{
+        target: main_frame
+        onLogOut:{
+            wait_box.visible = false;
+            root.StackView.view.pop();
+        }
+
+        onWaitingForTooLong:{
+            if(buttons_blocked==true){
+                wait_box.visible = true;
+            }
+        }
+    }
 
     header: ToolBar {
         id: toolbar
@@ -15,12 +33,19 @@ Page{
 
         ToolButton {
             id: backbutton
+            enabled: !(buttons_blocked)
 
-            BorderImage {
-                id: backiconid
-                source: "icons/whitebackicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: backicon
+                    source: "icons/whitebackicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             MouseArea{
@@ -34,14 +59,15 @@ Page{
             anchors.leftMargin: (((parent.width)/4-width)/2)
             anchors.verticalCenter: parent.verticalCenter
             onClicked:{
-                main_frame.logOutUser()
-                root.StackView.view.pop()
+                buttons_blocked = true;
+                main_frame.logOutUser();
             }
         }
 
 
         ToolButton {
-             id: groupbutton
+            id: groupbutton
+            enabled: !(buttons_blocked)
 
             MouseArea{
                 anchors.fill: parent
@@ -49,11 +75,17 @@ Page{
                 acceptedButtons: addcontactbutton | backbutton
             }
 
-            BorderImage {
-                id: groupicon
-                source: "icons/whitegroupicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: groupbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: groupicon
+                    source: "icons/whitegroupicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             anchors.left: parent.left
@@ -67,6 +99,7 @@ Page{
 
         ToolButton{
             id: profileiconbutton
+            enabled: !(buttons_blocked)
 
             MouseArea{
                 anchors.fill: parent
@@ -74,11 +107,17 @@ Page{
                 acceptedButtons: addcontactbutton | backbutton
             }
 
-            BorderImage {
-                id: profileicon
-                source: "icons/whiteprofileicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: profileiconbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: profileicon
+                    source: "icons/whiteprofileicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             anchors.left: parent.left
@@ -93,6 +132,7 @@ Page{
 
         ToolButton {
             id: addcontactbutton
+            enabled: !(buttons_blocked)
 
             MouseArea{
                 anchors.fill: parent
@@ -100,11 +140,17 @@ Page{
                 acceptedButtons: addcontactbutton | backbutton
             }
 
-            BorderImage {
-                id: plusicon
-                source: "icons/whiteplusicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: addcontactbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: plusicon
+                    source: "icons/whiteplusicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             anchors.left: parent.left
@@ -119,7 +165,6 @@ Page{
     }
 
     ListView{
-
         id: contacts_view
         anchors.fill: parent
         topMargin: 15
@@ -129,6 +174,8 @@ Page{
         spacing: 10
         height: 80
         model: ContactModel
+        enabled: !(buttons_blocked)
+
         delegate: ItemDelegate {
 
             width: contacts_view.width - contacts_view.leftMargin - contacts_view.rightMargin
@@ -148,15 +195,36 @@ Page{
                 anchors.left: parent.left
                 anchors.leftMargin: 6
                 anchors.verticalCenter: parent.verticalCenter
+                enabled: !(buttons_blocked)
 
-                Image {
-                    id: avatar
+                Rectangle{
                     height: contactprofilebutton.height
                     width: contactprofilebutton.width
                     anchors.centerIn: parent
-                    source: model.modelData.avatar_path_gui
-                    fillMode: Image.PreserveAspectCrop
+                    color: "white"
+
+                    Image {
+                        id: avatar
+                        height: contactprofilebutton.height
+                        width: contactprofilebutton.width
+                        anchors.centerIn: parent
+                        source: model.modelData.avatar_path_gui
+                        fillMode: Image.PreserveAspectCrop
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: mask
+                        }
+                    }
+
+                    Rectangle {
+                        id: mask
+                        height: contactprofilebutton.height
+                        width: contactprofilebutton.width
+                        radius: (contactprofilebutton.height/2)
+                        visible: false
+                    }
                 }
+
 
                 MouseArea{
                     anchors.fill: parent
@@ -166,7 +234,8 @@ Page{
 
                 onClicked: {
                     main_frame.refreshContactGUI(model.modelData.username_gui)
-                    root.StackView.view.push("qrc:/ContactProfilePage.qml", { model: model })
+                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                             {previous_page : "ContactPage"});
                 }
 
             }
@@ -189,8 +258,8 @@ Page{
                 anchors.leftMargin: 10
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin:(parent.height/2 - height)/2
-                text: (model.modelData.status_gui.length>20)?(model.modelData.status_gui.substr(0,19)+"..."):(model.modelData.status_gui)
-                font.pixelSize: 12
+                text: (model.modelData.status_gui.length>10)?(model.modelData.status_gui.substr(0,9)+"..."):(model.modelData.status_gui)
+                font.pixelSize: 11
                 font.italic: true
                 color: "#626665"
             }
@@ -201,8 +270,8 @@ Page{
                 anchors.rightMargin: (messagesnotread.text == "0")?(15):(25+buttonmessagesnotread.width)
                 anchors.bottom:  parent.bottom
                 anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
-                text: (model.modelData.last_message_gui.length>20)?(model.modelData.last_message_gui.substr(0,19)+"..."):(model.modelData.last_message_gui)
-                font.pixelSize: 12
+                text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
+                font.pixelSize: 10
                 color: "#626665"
             }
 
@@ -215,7 +284,7 @@ Page{
                 color: "#626665"
                 text: model.modelData.presence_gui
                 horizontalAlignment: Text.AlignRight
-                font.pixelSize: 12
+                font.pixelSize: 10
 
             }
 
@@ -256,8 +325,30 @@ Page{
 
             onPressAndHold: {
                 main_frame.refreshContactGUI(model.modelData.username_gui)
-                root.StackView.view.push("qrc:/ContactProfilePage.qml")
+                root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                         {previous_page : "ContactPage"});
             }
+        }
+    }
+
+    Rectangle{
+        id: wait_box;
+        anchors.fill: parent
+        height: parent.height
+        width: parent.width
+        visible: false;
+        color: Qt.rgba(1,1,1,0.85);
+
+
+        AnimatedImage{
+            source: "icons/loading.gif"
+            width: 3*parent.width/8
+            height: 3*parent.width/8
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width/2-width/2
+            anchors.top: parent.top
+            anchors.topMargin: parent.height/2-height/2
+            fillMode: Image.PreserveAspectFit
         }
     }
 }

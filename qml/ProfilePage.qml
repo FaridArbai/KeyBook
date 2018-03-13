@@ -2,19 +2,14 @@ import QtQuick 2.0
 import QtQuick.Controls 2.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
+import "Constants.js" as Constants
 
 Page {
-
-    /*
-      Esta página se refiere al perfil del propio usuario, tiene una imagen, un nombre y un estado. Tanto la imagen como el estado son clickables para poder cambiarlo,
-      si clickas en la imagen abre el file dialog para poder seleccionar la nueva imagen. Cuando se selecciona la imagen se devuelve la ruta hasta ella como: file:///directorio
-      Lo que habría que hacer sería almacenarla como icono del usuario y además enviársela al servidor para que los demás usuarios la acutalicen. Del mismo modo para el
-      estado cuando se clicka te lleva a la ventana de cambiar estado. Ahora mismo está puesto como Name para el nombre y Status para el estado, habría que cargar
-      el nombre y el estado del usuario.
-      */
-
     id: root
     visible:true
+
+    property bool avatar_changed : false;
+    property bool block_buttons : false;
 
     Connections{
         target: main_frame
@@ -23,6 +18,19 @@ Page {
             statustext.text = new_status_gui + "\n On " + new_date_gui;
         }
 
+        onAvatarChanged:{
+            profileimage.source = main_frame.getCurrentImagePath();
+            avatar_changed = true;
+        }
+
+        onFinishedUploadingImage:{
+            avatar_changed = false;
+            root.StackView.view.pop();
+        }
+
+        onWaitingForTooLong:{
+            wait_box.visible = true;
+        }
     }
 
     header: ToolBar{
@@ -36,6 +44,7 @@ Page {
 
         ToolButton {
             id: backbutton
+            flat: true
 
             MouseArea{
                 anchors.fill: parent
@@ -43,21 +52,36 @@ Page {
                 acceptedButtons: profileimagebutton | backbutton
             }
 
-            BorderImage {
-                id: backicon
-                source: "icons/whitebackicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: backicon
+                    source: "icons/whitebackicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
+
 
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: root.StackView.view.pop()
+            onClicked:{
+                if(avatar_changed){
+                    block_buttons = true;
+                    main_frame.sendAvatar();
+                }
+                else{
+                    root.StackView.view.pop()
+                }
+            }
         }
 
         Label{
-            text: qsTr("Profile")
+            text: "Profile"
             color: "white"
             font.pixelSize: 20
             font.bold: true
@@ -65,9 +89,7 @@ Page {
         }
     }
 
-
     Rectangle{
-
         anchors.fill: parent
         color: "white"
         height: parent.height
@@ -98,7 +120,10 @@ Page {
             }
 
             onClicked: {
-                profileimagefiledialog.open()
+                //profileimagefiledialog.open()
+                if(block_buttons==false){
+                    main_frame.openImagePicker();
+                }
             }
 
         }
@@ -153,23 +178,84 @@ Page {
                 }
 
                 onClicked: {
-                    root.StackView.view.push("qrc:/ChangeStatusPage.qml")
+                    if(block_buttons==false){
+                        root.StackView.view.push("qrc:/ChangeStatusPage.qml")
+                    }
                 }
             }
 
         }
     }
 
-    FileDialog{
-        id: profileimagefiledialog
-        title: "Choose the new profile image"
-        nameFilters: [ "Image files (*.jpg *.png *.bmp)"]
-        folder:shortcuts.desktop
-        onAccepted: {
-            var entered_path = this.fileUrl
-            profileimage.source = entered_path
-            main_frame.updateImagePath(entered_path.toString().replace("file:///",""));
+    Rectangle{
+        id: wait_box;
+        anchors.fill: parent
+        height: parent.height
+        width: parent.width
+        visible: false;
+        color: Qt.rgba(1,1,1,0.85);
+
+
+        AnimatedImage{
+            source: "icons/loading.gif"
+            width: 3*parent.width/8
+            height: 3*parent.width/8
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width/2-width/2
+            anchors.top: parent.top
+            anchors.topMargin: parent.height/2-height/2
+            fillMode: Image.PreserveAspectFit
         }
+
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

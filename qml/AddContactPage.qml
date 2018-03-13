@@ -1,29 +1,49 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
+import "Constants.js" as Constants;
 
 Page {
 
     id: root
     visible:true
 
-    Connections{   
+    property bool adding_contact : false;
+    property bool buttons_blocked : false;
+    property string entered_username : "";
+
+    Connections{
         target: main_frame
+
+        onReceivedRequestedContact:{
+             main_frame.addRequestedContact(entered_username);
+        }
+
         onFinishedAddingContact:{
-            if(add_result){
-                root.StackView.view.pop();
+            wait_box.visible = false;
+            buttons_blocked = false;
+
+            if(add_result==true){
+                errorlabeladd.text =
+                        entered_username +
+                        "was added to your contact list";
+                errorlabeladd.color = "green";
+                errorlabeladd.visible = true;
             }
             else{
                 errorlabeladd.text = err_msg;
                 errorlabeladd.color = "red";
                 errorlabeladd.visible = true;
             }
+            adding_contact = false;
+        }
 
+        onWaitingForTooLong:{
+            wait_box.visible = true;
         }
 
     }
 
     header: ToolBar{
-
         height: 48
 
         Rectangle{
@@ -41,21 +61,30 @@ Page {
                 acceptedButtons: backbutton | addcontactbutton
             }
 
-            BorderImage {
-                id: backicon
-                source: "icons/whitebackicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: backicon
+                    source: "icons/whitebackicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: root.StackView.view.pop()
+            onClicked:
+                if(!buttons_blocked){
+                    root.StackView.view.pop()
+                }
         }
 
         Label{
-            text: qsTr("Add User")
+            text: "Add User"
             color: "white"
             font.pixelSize: 25
             font.bold: true
@@ -87,7 +116,6 @@ Page {
             radius: 4
             border.color: "#021400"
 
-
             MouseArea{
                 anchors.fill: parent
                 cursorShape: Qt.IBeamCursor
@@ -102,6 +130,8 @@ Page {
                 selectByMouse: true
                 mouseSelectionMode: TextInput.SelectCharacters
                 maximumLength: 10
+                enabled: buttons_blocked ? false : true
+
                 onTextChanged: {
                     if(errorlabeladd.visible){
                         errorlabeladd.visible = false
@@ -109,12 +139,17 @@ Page {
                     }
                 }
                 onAccepted:{
-                    if(contactinput.text == ""){
-                        errorlabeladd.visible = true
-                        errorlabeladd.text = "Set a valid name"
-                        errorlabeladd.color = "red"
-                    }else{
-                        main_frame.addContact(contactinput.text);
+                    if(!buttons_blocked){
+                        if(contactinput.text == ""){
+                            errorlabeladd.visible = true
+                            errorlabeladd.text = "Set a valid name"
+                            errorlabeladd.color = "red"
+                        }else{
+                            entered_username = contactinput.text;
+                            main_frame.addContact(entered_username);
+                            adding_contact = true;
+                            buttons_blocked = true;
+                        }
                     }
                 }
             }
@@ -151,15 +186,40 @@ Page {
                 radius: 4
             }
             onClicked: {
-                if(contactinput.text == ""){
-                    errorlabeladd.visible = true
-                    errorlabeladd.text = "Set a valid name"
-                    errorlabeladd.color = "red"
-                }
-                else{
-                    main_frame.addContact(contactinput.text);
+                if(!buttons_blocked){
+                    if(contactinput.text == ""){
+                        errorlabeladd.visible = true
+                        errorlabeladd.text = "Set a valid name"
+                        errorlabeladd.color = "red"
+                    }else{
+                        entered_username = contactinput.text;
+                        main_frame.addContact(entered_username);
+                        adding_contact = true;
+                        buttons_blocked = true;
+                    }
                 }
             }
+        }
+    }
+
+    Rectangle{
+        id: wait_box;
+        anchors.fill: parent
+        height: parent.height
+        width: parent.width
+        visible: false;
+        color: Qt.rgba(1,1,1,0.85);
+
+
+        AnimatedImage{
+            source: "icons/loading.gif"
+            width: 3*parent.width/8
+            height: 3*parent.width/8
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width/2-width/2
+            anchors.top: parent.top
+            anchors.topMargin: parent.height/2-height/2
+            fillMode: Image.PreserveAspectFit
         }
     }
 

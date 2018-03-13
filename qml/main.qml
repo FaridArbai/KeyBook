@@ -7,6 +7,9 @@ ApplicationWindow {
     height: 600
     visible: true
 
+    property alias main :   window
+    property int toolbar_height :   height/10;
+
     Connections{
         target: main_frame
 

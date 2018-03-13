@@ -83,7 +83,7 @@ Page{
 
                 TextInput {
                     id: username_input
-                    font.bold: false
+                    font.bold: true
                     maximumLength: 10
                     font.pixelSize: 16
                     anchors.fill: parent
@@ -152,7 +152,6 @@ Page{
                     id: password_input
                     anchors.fill: parent
                     font.pixelSize: 16
-                    font.bold: false
                     maximumLength: 10
                     echoMode: TextInput.Password
                     anchors.topMargin: 3
@@ -303,5 +302,6 @@ Page{
                 }
             }
         }
+
 }
 
