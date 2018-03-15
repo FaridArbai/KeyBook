@@ -18,8 +18,8 @@ Page {
     property int text_area_width        :   root.width - (3*send_field_margin + send_button_size);
 
     property int arrow_left_padding     :   (1/32)*root.width;
-    property int arrow_size             :   (1/16)*root.width;
-    property int image_left_paddding    :   (1/16)*root.width;
+    property int arrow_size             :   (3/32)*root.width;
+    property int image_left_paddding    :   (1/32)*root.width;
     property int image_size             :   (3/4)*main.toolbar_height;
     property int image_top_padding      :   (1/8)*main.toolbar_height;
     property int presence_left_padding  :   (1/16)*root.width;
@@ -71,7 +71,13 @@ Page {
 
                 Image {
                     id: backicon
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: (parent.height-height)/2
+                    anchors.leftMargin: (parent.width-width)/2
+                    height: 3*arrow_size/4
+                    width: 3*arrow_size/4
+                    fillMode: Image.PreserveAspectFit
                     source: "icons/whitebackicon.png"
                 }
             }
@@ -94,7 +100,7 @@ Page {
             Rectangle{
                 id: avatar_container
                 anchors.fill: parent
-                color: Constants.TOOLBAR_COLOR
+                color: avatar_button.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
 
                 Image {
                     id: avatar
@@ -129,13 +135,20 @@ Page {
             }
         }
 
-        Rectangle{
+        Button{
             id: contact_info_container
             anchors.top: parent.top
             anchors.left: avatar_button.right
             anchors.leftMargin: presence_left_padding
             anchors.bottom: parent.bottom
-            color: "transparent"
+            width: Math.max(username_label.width,presence_label.width)
+            background: bg
+
+            Rectangle{
+                id: bg
+                anchors.fill: contact_info_container
+                color: contact_info_container.pressed ? Constants.PRESSED_COLOR : "transparent"
+            }
 
             Label{
                 id: username_label
@@ -156,6 +169,12 @@ Page {
                 text: contact.presence_gui
                 color: "white"
                 font.pixelSize: 12
+            }
+
+            onClicked: {
+                main_frame.refreshContactGUI(contact.username_gui)
+                root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                         {previous_page : "Conversation_Page"})
             }
         }
     }
