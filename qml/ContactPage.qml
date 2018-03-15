@@ -8,6 +8,20 @@ Page{
 
     property bool buttons_blocked : false;
 
+    property int side_margin           :   (1/32)*root.width;
+    property int pad_buttons            :   (1/16)*root.width;
+    property int buttons_size           :   (3/32)*root.width;
+    property int icons_size             :   (3/4)*buttons_size;
+    property int left_pad_headertext    :   (1/16)*root.width;
+
+    property int avatar_container_size  :   (4/17)*root.width;
+    property int avatar_pad             :   (1/6)*root.width;
+    property int avatar_image_size      :   (2/3)*avatar_container_size;
+    property int contact_height         :   (2/15)*root.height;
+    property int contactname_top_margin :   (1/3)*contact_height;
+    property int lastmessage_top_margin :   (2/3)*contact_height;
+    property int lastconnection_right_margin    :   (1/6)*root.width;
+
     Connections{
         target: main_frame
         onLogOut:{
@@ -24,7 +38,7 @@ Page{
 
     header: ToolBar {
         id: toolbar
-        height: 60
+        height: main.toolbar_height
 
         Rectangle{
             anchors.fill: parent
@@ -33,18 +47,24 @@ Page{
 
         ToolButton {
             id: backbutton
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.leftMargin: side_margin
+            anchors.verticalCenter: parent.verticalCenter
             enabled: !(buttons_blocked)
+            height: buttons_size
+            width: buttons_size
 
             Rectangle{
                 color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
+                anchors.fill: parent
 
                 Image {
-                    id: backicon
+                    id: backicon                    
+                    anchors.centerIn: parent
+                    height: icons_size
+                    width:  icons_size
                     source: "icons/whitebackicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
                 }
             }
 
@@ -55,50 +75,33 @@ Page{
 
             }
 
-            anchors.left: parent.left
-            anchors.leftMargin: (((parent.width)/4-width)/2)
-            anchors.verticalCenter: parent.verticalCenter
             onClicked:{
                 buttons_blocked = true;
                 main_frame.logOutUser();
             }
         }
 
-
-        ToolButton {
-            id: groupbutton
-            enabled: !(buttons_blocked)
-
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
-            }
-
-            Rectangle{
-                color: groupbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
-
-                Image {
-                    id: groupicon
-                    source: "icons/whitegroupicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
-                }
-            }
-
-            anchors.left: parent.left
-            anchors.leftMargin:(((parent.width)/4-width)/2) + (parent.width/4)
-            anchors.verticalCenter: parent.verticalCenter
-
-            onClicked: {
-                root.StackView.view.push("qrc:/AddGroupPage.qml")
-            }
+        Text{
+            id: logo_text
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2
+            anchors.left: backbutton.right
+            anchors.leftMargin: pad_buttons
+            font.bold: false
+            //font.family: ""
+            font.pixelSize: 20
+            color: "white"
+            text: "Latchkey"
         }
 
         ToolButton{
             id: profileiconbutton
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.rightMargin: side_margin
+            anchors.verticalCenter: parent.verticalCenter
+            height: buttons_size
+            width: buttons_size
             enabled: !(buttons_blocked)
 
             MouseArea{
@@ -109,20 +112,16 @@ Page{
 
             Rectangle{
                 color: profileiconbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
+                anchors.fill: parent
 
                 Image {
                     id: profileicon
+                    anchors.centerIn: parent
                     source: "icons/whiteprofileicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
+                    height: icons_size
+                    width: icons_size
                 }
             }
-
-            anchors.left: parent.left
-            anchors.leftMargin: (((parent.width)/4-width)/2) + (parent.width/4)*2
-            anchors.verticalCenter: parent.verticalCenter
 
             onClicked: {
                 root.StackView.view.push("qrc:/ProfilePage.qml")
@@ -132,7 +131,13 @@ Page{
 
         ToolButton {
             id: addcontactbutton
+            anchors.top: parent.top
+            anchors.right: profileiconbutton.left
+            anchors.rightMargin: pad_buttons
+            anchors.verticalCenter: parent.verticalCenter
             enabled: !(buttons_blocked)
+            height: buttons_size
+            width: buttons_size
 
             MouseArea{
                 anchors.fill: parent
@@ -142,45 +147,39 @@ Page{
 
             Rectangle{
                 color: addcontactbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
+                height: icons_size
+                width: icons_size
+                anchors.fill: parent
 
                 Image {
                     id: plusicon
                     source: "icons/whiteplusicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
+                    anchors.centerIn: parent
+                    height: icons_size
+                    width: icons_size
                 }
             }
 
-            anchors.left: parent.left
-            anchors.leftMargin: (((parent.width)/4-width)/2) + (parent.width/4)*3
-            anchors.verticalCenter: parent.verticalCenter
             onClicked:{
                 root.StackView.view.push("qrc:/AddContactPage.qml")
             }
         }
-
-
     }
 
     ListView{
         id: contacts_view
         anchors.fill: parent
-        topMargin: 15
-        leftMargin: 15
-        bottomMargin: 15
-        rightMargin: 15
-        spacing: 10
-        height: 80
+        topMargin: 0
+        leftMargin: 0
+        bottomMargin: 0
+        rightMargin: 0
+        spacing: 0
         model: ContactModel
         enabled: !(buttons_blocked)
 
         delegate: ItemDelegate {
-
-            width: contacts_view.width - contacts_view.leftMargin - contacts_view.rightMargin
-            height: avatar.height + 15
-            leftPadding: avatar.implicitWidth + 32
+            width: root.width
+            height: contact_height
 
             MouseArea{
                 anchors.fill: parent
@@ -189,25 +188,22 @@ Page{
             }
 
             Button{
-                id: contactprofilebutton
-                height: 70
-                width: 70
+                id: avatar_button
+                anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.leftMargin: 6
-                anchors.verticalCenter: parent.verticalCenter
+                height: avatar_container_size
+                width: avatar_container_size
                 enabled: !(buttons_blocked)
 
                 Rectangle{
-                    height: contactprofilebutton.height
-                    width: contactprofilebutton.width
-                    anchors.centerIn: parent
+                    anchors.fill: parent
                     color: "white"
 
                     Image {
                         id: avatar
-                        height: contactprofilebutton.height
-                        width: contactprofilebutton.width
                         anchors.centerIn: parent
+                        height: avatar_image_size
+                        width: avatar_image_size
                         source: model.modelData.avatar_path_gui
                         fillMode: Image.PreserveAspectCrop
                         layer.enabled: true
@@ -218,9 +214,9 @@ Page{
 
                     Rectangle {
                         id: mask
-                        height: contactprofilebutton.height
-                        width: contactprofilebutton.width
-                        radius: (contactprofilebutton.height/2)
+                        height: avatar.height
+                        width: avatar.width
+                        radius: (avatar.height/2)
                         visible: false
                     }
                 }
@@ -229,7 +225,7 @@ Page{
                 MouseArea{
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: addcontactbutton | backbutton | contactprofilebutton
+                    acceptedButtons: addcontactbutton | backbutton | avatar_button
                 }
 
                 onClicked: {
@@ -237,27 +233,24 @@ Page{
                     root.StackView.view.push("qrc:/ContactProfilePage.qml",
                                              {previous_page : "ContactPage"});
                 }
-
             }
 
             Label{
-                id: nametext
-                anchors.left: contactprofilebutton.right
-                anchors.leftMargin: 10
+                id: contactname_label
+                anchors.left: avatar_button.right
                 anchors.top: parent.top
-                anchors.topMargin: (parent.height/2 - height)/2
+                anchors.topMargin: contactname_top_margin
                 text: model.modelData.username_gui
                 font.bold: true
                 font.pixelSize: 15
-                color: "#206d75"
+                color: Constants.TOOLBAR_COLOR
             }
 
             Label{
                 id: statustext
-                anchors.left: contactprofilebutton.right
-                anchors.leftMargin: 10
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin:(parent.height/2 - height)/2
+                anchors.left: avatar_button.right
+                anchors.top: parent.top
+                anchors.topMargin: lastmessage_top_margin
                 text: (model.modelData.status_gui.length>10)?(model.modelData.status_gui.substr(0,9)+"..."):(model.modelData.status_gui)
                 font.pixelSize: 11
                 font.italic: true
@@ -278,9 +271,8 @@ Page{
             Label{
                 id: presencetext
                 anchors.right: parent.right
-                anchors.rightMargin: 15
                 anchors.top: parent.top
-                anchors.topMargin: (parent.height/2 - height)/2
+                anchors.topMargin: lastmessage_top_margin
                 color: "#626665"
                 text: model.modelData.presence_gui
                 horizontalAlignment: Text.AlignRight
@@ -353,3 +345,36 @@ Page{
     }
 }
 
+/**
+        ToolButton {
+            id: groupbutton
+            enabled: !(buttons_blocked)
+
+            MouseArea{
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: addcontactbutton | backbutton
+            }
+
+            Rectangle{
+                color: groupbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: groupicon
+                    source: "icons/whitegroupicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
+            }
+
+            anchors.left: parent.left
+            anchors.leftMargin:(((parent.width)/4-width)/2) + (parent.width/4)
+            anchors.verticalCenter: parent.verticalCenter
+
+            onClicked: {
+                root.StackView.view.push("qrc:/AddGroupPage.qml")
+            }
+        }
+**/
