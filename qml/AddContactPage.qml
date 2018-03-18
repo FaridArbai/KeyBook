@@ -11,6 +11,17 @@ Page {
     property bool buttons_blocked : false;
     property string entered_username : "";
 
+    property int side_margin            :   (1/32)*root.width;
+    property int pad_buttons            :   (1/16)*root.width;
+    property int buttons_size           :   (3/32)*root.width;
+    property int icons_size             :   (3/4)*buttons_size;
+
+    property int textarea_width         :   (1/2)*root.width;
+    property int textarea_height        :   (3/24)*root.height;
+    property int textarea_spacing       :   (1/4)*textarea_height;
+
+    property int textarea_top_margin    :   (1/6)*root.height;
+
     Connections{
         target: main_frame
 
@@ -44,39 +55,36 @@ Page {
     }
 
     header: ToolBar{
-        height: 48
+        height: main.toolbar_height
 
         Rectangle{
             anchors.fill: parent
-            color: "#206d75"
+            color: Constants.TOOLBAR_COLOR
         }
 
         ToolButton {
             id: backbutton
-
-
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: backbutton | addcontactbutton
-            }
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.leftMargin: side_margin
+            anchors.verticalCenter: parent.verticalCenter
+            enabled: !(buttons_blocked)
+            height: buttons_size
+            width: buttons_size
 
             Rectangle{
                 color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
+                anchors.fill: parent
 
                 Image {
                     id: backicon
+                    anchors.centerIn: parent
+                    height: icons_size
+                    width:  icons_size
                     source: "icons/whitebackicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
                 }
             }
 
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
             onClicked:
                 if(!buttons_blocked){
                     root.StackView.view.pop()
@@ -84,75 +92,75 @@ Page {
         }
 
         Label{
-            text: "Add User"
+            id: logo_text
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2
+            anchors.left: backbutton.right
+            anchors.leftMargin: pad_buttons
+            font.bold: false
+            //font.family: ""
+            font.pixelSize: 20
             color: "white"
-            font.pixelSize: 25
-            font.bold: true
-            anchors.centerIn: parent
+            text: "New Contact"
         }
     }
 
 
     Rectangle{
         anchors.fill: parent
-        anchors.leftMargin: (root.width - rectuseradd.width)/2
-        anchors.topMargin: 120
+        color: Constants.TOOLBAR_COLOR
 
-        Text {
-            id: enteruseradd
-            text: "New contact:"
-            font.bold: true
-            font.pixelSize: 17
-            color: "#16323d"
-        }
+        TextInput{
+            id: username_input
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.topMargin: textarea_top_margin
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: textarea_height
+            width: textarea_width
+            font.bold: false
+            font.pixelSize: 15
+            mouseSelectionMode: TextInput.SelectCharacters
+            selectByMouse: true
+            enabled: buttons_blocked ? false:true
+            text: "Username"
 
-        Rectangle {
-            id: rectuseradd
-            width: 300
-            height: 28
-            anchors.top: enteruseradd.bottom
-            anchors.topMargin: 10
-            border.width: 2
-            radius: 4
-            border.color: "#021400"
+            Rectangle{
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1
+                color: "white"
+            }
+
 
             MouseArea{
                 anchors.fill: parent
                 cursorShape: Qt.IBeamCursor
             }
 
-            TextInput {
-                id: contactinput           
-                anchors.fill: parent
-                font.bold: true
-                anchors.leftMargin: 2
-                font.pixelSize: 20
-                selectByMouse: true
-                mouseSelectionMode: TextInput.SelectCharacters
-                maximumLength: 10
-                enabled: buttons_blocked ? false : true
-
-                onTextChanged: {
-                    if(errorlabeladd.visible){
-                        errorlabeladd.visible = false
-                        errorlabeladd.text = ""
-                    }
+            onTextChanged: {
+                if(errorlabeladd.visible){
+                    errorlabeladd.visible = false;
+                    errorlabeladd.text = "";
                 }
-                onAccepted:{
-                    if(!buttons_blocked){
-                        if(contactinput.text == ""){
-                            errorlabeladd.visible = true
-                            errorlabeladd.text = "Set a valid name"
-                            errorlabeladd.color = "red"
-                        }else{
-                            entered_username = contactinput.text;
-                            main_frame.addContact(entered_username);
-                            adding_contact = true;
-                            buttons_blocked = true;
-                        }
+            }
+
+            onAccepted:{
+                if(!buttons_blocked){
+                    if(contact_input.text == ""){
+                        errorlabeladd.visible = true
+                        errorlabeladd.text = "Set a valid name"
+                        errorlabeladd.color = "red"
+                    }else{
+                        entered_username = contact_input.text;
+                        main_frame.addContact(entered_username);
+                        adding_contact = true;
+                        buttons_blocked = true;
                     }
                 }
             }
+
         }
 
         Label{
@@ -160,23 +168,26 @@ Page {
             text: ""
             visible: false
             font.pixelSize: 15
-            anchors.top: rectuseradd.bottom
+            anchors.top: username_input.bottom
             anchors.topMargin: 10
         }
 
         Button{
             id: addcontactbutton
+            anchors.top: errorlabeladd.bottom
+            anchors.topMargin: 10
+            font.pixelSize: 14
+            anchors.left : parent.left
+            anchors.leftMargin: (username_input.width - addcontactbutton.width)/2
+            text: "Add User"
+
+
             MouseArea{
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 acceptedButtons: backbutton | addcontactbutton
             }
-            anchors.top: errorlabeladd.bottom
-            anchors.topMargin: 10
-            font.pixelSize: 14
-            anchors.left : parent.left
-            anchors.leftMargin: (rectuseradd.width - addcontactbutton.width)/2
-            text: "Add User"
+
             background: Rectangle {
                 implicitWidth: 100
                 implicitHeight: 40
@@ -185,14 +196,15 @@ Page {
                 border.width: 1
                 radius: 4
             }
+
             onClicked: {
                 if(!buttons_blocked){
-                    if(contactinput.text == ""){
+                    if(contact_input.text == ""){
                         errorlabeladd.visible = true
                         errorlabeladd.text = "Set a valid name"
                         errorlabeladd.color = "red"
                     }else{
-                        entered_username = contactinput.text;
+                        entered_username = contact_input.text;
                         main_frame.addContact(entered_username);
                         adding_contact = true;
                         buttons_blocked = true;

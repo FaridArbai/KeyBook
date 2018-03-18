@@ -8,19 +8,20 @@ Page{
 
     property bool buttons_blocked : false;
 
-    property int side_margin           :   (1/32)*root.width;
+    property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (3/4)*buttons_size;
     property int left_pad_headertext    :   (1/16)*root.width;
 
-    property int avatar_container_size  :   (4/17)*root.width;
-    property int avatar_pad             :   (1/6)*root.width;
-    property int avatar_image_size      :   (2/3)*avatar_container_size;
-    property int contact_height         :   (2/15)*root.height;
+    property int avatar_container_width :   (165/724)*root.width;
+    property int contact_height         :   (156/165)*avatar_container_width;
+    property int avatar_right_pad       :   (1/6)*avatar_container_width;
+    property int avatar_top_pad         :   (contact_height-avatar_image_size)/2;
+    property int avatar_image_size      :   (2/3)*avatar_container_width;
     property int contactname_top_margin :   (1/3)*contact_height;
     property int lastmessage_top_margin :   (2/3)*contact_height;
-    property int lastconnection_right_margin    :   (1/6)*root.width;
+    property int lastconnection_right_margin    :   avatar_right_pad;
 
     Connections{
         target: main_frame
@@ -191,8 +192,8 @@ Page{
                 id: avatar_button
                 anchors.top: parent.top
                 anchors.left: parent.left
-                height: avatar_container_size
-                width: avatar_container_size
+                height: contact_height
+                width: avatar_container_width
                 enabled: !(buttons_blocked)
 
                 Rectangle{
@@ -201,7 +202,10 @@ Page{
 
                     Image {
                         id: avatar
-                        anchors.centerIn: parent
+                        anchors.top: parent.top
+                        anchors.topMargin: avatar_top_pad
+                        anchors.left: parent.left
+                        anchors.leftMargin: avatar_right_pad
                         height: avatar_image_size
                         width: avatar_image_size
                         source: model.modelData.avatar_path_gui
@@ -239,7 +243,7 @@ Page{
                 id: contactname_label
                 anchors.left: avatar_button.right
                 anchors.top: parent.top
-                anchors.topMargin: contactname_top_margin
+                anchors.topMargin: contactname_top_margin-height/2
                 text: model.modelData.username_gui
                 font.bold: true
                 font.pixelSize: 15
@@ -247,42 +251,29 @@ Page{
             }
 
             Label{
-                id: statustext
-                anchors.left: avatar_button.right
+                id: presencetext
+                anchors.right: parent.right
+                anchors.rightMargin: avatar_right_pad
                 anchors.top: parent.top
-                anchors.topMargin: lastmessage_top_margin
-                text: (model.modelData.status_gui.length>10)?(model.modelData.status_gui.substr(0,9)+"..."):(model.modelData.status_gui)
-                font.pixelSize: 11
-                font.italic: true
+                anchors.topMargin: contactname_label.anchors.topMargin+(contactname_label.font.pixelSize-font.pixelSize)
                 color: "#626665"
+                text: model.modelData.presence_gui
+                font.pixelSize: 12
             }
 
             Label{
                 id: lastmessagetext
-                anchors.right: parent.right
-                anchors.rightMargin: (messagesnotread.text == "0")?(15):(25+buttonmessagesnotread.width)
-                anchors.bottom:  parent.bottom
-                anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
+                anchors.left: avatar_button.right
+                anchors.top:  parent.top
+                anchors.topMargin: lastmessage_top_margin-height/2
                 text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
-                font.pixelSize: 10
+                font.pixelSize: 14
                 color: "#626665"
             }
 
             Label{
-                id: presencetext
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: lastmessage_top_margin
-                color: "#626665"
-                text: model.modelData.presence_gui
-                horizontalAlignment: Text.AlignRight
-                font.pixelSize: 10
-
-            }
-
-            Label{
-                visible: messagesnotread.text != "0"
                 id: buttonmessagesnotread
+                visible: messagesnotread.text != "0"
                 anchors.right: parent.right
                 rightPadding: 30
                 anchors.rightMargin: 15
@@ -320,6 +311,17 @@ Page{
                 root.StackView.view.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ContactPage"});
             }
+
+            Rectangle{
+                id: separator
+                anchors.bottom: parent.bottom
+                anchors.left: avatar_button.right
+                anchors.right: parent.right
+                anchors.rightMargin: avatar_right_pad
+                height: 1
+                color: "#EEEEEE"
+            }
+
         }
     }
 
