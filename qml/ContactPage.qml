@@ -43,7 +43,7 @@ Page{
 
         Rectangle{
             anchors.fill: parent
-            color: "#206d75"
+            color: Constants.TOOLBAR_COLOR
         }
 
         ToolButton {

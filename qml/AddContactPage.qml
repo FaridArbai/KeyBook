@@ -16,11 +16,48 @@ Page {
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (3/4)*buttons_size;
 
-    property int textarea_width         :   (1/2)*root.width;
+    property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/24)*root.height;
     property int textarea_spacing       :   (1/4)*textarea_height;
 
     property int textarea_top_margin    :   (1/6)*root.height;
+
+    property int button_width           :   3/8*root.width;
+
+
+
+
+    function handleTextChange(text_area){
+        if(errorlabeladd.visible==true){
+            errorlabeladd.text = "";
+            errorlabeladd.visible = false;
+        }
+
+        var text = text_area.text;
+        var accepted = (text.indexOf("\n")!==(-1));
+
+        if(accepted){
+            text_area.text = text_area.text.replace('\n','');
+            addContact();
+        }
+    }
+
+    function addContact(){
+        if(!buttons_blocked){
+            if(username_input.text == ""){
+                errorlabeladd.visible = true
+                errorlabeladd.text = "Set a valid name"
+                errorlabeladd.color = Constants.FAILURE_COLOR
+            }else{
+                entered_username = username_input.text;
+                main_frame.addContact(entered_username);
+                adding_contact = true;
+                buttons_blocked = true;
+            }
+        }
+
+    }
+
 
     Connections{
         target: main_frame
@@ -37,12 +74,12 @@ Page {
                 errorlabeladd.text =
                         entered_username +
                         "was added to your contact list";
-                errorlabeladd.color = "green";
+                errorlabeladd.color = Constants.SUCESS_COLOR;
                 errorlabeladd.visible = true;
             }
             else{
                 errorlabeladd.text = err_msg;
-                errorlabeladd.color = "red";
+                errorlabeladd.color = Constants.FAILURE_COLOR;
                 errorlabeladd.visible = true;
             }
             adding_contact = false;
@@ -108,79 +145,141 @@ Page {
 
     Rectangle{
         anchors.fill: parent
-        color: Constants.TOOLBAR_COLOR
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Constants.TOOLBAR_COLOR }
+            GradientStop { position: 1.0; color: Constants.GRADIENT_TOOLBAR_COLOR }
+        }
 
-        TextInput{
+        TextArea{
             id: username_input
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.topMargin: textarea_top_margin
-            anchors.horizontalCenter: parent.horizontalCenter
-            height: textarea_height
+            anchors.leftMargin: (parent.width-width)/2
+            leftPadding: 0
+            rightPadding: 0
             width: textarea_width
             font.bold: false
-            font.pixelSize: 15
-            mouseSelectionMode: TextInput.SelectCharacters
+            font.pixelSize: 20
             selectByMouse: true
-            enabled: buttons_blocked ? false:true
-            text: "Username"
+            mouseSelectionMode: TextInput.SelectCharacters
+            enabled: (!buttons_blocked)
+            color: "white"
+            placeholderText: "Enter username"
 
             Rectangle{
-                anchors.bottom: parent.bottom
+                anchors.top: parent.bottom
                 anchors.left: parent.left
-                anchors.right: parent.right
                 height: 1
+                width: parent.width
                 color: "white"
             }
 
+            onTextChanged:{
+                handleTextChange(username_input);
+            }
+        }
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.IBeamCursor
+        TextArea{
+            id: latchkey_input
+            anchors.top: username_input.bottom
+            anchors.left: parent.left
+            anchors.topMargin: textarea_spacing
+            anchors.leftMargin: (parent.width-width)/2
+            leftPadding: 0
+            rightPadding: 0
+            width: textarea_width
+            font.bold: false
+            font.pixelSize: 20
+            selectByMouse: true
+            mouseSelectionMode: TextInput.SelectCharacters
+            enabled: (!buttons_blocked)
+            color: "white"
+            placeholderText: "Enter latchkey"
+
+            Rectangle{
+                anchors.top: parent.bottom
+                anchors.left: parent.left
+                height: 1
+                width: parent.width
+                color: "white"
             }
 
-            onTextChanged: {
-                if(errorlabeladd.visible){
-                    errorlabeladd.visible = false;
-                    errorlabeladd.text = "";
-                }
+            onTextChanged:{
+                handleTextChange(username_input);
             }
 
-            onAccepted:{
-                if(!buttons_blocked){
-                    if(contact_input.text == ""){
-                        errorlabeladd.visible = true
-                        errorlabeladd.text = "Set a valid name"
-                        errorlabeladd.color = "red"
-                    }else{
-                        entered_username = contact_input.text;
-                        main_frame.addContact(entered_username);
-                        adding_contact = true;
-                        buttons_blocked = true;
-                    }
-                }
+        }
+
+        TextArea{
+            id: latchkey_repetition_input
+            anchors.top: latchkey_input.bottom
+            anchors.left: parent.left
+            anchors.topMargin: textarea_spacing
+            anchors.leftMargin: (parent.width-width)/2
+            leftPadding: 0
+            rightPadding: 0
+            width: textarea_width
+            font.bold: false
+            font.pixelSize: 20
+            selectByMouse: true
+            mouseSelectionMode: TextInput.SelectCharacters
+            enabled: (!buttons_blocked)
+            color: "white"
+            placeholderText: "Repeat latchkey"
+
+            Rectangle{
+                anchors.top: parent.bottom
+                anchors.left: parent.left
+                height: 1
+                width: parent.width
+                color: "white"
+            }
+
+            onTextChanged:{
+                handleTextChange(username_input);
             }
 
         }
 
         Label{
             id:errorlabeladd
-            text: ""
             visible: false
+            anchors.top: latchkey_repetition_input.bottom
+            anchors.topMargin: textarea_spacing
+            anchors.left: parent.left
+            anchors.leftMargin: (parent.width-width)/2
+            text: ""
             font.pixelSize: 15
-            anchors.top: username_input.bottom
-            anchors.topMargin: 10
+            color: "lightgrey"
         }
 
         Button{
             id: addcontactbutton
             anchors.top: errorlabeladd.bottom
-            anchors.topMargin: 10
-            font.pixelSize: 14
+            anchors.topMargin: textarea_spacing
             anchors.left : parent.left
-            anchors.leftMargin: (username_input.width - addcontactbutton.width)/2
-            text: "Add User"
+            anchors.leftMargin: (parent.width-width)/2
+            height: 3*button_text.font.pixelSize
+            width: button_width
 
+            background: Rectangle {
+                height: addcontactbutton.height
+                width: addcontactbutton.width
+                color: addcontactbutton.down ? Constants.BRIGHTER_TOOLBAR_COLOR : Constants.TOOLBAR_COLOR
+                border.color: "white"
+                border.width: 1
+                radius: width/2
+            }
+
+            Text{
+                id: button_text
+                anchors.centerIn: parent
+                font.pixelSize: 15;
+                font.bold: false
+                text: "Add Contact"
+                color: "white"
+            }
 
             MouseArea{
                 anchors.fill: parent
@@ -188,23 +287,15 @@ Page {
                 acceptedButtons: backbutton | addcontactbutton
             }
 
-            background: Rectangle {
-                implicitWidth: 100
-                implicitHeight: 40
-                color: addcontactbutton.down ? "#eefdff" : "#f6f6f6"
-                border.color: "#26282a"
-                border.width: 1
-                radius: 4
-            }
-
             onClicked: {
                 if(!buttons_blocked){
-                    if(contact_input.text == ""){
+                    if(username_input.text == ""){
                         errorlabeladd.visible = true
                         errorlabeladd.text = "Set a valid name"
-                        errorlabeladd.color = "red"
-                    }else{
-                        entered_username = contact_input.text;
+                        errorlabeladd.color = Constants.FAILURE_COLOR
+                    }
+                    else{
+                        entered_username = username_input.text;
                         main_frame.addContact(entered_username);
                         adding_contact = true;
                         buttons_blocked = true;
@@ -236,3 +327,5 @@ Page {
     }
 
 }
+
+
