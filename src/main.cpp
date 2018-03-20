@@ -6,14 +6,13 @@
 #include <QtQml/QQmlApplicationEngine>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QtAndroid>
+#include <QAndroidJniObject>
 
 #include <thread>
 #include <iostream>
 #include <string>
 #include <stdlib.h>
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
 
 #include "./connection_management/connection.h"
 #include "./connection_management/servermessage.h"
@@ -37,6 +36,8 @@
 #include "./user_management/privateuser.h"
 #include "./user_management/iomanager.h"
 
+#include <signal.h>
+
 QQmlContext* context;
 
 #define BUFFER_LENGTH 1048576
@@ -45,7 +46,6 @@ using namespace std;
 
 void listeningTask(Connection& server_conn, ServerMessage* server_response,QWaitCondition* RESPONSE_CONDITION, MainFrame* main_frame);
 void handleTrap(ProtocolMessage* trap, MainFrame* main_frame);
-void trapTask(ServerMessage* server_trap, QWaitCondition* TRAP_CONDITION, MainFrame* main_frame);
 
 int main(int argc, char *argv[]){
     // Connection
@@ -67,26 +67,37 @@ int main(int argc, char *argv[]){
     RegisterFrame register_frame(&request_handler);
 
 
-    // App threads
+    // Start the networking thread
     thread listening_thread = thread(listeningTask, std::ref(server_conn), &server_response,&RESPONSE_CONDITION,&main_frame);
     listening_thread.detach();
 
     // GUI
-        // Context configutarion
+        // Provide access to the frame managers
         context->setContextProperty("log_frame", &log_frame);
         context->setContextProperty("register_frame", &register_frame);
         context->setContextProperty("main_frame", &main_frame);
 
-        context->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
+        // Initialize the IOManager
+        IOManager::init();
 
+        // Load the GUI resources
         engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    // END GUI
 
+        QtAndroid::runOnAndroidThread([=]()
+        {
+            QAndroidJniObject window = QtAndroid::androidActivity().callObjectMethod("getWindow", "()Landroid/view/Window;");
+            window.callMethod<void>("addFlags", "(I)V", 0x80000000);
+            window.callMethod<void>("clearFlags", "(I)V", 0x04000000);
+            window.callMethod<void>("setStatusBarColor", "(I)V", 0xff015f6a); // Desired statusbar color
+        });
+
+
+    // Start the GUI thread
     int app_result;
-
     app_result = app.exec();
 
     //save all the data before shutting down the app
-
     main_frame.logOutUser();
 
     return app_result;
@@ -157,6 +168,10 @@ void handleTrap(ProtocolMessage* trap, MainFrame* main_frame){
                     break;
                 }
                 case(PM_updateStatus::StatusType::image):{
+                    string username = update->getUsername();
+                    Avatar new_avatar = update->getAvatar();
+
+                    user->updateAvatarOf(username,new_avatar);
 
                     break;
                 }
@@ -190,4 +205,33 @@ void handleTrap(ProtocolMessage* trap, MainFrame* main_frame){
 
     delete trap;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
