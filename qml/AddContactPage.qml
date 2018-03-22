@@ -1,5 +1,5 @@
 import QtQuick 2.6
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.2
 import "Constants.js" as Constants;
 
 Page {
@@ -16,15 +16,21 @@ Page {
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (3/4)*buttons_size;
 
+
+    property int init_spacing           :   (15/100)*root.height-toolbar.height;
     property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/24)*root.height;
-    property int textarea_spacing       :   (1/4)*textarea_height;
 
-    property int textarea_top_margin    :   (1/6)*root.height;
+    property int label_spacing          :   (9/100)*root.height;
+    property int textarea_spacing       :   (120/100)*label_spacing;
 
-    property int button_width           :   3/8*root.width;
+    property int errorlabel_top_margin  :   (1/20)*root.height;
+    property int button_top_margin      :   (1/10)*root.height;
 
+    property int button_width           :   (3/8)*root.width;
 
+    property int indicator_pixelsize    :   19;
+    property int input_pixelsize        :   19;
 
 
     function handleTextChange(text_area){
@@ -92,6 +98,7 @@ Page {
     }
 
     header: ToolBar{
+        id: toolbar
         height: main.toolbar_height
 
         Rectangle{
@@ -150,59 +157,85 @@ Page {
             GradientStop { position: 1.0; color: Constants.GRADIENT_TOOLBAR_COLOR }
         }
 
+        Label{
+            id: username_input_indicator
+            anchors.top: parent.top
+            anchors.topMargin: init_spacing
+            anchors.left: parent.left
+            anchors.leftMargin: username_input.anchors.leftMargin
+            topPadding: 0
+            bottomPadding: 0
+            font.bold: false
+            font.pixelSize:indicator_pixelsize
+            text: "Enter Username"
+            color: Constants.GENERAL_TEXT_WHITE
+        }
+
         TextArea{
             id: username_input
-            anchors.top: parent.top
+            anchors.top: username_input_indicator.top
             anchors.left: parent.left
-            anchors.topMargin: textarea_top_margin
+            anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
             leftPadding: 0
             rightPadding: 0
             width: textarea_width
             font.bold: false
-            font.pixelSize: 20
+            font.pixelSize: input_pixelsize
             selectByMouse: true
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
-            color: "white"
-            placeholderText: "Enter username"
+            color: Constants.RELEVANT_TEXT_WHITE
 
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
                 height: 1
                 width: parent.width
-                color: "white"
+                color: Constants.LINES_WHITE
             }
 
             onTextChanged:{
                 handleTextChange(username_input);
             }
+        }
+
+        Label{
+            id:  latchkey_input_indicator
+            anchors.top: username_input.bottom
+            anchors.topMargin: label_spacing
+            anchors.left: parent.left
+            anchors.leftMargin: username_input.anchors.leftMargin
+            topPadding: 0
+            bottomPadding: 0
+            font.bold: false
+            font.pixelSize:indicator_pixelsize
+            text: "Enter Latchkey"
+            color: Constants.GENERAL_TEXT_WHITE
         }
 
         TextArea{
             id: latchkey_input
-            anchors.top: username_input.bottom
+            anchors.top: latchkey_input_indicator.top
             anchors.left: parent.left
-            anchors.topMargin: textarea_spacing
+            anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
             leftPadding: 0
             rightPadding: 0
             width: textarea_width
             font.bold: false
-            font.pixelSize: 20
+            font.pixelSize: indicator_pixelsize
             selectByMouse: true
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
-            color: "white"
-            placeholderText: "Enter latchkey"
+            color: Constants.RELEVANT_TEXT_WHITE
 
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
                 height: 1
                 width: parent.width
-                color: "white"
+                color: Constants.LINES_WHITE
             }
 
             onTextChanged:{
@@ -211,29 +244,42 @@ Page {
 
         }
 
+        Label{
+            id:  latchkey_repetition_input_indicator
+            anchors.top: latchkey_input.bottom
+            anchors.topMargin: label_spacing
+            anchors.left: parent.left
+            anchors.leftMargin: username_input.anchors.leftMargin
+            topPadding: 0
+            bottomPadding: 0
+            font.bold: false
+            font.pixelSize: indicator_pixelsize
+            text: "Repeat Latchkey"
+            color: Constants.GENERAL_TEXT_WHITE
+        }
+
         TextArea{
             id: latchkey_repetition_input
-            anchors.top: latchkey_input.bottom
+            anchors.top: latchkey_repetition_input_indicator.top
             anchors.left: parent.left
-            anchors.topMargin: textarea_spacing
+            anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
             leftPadding: 0
             rightPadding: 0
             width: textarea_width
             font.bold: false
-            font.pixelSize: 20
+            font.pixelSize: input_pixelsize
             selectByMouse: true
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
-            color: "white"
-            placeholderText: "Repeat latchkey"
+            color: Constants.RELEVANT_TEXT_WHITE
 
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
                 height: 1
                 width: parent.width
-                color: "white"
+                color: Constants.LINES_WHITE
             }
 
             onTextChanged:{
@@ -246,7 +292,7 @@ Page {
             id:errorlabeladd
             visible: false
             anchors.top: latchkey_repetition_input.bottom
-            anchors.topMargin: textarea_spacing
+            anchors.topMargin: errorlabel_top_margin
             anchors.left: parent.left
             anchors.leftMargin: (parent.width-width)/2
             text: ""
@@ -256,8 +302,8 @@ Page {
 
         Button{
             id: addcontactbutton
-            anchors.top: errorlabeladd.bottom
-            anchors.topMargin: textarea_spacing
+            anchors.top: errorlabeladd.top
+            anchors.topMargin: label_spacing
             anchors.left : parent.left
             anchors.leftMargin: (parent.width-width)/2
             height: 3*button_text.font.pixelSize
@@ -266,10 +312,11 @@ Page {
             background: Rectangle {
                 height: addcontactbutton.height
                 width: addcontactbutton.width
-                color: addcontactbutton.down ? Constants.BRIGHTER_TOOLBAR_COLOR : Constants.TOOLBAR_COLOR
-                border.color: "white"
+                color: addcontactbutton.down ? Constants.BUTTON_WHITE : "transparent"
+                border.color: Constants.LINES_WHITE
                 border.width: 1
-                radius: width/2
+                //radius: width/2
+                radius: 8
             }
 
             Text{
@@ -278,7 +325,7 @@ Page {
                 font.pixelSize: 15;
                 font.bold: false
                 text: "Add Contact"
-                color: "white"
+                color: Constants.LINES_WHITE
             }
 
             MouseArea{
