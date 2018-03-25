@@ -1,8 +1,8 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
+import "Constants.js" as Constants
 
 Page{
-
         id: root
         visible:true 
 
@@ -27,7 +27,7 @@ Page{
 
             Rectangle{
                 anchors.fill: parent
-                color: "#206d75"
+                color: Constants.TOOLBAR_COLOR
             }
 
             Label{

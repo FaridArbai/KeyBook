@@ -1,9 +1,9 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
+import QtGraphicalEffects 1.0
 import "Constants.js" as Constants;
 
-Page {
-
+Page{
     id: root
     visible:true
 
@@ -21,17 +21,17 @@ Page {
     property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/24)*root.height;
 
-    property int label_spacing          :   (9/100)*root.height;
-    property int textarea_spacing       :   (120/100)*label_spacing;
+    property int label_spacing          :   (85/1000)*root.height;
+    property int textarea_spacing       :   (130/100)*label_spacing;
 
-    property int errorlabel_top_margin  :   (1/20)*root.height;
+    property int errorlabel_top_margin  :   (15/200)*root.height;
     property int button_top_margin      :   (1/10)*root.height;
 
     property int button_width           :   (3/8)*root.width;
 
-    property int indicator_pixelsize    :   19;
-    property int input_pixelsize        :   19;
-
+    property int indicator_pixelsize    :   18;
+    property int input_pixelsize        :   22;
+    property int textarea_left_padding  :   (3/2)*input_pixelsize;
 
     function handleTextChange(text_area){
         if(errorlabeladd.visible==true){
@@ -41,9 +41,17 @@ Page {
 
         var text = text_area.text;
         var accepted = (text.indexOf("\n")!==(-1));
+        var contains_whitespace = (text.indexOf(" ")!==(-1));
 
+        if(contains_whitespace){
+            text = text.substr(0,text.length-1);
+            text_area.text = text;
+            text_area.cursorPosition = text_area.length;
+        }
         if(accepted){
             text_area.text = text_area.text.replace('\n','');
+            text_area.cursorPosition = text_area.length;
+            text_area.focus = false;
             addContact();
         }
     }
@@ -79,7 +87,7 @@ Page {
             if(add_result==true){
                 errorlabeladd.text =
                         entered_username +
-                        "was added to your contact list";
+                        " was added to your contact list";
                 errorlabeladd.color = Constants.SUCESS_COLOR;
                 errorlabeladd.visible = true;
             }
@@ -152,10 +160,7 @@ Page {
 
     Rectangle{
         anchors.fill: parent
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: Constants.TOOLBAR_COLOR }
-            GradientStop { position: 1.0; color: Constants.GRADIENT_TOOLBAR_COLOR }
-        }
+        color: Constants.TOOLBAR_COLOR
 
         Label{
             id: username_input_indicator
@@ -177,20 +182,45 @@ Page {
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
-            leftPadding: 0
+            leftPadding: textarea_left_padding
             rightPadding: 0
             width: textarea_width
             font.bold: false
             font.pixelSize: input_pixelsize
             selectByMouse: true
+            //textFormat: TextEdit.PlainText
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
             color: Constants.RELEVANT_TEXT_WHITE
 
+            OpacityMask{
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: (3/2)*parent.bottomPadding
+                anchors.left: parent.left
+                height: input_pixelsize
+                width: input_pixelsize
+                source: usericon_bg
+                maskSource: usericon_mask
+
+                Image{
+                    id: usericon_mask
+                    anchors.fill: parent
+                    source: "icons/whiteusernameicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: usericon_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
-                height: 1
+                height: username_input.activeFocus? 2:1
                 width: parent.width
                 color: Constants.LINES_WHITE
             }
@@ -220,26 +250,51 @@ Page {
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
-            leftPadding: 0
+            leftPadding: textarea_left_padding
             rightPadding: 0
             width: textarea_width
             font.bold: false
-            font.pixelSize: indicator_pixelsize
+            font.pixelSize: input_pixelsize
             selectByMouse: true
+            //textFormat: TextEdit.PlainText
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
             color: Constants.RELEVANT_TEXT_WHITE
 
+            OpacityMask{
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: (3/2)*parent.bottomPadding
+                anchors.left: parent.left
+                height: input_pixelsize
+                width: input_pixelsize
+                source: latchicon_bg
+                maskSource: latchicon_mask
+
+                Image{
+                    id: latchicon_mask
+                    anchors.fill: parent
+                    source: "icons/whitelockicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: latchicon_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
-                height: 1
+                height: latchkey_input.activeFocus? 2:1
                 width: parent.width
                 color: Constants.LINES_WHITE
             }
 
             onTextChanged:{
-                handleTextChange(username_input);
+                handleTextChange(latchkey_input);
             }
 
         }
@@ -264,26 +319,51 @@ Page {
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
-            leftPadding: 0
+            leftPadding: textarea_left_padding
             rightPadding: 0
             width: textarea_width
             font.bold: false
             font.pixelSize: input_pixelsize
             selectByMouse: true
+            //textFormat: TextEdit.PlainText
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
             color: Constants.RELEVANT_TEXT_WHITE
 
+            OpacityMask{
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: (3/2)*parent.bottomPadding
+                anchors.left: parent.left
+                height: input_pixelsize
+                width: input_pixelsize
+                source: latchicon2_bg
+                maskSource: latchicon2_mask
+
+                Image{
+                    id: latchicon2_mask
+                    anchors.fill: parent
+                    source: "icons/whitelockicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: latchicon2_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
             Rectangle{
                 anchors.top: parent.bottom
                 anchors.left: parent.left
-                height: 1
+                height: latchkey_repetition_input.activeFocus? 2:1
                 width: parent.width
                 color: Constants.LINES_WHITE
             }
 
             onTextChanged:{
-                handleTextChange(username_input);
+                handleTextChange(latchkey_repetition_input);
             }
 
         }
@@ -307,7 +387,7 @@ Page {
             anchors.left : parent.left
             anchors.leftMargin: (parent.width-width)/2
             height: 3*button_text.font.pixelSize
-            width: button_width
+            width: textarea_width
 
             background: Rectangle {
                 height: addcontactbutton.height
@@ -315,8 +395,8 @@ Page {
                 color: addcontactbutton.down ? Constants.BUTTON_WHITE : "transparent"
                 border.color: Constants.LINES_WHITE
                 border.width: 1
-                //radius: width/2
-                radius: 8
+                //radius: 8
+                radius: height/2
             }
 
             Text{
@@ -324,7 +404,7 @@ Page {
                 anchors.centerIn: parent
                 font.pixelSize: 15;
                 font.bold: false
-                text: "Add Contact"
+                text: "ADD CONTACT"
                 color: Constants.LINES_WHITE
             }
 
