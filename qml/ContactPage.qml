@@ -11,7 +11,8 @@ Page{
     property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
-    property int icons_size             :   (3/4)*buttons_size;
+    property int icons_size             :   (34/720)*root.width;
+    property int backicon_size          :   (3/4)*buttons_size;
     property int left_pad_headertext    :   (1/16)*root.width;
 
     property int avatar_container_width :   (165/724)*root.width;
@@ -51,7 +52,7 @@ Page{
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: side_margin
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.topMargin: (parent.height-height)/2
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
@@ -100,7 +101,7 @@ Page{
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: side_margin
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.topMargin: (parent.height-height)/2
             height: buttons_size
             width: buttons_size
             enabled: !(buttons_blocked)
@@ -134,8 +135,8 @@ Page{
             id: addcontactbutton
             anchors.top: parent.top
             anchors.right: profileiconbutton.left
-            anchors.rightMargin: pad_buttons
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: side_margin
+            anchors.topMargin: (parent.height-height)/2
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size

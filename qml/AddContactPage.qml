@@ -1,4 +1,4 @@
-import QtQuick 2.6
+import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
 import "Constants.js" as Constants;
@@ -14,7 +14,7 @@ Page{
     property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
-    property int icons_size             :   (3/4)*buttons_size;
+    property int icons_size             :   (34/720)*root.width;
 
 
     property int init_spacing           :   (15/100)*root.height-toolbar.height;
@@ -32,6 +32,10 @@ Page{
     property int indicator_pixelsize    :   18;
     property int input_pixelsize        :   22;
     property int textarea_left_padding  :   (3/2)*input_pixelsize;
+
+    property bool show_lk   :   false;
+    property bool show_lk2  :   false;
+    property string lk_char :   "•";
 
     function handleTextChange(text_area){
         if(errorlabeladd.visible==true){
@@ -244,6 +248,57 @@ Page{
             color: Constants.GENERAL_TEXT_WHITE
         }
 
+        Button{
+            id: lk_button
+            anchors.top: latchkey_input_indicator.top
+            anchors.topMargin: (latchkey_input_indicator.height-height)/2
+            anchors.right: latchkey_input.right
+            height: latchicon_mask.height
+            width: latchicon_mask.width
+            background: Rectangle{
+                color: "transparent"
+            }
+
+            OpacityMask{
+                id: lk_button_image
+                anchors.fill: parent
+                source: lk_button_bg
+                maskSource: lk_button_mask
+
+                Image{
+                    id: lk_button_mask
+                    anchors.fill: parent
+                    source: root.show_lk ? "icons/whitehideicon.png" : "icons/whiteshowicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: lk_button_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
+            onClicked:{
+                root.show_lk = !root.show_lk;
+            }
+        }
+
+        Label{
+            id: lk_dots
+            anchors.fill: latchkey_input
+            topPadding: latchkey_input.topPadding
+            bottomPadding: latchkey_input.bottomPadding
+            leftPadding: latchkey_input.leftPadding
+            rightPadding: latchkey_input.rightPadding
+            font.family: "Monospace"
+            font.bold: false
+            font.pixelSize: input_pixelsize
+            color: root.show_lk ? "transparent" : Constants.RELEVANT_TEXT_WHITE
+            text: root.lk_char.repeat(latchkey_input.text.length);
+        }
+
         TextArea{
             id: latchkey_input
             anchors.top: latchkey_input_indicator.top
@@ -253,13 +308,14 @@ Page{
             leftPadding: textarea_left_padding
             rightPadding: 0
             width: textarea_width
+            font.family: "Monospace"
             font.bold: false
             font.pixelSize: input_pixelsize
             selectByMouse: true
             //textFormat: TextEdit.PlainText
             mouseSelectionMode: TextInput.SelectCharacters
             enabled: (!buttons_blocked)
-            color: Constants.RELEVANT_TEXT_WHITE
+            color: root.show_lk ? Constants.RELEVANT_TEXT_WHITE : "transparent"
 
             OpacityMask{
                 anchors.bottom: parent.bottom
@@ -311,6 +367,43 @@ Page{
             font.pixelSize: indicator_pixelsize
             text: "Repeat Latchkey"
             color: Constants.GENERAL_TEXT_WHITE
+        }
+
+        Button{
+            id: lk2_button
+            anchors.top: latchkey_repetition_input_indicator.top
+            anchors.topMargin: (latchkey_repetition_input_indicator.height-height)/2
+            anchors.right: latchkey_repetition_input.right
+            height: latchicon2_mask.height
+            width: latchicon2_mask.width
+            background: Rectangle{
+                color: "transparent"
+            }
+
+            OpacityMask{
+                id: lk2_button_image
+                anchors.fill: parent
+                source: lk2_button_bg
+                maskSource: lk2_button_mask
+
+                Image{
+                    id: lk2_button_mask
+                    anchors.fill: parent
+                    source: root.show_lk2 ? "icons/whitehideicon.png" : "icons/whiteshowicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: lk2_button_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
+            onClicked:{
+                root.show_lk2 = !root.show_lk2;
+            }
         }
 
         TextArea{
