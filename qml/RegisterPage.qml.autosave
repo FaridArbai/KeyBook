@@ -15,8 +15,7 @@ Page{
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (34/720)*root.width;
-
-
+    
     property int init_spacing           :   (15/100)*root.height-toolbar.height;
     property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/2)*input_pixelsize;

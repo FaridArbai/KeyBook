@@ -15,6 +15,14 @@ var GENERAL_TEXT_WHITE      =   "#AFFFFFFF"
 var RELEVANT_TEXT_WHITE     =   "#CFFFFFFF";
 var BUTTON_WHITE            =   "#3FFFFFFF";
 
+var MIN_USERNAME_LENGTH     =   3;
+var MAX_USERNAME_LENGTH     =   14;
+var MIN_PASSWORD_LENGTH     =   6;
+var MAX_PASSWORD_LENGTH     =   14;
+var MIN_LATCHKEY_LENGTH     =   4;
+var MAX_LATCHKEY_LENGTH     =   14;
+var USERNAME_REGEX          =   /^[0-9a-zA-Z]+$/;
+
 var TOOLBUTTON_SIZE         =   40;
 var SENDBUTTON_SIZE         =   80;
 
