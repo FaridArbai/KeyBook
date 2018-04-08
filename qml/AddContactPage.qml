@@ -120,7 +120,8 @@ Page{
         target: main_frame
 
         onReceivedRequestedContact:{
-             main_frame.addRequestedContact(entered_username);
+            main_frame.addRequestedContact(entered_username);
+            console.log("CONSOLA AQUI");
         }
 
         onFinishedAddingContact:{

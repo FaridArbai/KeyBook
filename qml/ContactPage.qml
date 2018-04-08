@@ -28,6 +28,7 @@ Page{
         target: main_frame
         onLogOut:{
             wait_box.visible = false;
+            main_frame.changeStatusbarColor(Constants.LOGIN_STATUSBAR_COLOR);
             root.StackView.view.pop();
         }
 

@@ -16,7 +16,6 @@ Page{
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (34/720)*root.width;
 
-
     property int init_spacing           :   (15/100)*root.height-toolbar.height;
     property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/2)*input_pixelsize;
@@ -121,14 +120,31 @@ Page{
 
     }
 
-    header: ToolBar{
-        id: toolbar
-        height: main.toolbar_height
+    Rectangle{
+        id: page_bg
+        anchors.fill: parent
 
-        Rectangle{
+        RadialGradient{
             anchors.fill: parent
-            color: Constants.TOOLBAR_COLOR
+            //horizontalOffset: -root.width/2
+            horizontalOffset: 0
+            verticalOffset: -root.height/2
+            horizontalRadius: root.height
+            verticalRadius: root.height
+            gradient: Gradient{
+                GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
+                GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
+            }
         }
+    }
+
+    Rectangle{
+        id: toolbar
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: parent.left
+        height: main.toolbar_height
+        color: "transparent"
 
         ToolButton {
             id: backbutton
@@ -139,9 +155,16 @@ Page{
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
+            background: backbutton_bg
 
             Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                id: backbutton_bg;
+                anchors.fill: parent;
+                color: "transparent";
+            }
+
+            Rectangle{
+                color: backbutton.pressed ? Constants.BUTTON_WHITE:"transparent"
                 anchors.fill: parent
 
                 Image {
@@ -174,8 +197,11 @@ Page{
     }
 
     Rectangle{
-        anchors.fill: parent
-        color: Constants.TOOLBAR_COLOR
+        anchors.top: toolbar.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        color: "transparent"
 
         Label{
             id: username_input_indicator
