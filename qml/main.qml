@@ -8,7 +8,8 @@ ApplicationWindow {
     visible: true
 
     property alias main                 :   window;
-    property int toolbar_height         :   height/10;
+    property int toolbar_height         :   (app_height/10);
+    property real density               :   main_frame.getDensity();
     property int app_height             :   main_frame.getAppHeight();
     property int app_width              :   main_frame.getAppWidth();
     property int statusbar_height       :   main_frame.getStatusbarHeight();

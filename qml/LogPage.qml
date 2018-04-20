@@ -8,32 +8,38 @@ Page{
     visible:true
 
     property int href                   :   1135;
+    property int log_height             :   main.app_height + main.statusbar_height;
 
-    property int logo_top_pad           :   (90/href)*root.height;
-    property int logo_size              :   (194/href)*root.height;
+    property int logo_top_pad           :   (90/href)*log_height + main.statusbar_height;
+    property int logo_size              :   (194/href)*log_height;
 
-    property int usernameinput_top_pad  :   (190/href)*root.height;
+    property int usernameinput_top_pad  :   (190/href)*log_height;
     property int usernameinput_width    :   (3/4)*root.width;
 
-    property int passwordinput_top_pad  :   (100/href)*root.height;
+    property int passwordinput_top_pad  :   (100/href)*log_height;
     property int passwordinput_width    :   (3/4)*root.width;
 
     property int errorlabel_center_pad  :   loginbutton_top_pad/2;
 
-    property int loginbutton_top_pad    :   (91/href)*root.height;
-    property int loginbutton_height     :   (90/href)*root.height;
+    property int loginbutton_top_pad    :   (91/href)*log_height;
+    property int loginbutton_height     :   (90/href)*log_height;
     property int loginbutton_width      :   usernameinput_width;
 
-    property int registerbutton_top_pad :   (29/href)*root.height;
+    property int registerbutton_top_pad :   (29/href)*log_height;
     property int registerbutton_height  :   loginbutton_height;
     property int registerbutton_width   :   loginbutton_width;
 
     property int textarea_left_padding  :   (3/2)*input_pixelsize;
 
-    property int input_pixelsize        :   18;
-    property int errorlabel_pixelsize   :   15;
-    property int buttons_pixelsize      :   15;
-    property int infolabel_pixelsize    :   13;
+    property real density               :   main.density;
+
+    property int input_pixelsize        :   (36/href)*log_height;
+    property int input_bottom_pad       :   (12/href)*log_height;
+    property int errorlabel_pixelsize   :   (12/18)*input_pixelsize;
+    property int buttons_pixelsize      :   (15/18)*input_pixelsize;
+    property int infolabel_pixelsize    :   (13/18)*input_pixelsize;
+    property int placeicons_size        :   input_pixelsize;
+    property int icons_bottom_pad       :   (3/2)*input_bottom_pad;
 
     property int erroricon_size         :   errorlabel_pixelsize;
     property int errorlabel_left_pad    :   1.5*erroricon_size;
@@ -41,11 +47,11 @@ Page{
 
     property string pw_char             :   "•";
 
-    property int infolabel_top_pad      :   (98/href)*root.height;
-    property int infolabel_bottom_pad   :   (72/href)*root.height;
+    property int infolabel_top_pad      :   (98/href)*log_height;
+    property int infolabel_bottom_pad   :   (72/href)*log_height;
 
     function handleTextChange(text_area){
-        if(main.vkeyboard_height==-1){
+        if(main.vkeyboard_height<0){
             main_frame.measureVKeyboardHeight();
         }
 
@@ -77,7 +83,6 @@ Page{
             text_area.text = text.substring(0,len-1);
             text_area.cursorPosition = text_area.length;
         }
-        main_frame.changeStatusbarColor("");
     }
 
     function logUser(){
@@ -125,25 +130,19 @@ Page{
 
     Component.onCompleted: {
         main_frame.changeStatusbarColor(Constants.LOGIN_STATUSBAR_COLOR);
-        console.log("STATUSBAR : " + main.statusbar_height);
-        console.log("NAVIGATIONBAR : " + main.navigationbar_height);
-        console.log("APP HEIGHT : " + main.app_height);
-        console.log("KBD HEIGHT : " + main.vkeyboard_height);
-        main_frame.initScreenResources();
     }
 
     Rectangle{
         id: page_bg
         anchors.fill: parent
-        //color: Constants.TOOLBAR_COLOR
 
         RadialGradient{
             anchors.fill: parent
             //horizontalOffset: -root.width/2
             horizontalOffset: 0
-            verticalOffset: -root.height/2
-            horizontalRadius: root.height
-            verticalRadius: root.height
+            verticalOffset: -log_height/2
+            horizontalRadius: log_height
+            verticalRadius: log_height
             gradient: Gradient{
                 GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
@@ -185,6 +184,7 @@ Page{
         anchors.leftMargin: (parent.width-width)/2
         leftPadding: textarea_left_padding
         rightPadding: 0
+        bottomPadding: input_bottom_pad
         width: usernameinput_width
         font.bold: false
         font.pixelSize: input_pixelsize
@@ -196,10 +196,10 @@ Page{
         OpacityMask{
             id: user_logo
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: (3/2)*parent.bottomPadding
+            anchors.bottomMargin: icons_bottom_pad
             anchors.left: parent.left
-            height: input_pixelsize
-            width: input_pixelsize
+            height: placeicons_size
+            width: placeicons_size
             source: usericon_bg
             maskSource: usericon_mask
 
@@ -252,6 +252,7 @@ Page{
         anchors.leftMargin: (parent.width-width)/2
         leftPadding: textarea_left_padding
         rightPadding: 0
+        bottomPadding: input_bottom_pad
         width: usernameinput_width
         font.bold: true
         font.pixelSize: input_pixelsize
@@ -310,6 +311,7 @@ Page{
         anchors.leftMargin: (parent.width-width)/2
         leftPadding: textarea_left_padding
         rightPadding: 0
+        bottomPadding: input_bottom_pad
         width: passwordinput_width
         font.bold: false
         font.pixelSize: input_pixelsize
@@ -324,10 +326,10 @@ Page{
     OpacityMask{
         id: password_logo
         anchors.bottom: password_input.bottom
-        anchors.bottomMargin: (3/2)*password_input.bottomPadding
+        anchors.bottomMargin: icons_bottom_pad
         anchors.left: password_input.left
-        height: input_pixelsize
-        width: input_pixelsize
+        height: placeicons_size
+        width: placeicons_size
         source: latchicon_bg
         maskSource: latchicon_mask
 
@@ -431,7 +433,7 @@ Page{
         Text{
             id: button_text
             anchors.centerIn: parent
-            font.pixelSize: 15;
+            font.pixelSize: buttons_pixelsize;
             font.bold: false
             text: "LOG IN"
             color: Constants.LINES_WHITE
@@ -464,7 +466,7 @@ Page{
         Text{
             id: register_text
             anchors.centerIn: parent
-            font.pixelSize: 15;
+            font.pixelSize: buttons_pixelsize;
             font.bold: false
             text: "SIGN UP"
             color: Constants.LINES_WHITE
@@ -506,6 +508,14 @@ Page{
         onClicked: {
             Qt.openUrlExternally("http://192.168.0.158/projects/encryptalk");
         }
+    }
+
+
+    footer: Rectangle{
+        id: footer;
+        width: root.width
+        height: root.height-(root.log_height);
+        color: "#000000";
     }
 }
 

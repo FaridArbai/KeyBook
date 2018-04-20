@@ -11,37 +11,97 @@ Page{
     property bool buttons_blocked : false;
     property string entered_username : "";
 
+    property int href                   :   1135;
+    property int reg_height             :   main.app_height+main.statusbar_height;
+
     property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
     property int icons_size             :   (34/720)*root.width;
 
-    property int init_spacing           :   (15/100)*root.height-toolbar.height;
+    property int init_spacing           :   (15/100)*reg_height-toolbar.height;
+
+    property int init_spacing_down      :   (15/100)*reg_height-toolbar.height;
+    property int init_spacing_up        :   20;
+
     property int textarea_width         :   (3/4)*root.width;
     property int textarea_height        :   (3/2)*input_pixelsize;
 
-    property int label_spacing          :   (85/1000)*root.height;
-    property int textarea_spacing       :   (130/100)*label_spacing;
+    property int textarea_spacing       :   (130/100)*(85/1000)*reg_height;
 
-    property int errorlabel_top_margin  :   (15/200)*root.height;
-    property int button_top_margin      :   (1/10)*root.height;
+    property int textarea_spacing_down  :   (130/100)*(85/1000)*reg_height;
+    property int textarea_spacing_up    :   (3/2)*input_pixelsize;
+
+    property int label_spacing          :   (40/1000)*reg_height;
+
+    property int label_spacing_down     :   (40/1000)*reg_height;
+    property int label_spacing_up       :   20;
+
+    property int button_top_margin      :   (1/10)*reg_height;
 
     property int button_width           :   (3/8)*root.width;
 
-    property int indicator_pixelsize    :   18;
-    property int input_pixelsize        :   22;
+    property int input_pixelsize        :   (44/href)*reg_height;
+
+    property int indicator_pixelsize    :   (18/22)*input_pixelsize;
+
+    property int indicator_pixelsize_down   :   (18/22)*input_pixelsize;
+    property int indicator_pixelsize_up     :   0;
+
+    property int input_bottom_pad       :   (12/href)*reg_height;
+
+    property int placeicons_size        :   input_pixelsize;
+    property int placeicons_bottom_pad  :   (3/2)*input_bottom_pad;
 
     property int textarea_left_padding  :   (3/2)*input_pixelsize;
 
+    property int header_pixelsize       :   (20/22)*input_pixelsize;
 
-    property int errorlabel_pixelsize   :   15;
+    property int error_spacing          :   (100/150)*textarea_spacing;
+
+    property int errorlabel_top_margin  :   (error_spacing-errorlabel_pixelsize);
+    property int errorlabel_pixelsize   :   (13/22)*input_pixelsize;
     property int erroricon_size         :   errorlabel_pixelsize;
-    property int errorlabel_right_pad   :   1.5*erroricon_size;
+    property int errorlabel_right_pad   :   (3/2)*erroricon_size;
     property int errorlabel_width       :   (7/8)*root.width;
+
+    property int button_pixelsize       :   (15/22)*input_pixelsize;
+    property int button_height          :   3*button_pixelsize;
+
+    property int button_top_magin       :   error_spacing;
+
+    property int showbutton_size        :   (9/8)*input_pixelsize;
+    property int showbutton_top_margin  :   (indicator_pixelsize_down - showbutton_size)/2;
+
+    property int showbutton_top_margin_down :   (indicator_pixelsize_down - showbutton_size)/2;
+    property int showbutton_top_margin_up   :   (textarea_spacing_up - showbutton_size - placeicons_bottom_pad);
 
     property bool show_pw   :   false;
     property bool show_pw2  :   false;
     property string pw_char :   "•";
+
+    property int placeholder_pixelsize          :   (20/22)*input_pixelsize;
+    property int placeholder_bottom_pad         :   (20/22)*input_bottom_pad;
+
+    property int placeholder_transparency       :   0x00;
+
+    property int placeholder_transparency_down  :   0x00;
+    property int placeholder_transparency_up    :   0xA0;
+
+    property int infolabel_pixelsize    :   (12/22)*input_pixelsize;
+    property int infolabel_top_pad      :   (98/href)*reg_height;
+    property int infolabel_bottom_pad   :   (72/href)*reg_height;
+
+
+    function transparentWhite(transparency){
+        var has_two_digits = (transparency>0x0f);
+        var transparency_str = transparency.toString(16);
+        var header = has_two_digits?(transparency_str):("0"+transparency_str);
+        var rgb_white = "FFFFFF";
+        var transparent_white = "#"+header+rgb_white;
+
+        return transparent_white
+    }
 
     function handleTextChange(text_area){
         if(errorlabelreg.visible==true){
@@ -128,9 +188,9 @@ Page{
             anchors.fill: parent
             //horizontalOffset: -root.width/2
             horizontalOffset: 0
-            verticalOffset: -root.height/2
-            horizontalRadius: root.height
-            verticalRadius: root.height
+            verticalOffset: -reg_height/2
+            horizontalRadius: reg_height
+            verticalRadius: reg_height
             gradient: Gradient{
                 GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
@@ -141,6 +201,7 @@ Page{
     Rectangle{
         id: toolbar
         anchors.top: parent.top
+        anchors.topMargin: main.statusbar_height
         anchors.right: parent.right
         anchors.left: parent.left
         height: main.toolbar_height
@@ -190,7 +251,7 @@ Page{
             anchors.leftMargin: pad_buttons
             font.bold: false
             //font.family: ""
-            font.pixelSize: 20
+            font.pixelSize: header_pixelsize
             color: "white"
             text: "New Account"
         }
@@ -215,6 +276,19 @@ Page{
             font.pixelSize:indicator_pixelsize
             text: "Enter Username"
             color: Constants.GENERAL_TEXT_WHITE
+            visible: font.pixelSize > 5
+        }
+
+        Label{
+            id: username_placeholder
+            anchors.bottom: username_input.bottom
+            anchors.left: username_input.left
+            bottomPadding: placeholder_bottom_pad
+            leftPadding: username_input.leftPadding
+            font.pixelSize: placeholder_pixelsize
+            text: "Enter username"
+            visible: (username_input.text.length==0)&&(!username_input.activeFocus)
+            color: transparentWhite(placeholder_transparency)
         }
 
         TextArea{
@@ -223,8 +297,9 @@ Page{
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
+            bottomPadding: input_bottom_pad
             leftPadding: textarea_left_padding
-            rightPadding: 0
+            rightPadding: placeicons_size
             width: textarea_width
             font.bold: false
             font.pixelSize: input_pixelsize
@@ -236,10 +311,10 @@ Page{
 
             OpacityMask{
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: (3/2)*parent.bottomPadding
+                anchors.bottomMargin: placeicons_bottom_pad
                 anchors.left: parent.left
-                height: input_pixelsize
-                width: input_pixelsize
+                height: placeicons_size
+                width: placeicons_size
                 source: usericon_bg
                 maskSource: usericon_mask
 
@@ -269,6 +344,10 @@ Page{
             onTextChanged:{
                 handleTextChange(username_input);
             }
+
+            onActiveFocusChanged: {
+                changeLayout();
+            }
         }
 
         Label{
@@ -283,43 +362,19 @@ Page{
             font.pixelSize:indicator_pixelsize
             text: "Enter password"
             color: Constants.GENERAL_TEXT_WHITE
+            visible: font.pixelSize > 5
         }
 
-        Button{
-            id: pw_button
-            anchors.top: password_input_indicator.top
-            anchors.topMargin: (password_input_indicator.height-height)/2
-            anchors.right: password_input.right
-            height: latchicon_mask.height
-            width: latchicon_mask.width
-            background: Rectangle{
-                color: "transparent"
-            }
-
-            OpacityMask{
-                id: pw_button_image
-                anchors.fill: parent
-                source: pw_button_bg
-                maskSource: pw_button_mask
-
-                Image{
-                    id: pw_button_mask
-                    anchors.fill: parent
-                    source: root.show_pw ? "icons/whitehideicon.png" : "icons/whiteshowicon.png"
-                    visible: false
-                }
-
-                Rectangle{
-                    id: pw_button_bg
-                    anchors.fill: parent
-                    color: Constants.GENERAL_TEXT_WHITE
-                    visible: false
-                }
-            }
-
-            onClicked:{
-                root.show_pw = !root.show_pw;
-            }
+        Label{
+            id: password_placeholder
+            anchors.bottom: password_input.bottom
+            anchors.left: password_input.left
+            bottomPadding: placeholder_bottom_pad
+            leftPadding: password_input.leftPadding
+            font.pixelSize: placeholder_pixelsize
+            text: "Enter password"
+            visible: (password_input.text.length==0)&&(!(password_input.activeFocus||pw_hidden_input.activeFocus))
+            color: transparentWhite(placeholder_transparency)
         }
 
         TextArea{
@@ -328,8 +383,9 @@ Page{
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
+            bottomPadding: input_bottom_pad
             leftPadding: textarea_left_padding
-            rightPadding: 0
+            rightPadding: placeicons_size
             width: textarea_width
             font.bold: true
             font.pixelSize: input_pixelsize
@@ -378,16 +434,21 @@ Page{
                     changing = false;
                 }
             }
+
+            onActiveFocusChanged: {
+                changeLayout();
+            }
         }
 
         TextArea{
             id: password_input
             anchors.top: password_input_indicator.top
             anchors.left: parent.left
+            bottomPadding: input_bottom_pad
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
             leftPadding: textarea_left_padding
-            rightPadding: 0
+            rightPadding: placeicons_size
             width: textarea_width
             font.bold: false
             font.pixelSize: input_pixelsize
@@ -410,14 +471,18 @@ Page{
                     changing = false;
                 }
             }
+
+            onActiveFocusChanged: {
+                changeLayout();
+            }
         }
 
         OpacityMask{
             anchors.bottom: password_input.bottom
-            anchors.bottomMargin: (3/2)*password_input.bottomPadding
+            anchors.bottomMargin: placeicons_bottom_pad
             anchors.left: password_input.left
-            height: input_pixelsize
-            width: input_pixelsize
+            height: placeicons_size
+            width: placeicons_size
             source: latchicon_bg
             maskSource: latchicon_mask
 
@@ -444,6 +509,43 @@ Page{
             color: Constants.LINES_WHITE
         }
 
+        Button{
+            id: pw_button
+            anchors.top: password_input_indicator.top
+            anchors.topMargin: showbutton_top_margin;
+            anchors.right: password_input.right
+            height: showbutton_size
+            width: showbutton_size
+            background: Rectangle{
+                color: "transparent"
+            }
+
+            OpacityMask{
+                id: pw_button_image
+                anchors.fill: parent
+                source: pw_button_bg
+                maskSource: pw_button_mask
+
+                Image{
+                    id: pw_button_mask
+                    anchors.fill: parent
+                    source: root.show_pw ? "icons/whiteshowicon.png" : "icons/whitehideicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: pw_button_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
+            onClicked:{
+                root.show_pw = !root.show_pw;
+            }
+        }
+
         Label{
             id:  password_repetition_input_indicator
             anchors.top: password_input.bottom
@@ -456,43 +558,21 @@ Page{
             font.pixelSize: indicator_pixelsize
             text: "Repeat password"
             color: Constants.GENERAL_TEXT_WHITE
+            visible: font.pixelSize > 5
         }
 
-        Button{
-            id: pw2_button
-            anchors.top: password_repetition_input_indicator.top
-            anchors.topMargin: (password_repetition_input_indicator.height-height)/2
-            anchors.right: password_repetition_input.right
-            height: latchicon2_mask.height
-            width: latchicon2_mask.width
-            background: Rectangle{
-                color: "transparent"
-            }
-
-            OpacityMask{
-                id: pw2_button_image
-                anchors.fill: parent
-                source: pw2_button_bg
-                maskSource: pw2_button_mask
-
-                Image{
-                    id: pw2_button_mask
-                    anchors.fill: parent
-                    source: root.show_pw2 ? "icons/whitehideicon.png" : "icons/whiteshowicon.png"
-                    visible: false
-                }
-
-                Rectangle{
-                    id: pw2_button_bg
-                    anchors.fill: parent
-                    color: Constants.GENERAL_TEXT_WHITE
-                    visible: false
-                }
-            }
-
-            onClicked:{
-                root.show_pw2 = !root.show_pw2;
-            }
+        Label{
+            id: password_repetition_placeholder
+            anchors.bottom: password_repetition_input.bottom
+            anchors.left: password_repetition_input.left
+            topPadding: password_repetition_input.topPadding
+            bottomPadding: placeholder_bottom_pad
+            leftPadding: password_repetition_input.leftPadding
+            rightPadding: password_repetition_input.rightPadding
+            font.pixelSize: placeholder_pixelsize
+            text: "Repeat password"
+            visible: (password_repetition_input.text.length==0)&&(!(password_repetition_input.activeFocus||pw2_hidden_input.activeFocus))
+            color: transparentWhite(placeholder_transparency)
         }
 
         TextArea{
@@ -501,8 +581,9 @@ Page{
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
+            bottomPadding: input_bottom_pad
             leftPadding: textarea_left_padding
-            rightPadding: 0
+            rightPadding: placeicons_size
             width: textarea_width
             font.bold: true
             font.pixelSize: input_pixelsize
@@ -551,6 +632,11 @@ Page{
                     changing = false;
                 }
             }
+
+            onActiveFocusChanged: {
+                changeLayout();
+            }
+
         }
 
         TextArea{
@@ -559,8 +645,9 @@ Page{
             anchors.left: parent.left
             anchors.topMargin: textarea_spacing-height
             anchors.leftMargin: (parent.width-width)/2
+            bottomPadding: input_bottom_pad
             leftPadding: textarea_left_padding
-            rightPadding: 0
+            rightPadding: placeicons_size
             width: textarea_width
             font.bold: false
             font.pixelSize: input_pixelsize
@@ -584,14 +671,17 @@ Page{
                 }
             }
 
+            onActiveFocusChanged: {
+                changeLayout();
+            }
         }
 
         OpacityMask{
             anchors.bottom: password_repetition_input.bottom
-            anchors.bottomMargin: (3/2)*password_repetition_input.bottomPadding
+            anchors.bottomMargin: placeicons_bottom_pad
             anchors.left: password_repetition_input.left
-            height: input_pixelsize
-            width: input_pixelsize
+            height: placeicons_size
+            width: placeicons_size
             source: latchicon2_bg
             maskSource: latchicon2_mask
 
@@ -618,6 +708,43 @@ Page{
             color: Constants.LINES_WHITE
         }
 
+        Button{
+            id: pw2_button
+            anchors.top: password_repetition_input_indicator.top
+            anchors.topMargin: showbutton_top_margin
+            anchors.right: password_repetition_input.right
+            height: showbutton_size
+            width: showbutton_size
+            background: Rectangle{
+                color: "transparent"
+            }
+
+            OpacityMask{
+                id: pw2_button_image
+                anchors.fill: parent
+                source: pw2_button_bg
+                maskSource: pw2_button_mask
+
+                Image{
+                    id: pw2_button_mask
+                    anchors.fill: parent
+                    source: root.show_pw2 ? "icons/whiteshowicon.png" : "icons/whitehideicon.png"
+                    visible: false
+                }
+
+                Rectangle{
+                    id: pw2_button_bg
+                    anchors.fill: parent
+                    color: Constants.GENERAL_TEXT_WHITE
+                    visible: false
+                }
+            }
+
+            onClicked:{
+                root.show_pw2 = !root.show_pw2;
+            }
+        }
+
         Label{
             id:errorlabelreg
             visible: false
@@ -627,6 +754,8 @@ Page{
             anchors.leftMargin: (parent.width-(paintedWidth+leftPadding))/2
             width: errorlabel_width
             leftPadding: errorlabel_right_pad
+            topPadding: 0
+            bottomPadding: 0
             text: ""
             font.pixelSize: errorlabel_pixelsize
             color: Constants.RELEVANT_TEXT_WHITE;
@@ -662,10 +791,10 @@ Page{
         Button{
             id: addcontactbutton
             anchors.top: errorlabelreg.top
-            anchors.topMargin: label_spacing
+            anchors.topMargin: button_top_margin
             anchors.left : parent.left
             anchors.leftMargin: (parent.width-width)/2
-            height: 3*button_text.font.pixelSize
+            height: button_height
             width: textarea_width
 
             background: Rectangle {
@@ -681,7 +810,7 @@ Page{
             Text{
                 id: button_text
                 anchors.centerIn: parent
-                font.pixelSize: 15;
+                font.pixelSize: button_pixelsize;
                 font.bold: false
                 text: "SIGN UP"
                 color: Constants.LINES_WHITE
@@ -698,4 +827,267 @@ Page{
             }
         }
     }
+
+    Label{
+        id: preinfo_label
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: infolabel_bottom_pad + height
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width-width)/2
+        font.bold: false
+        font.pixelSize: infolabel_pixelsize
+        color: Constants.LINES_WHITE
+        text: "By creating a Latchword account, you agree"
+    }
+
+    Label{
+        id: info_label
+        anchors.top: preinfo_label.bottom
+        anchors.topMargin: (infolabel_pixelsize/8)
+        anchors.left: parent.left
+        anchors.leftMargin: preinfo_label.anchors.leftMargin
+        font.bold: false
+        font.pixelSize: infolabel_pixelsize
+        color: Constants.LINES_WHITE
+        text: "to our "
+    }
+
+    Label{
+        id: termsofservice_label
+        anchors.top: info_label.top
+        anchors.left: info_label.right
+        leftPadding: 0
+        font.bold: true
+        font.underline: termsofservice_button.down
+        font.pixelSize: infolabel_pixelsize
+        color: Constants.LINES_WHITE
+        text: "Terms of Service "
+    }
+
+    Label{
+        id: joining_label
+        anchors.top: termsofservice_label.top
+        anchors.left: termsofservice_label.right
+        leftPadding: 0
+        font.bold: false
+        font.pixelSize: infolabel_pixelsize
+        color: Constants.LINES_WHITE
+        text: "and "
+    }
+
+    Label{
+        id: privacypolicy_label
+        anchors.top: joining_label.top
+        anchors.left: joining_label.right
+        leftPadding: 0
+        font.bold: true
+        font.underline: privacypolicy_button.down
+        font.pixelSize: infolabel_pixelsize
+        color: Constants.LINES_WHITE
+        text: "Privacy Policy"
+    }
+
+    Button{
+        id: termsofservice_button
+        anchors.fill: termsofservice_label
+        background: Rectangle{
+            color: "transparent"
+        }
+        onClicked: {
+            Qt.openUrlExternally("http://192.168.0.158/projects/encryptalk");
+        }
+    }
+
+    Button{
+        id: privacypolicy_button
+        anchors.fill: privacypolicy_label
+        background: Rectangle{
+            color: "transparent"
+        }
+        onClicked: {
+            Qt.openUrlExternally("http://192.168.0.158/projects/encryptalk");
+        }
+    }
+
+
+
+    function changeLayout(){
+        var focus =
+                username_input.activeFocus ||
+                password_input.activeFocus ||
+                pw_hidden_input.activeFocus ||
+                password_repetition_input.activeFocus ||
+                pw2_hidden_input.activeFocus;
+
+        if(focus){
+            push_down_labels.running = false;
+            push_up_labels.running = true;
+
+            expand_indicators.running = false;
+            shrink_indicators.running = true;
+
+            push_up_showbuttons.running = false;
+            push_down_showbuttons.running = true;
+
+            push_down_top.running = false;
+            push_up_top.running = true;
+
+            push_down_textareas.running = false;
+            push_up_textareas.running = true;
+
+            push_down_placeholders.running = false;
+            push_up_placeholders.running = true;
+        }
+        else{
+            push_up_labels.running = false;
+            push_down_labels.running = true;
+
+            shrink_indicators.running = false;
+            expand_indicators.running = true;
+
+            push_down_showbuttons.running = false;
+            push_up_showbuttons.running = true;
+
+            push_up_textareas.running = false;
+            push_down_textareas.running = true;
+
+            push_up_placeholders.running = false;
+            push_down_placeholders.running = true;
+        }
+    }
+
+    PropertyAnimation{
+        id: push_up_labels
+        target: root
+        property: "label_spacing"
+        to: label_spacing_up
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: shrink_indicators
+        target: root
+        property: "indicator_pixelsize"
+        to: root.indicator_pixelsize_up
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_down_showbuttons
+        target: root
+        property: "showbutton_top_margin"
+        to: showbutton_top_margin_up
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_up_top
+        target: root
+        property: "init_spacing"
+        to: init_spacing_up
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_up_textareas
+        target: root
+        property: "textarea_spacing"
+        to: textarea_spacing_up
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_down_labels
+        target: root
+        property: "label_spacing"
+        to: label_spacing_down
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: expand_indicators
+        target: root
+        property: "indicator_pixelsize"
+        to: root.indicator_pixelsize_down
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_up_showbuttons
+        target: root
+        property: "showbutton_top_margin"
+        to: showbutton_top_margin_down
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_down_top
+        target: root
+        property: "init_spacing"
+        to: init_spacing_down
+        duration: 250
+    }
+
+    PropertyAnimation{
+        id: push_down_textareas
+        target: root
+        property: "textarea_spacing"
+        to: textarea_spacing_down
+        duration: 250
+    }
+
+
+
+    PropertyAnimation{
+        id: push_up_placeholders
+        target: root
+        property: "placeholder_transparency"
+        to: placeholder_transparency_up
+        duration: 250
+    }
+    PropertyAnimation{
+        id: push_down_placeholders
+        target: root
+        property: "placeholder_transparency"
+        to: placeholder_transparency_down
+        duration: 250
+    }
+
+
+    footer: Rectangle{
+        id: footer;
+        width: root.width
+        height: root.height-(main.statusbar_height+main.app_height);
+        color: "#000000";
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
