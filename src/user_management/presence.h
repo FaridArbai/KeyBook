@@ -1,7 +1,7 @@
 #ifndef PRESENCE_H
 #define PRESENCE_H
 
-#include "date.h"
+#include "src/user_management/date.h"
 #include <string>
 
 using namespace std;
@@ -22,6 +22,7 @@ public:
     void setDate(Date date);
 
     string toHumanReadable();
+    string toShortlyHumanReadable();
 
 private:
     string text;

@@ -14,7 +14,7 @@
 #ifndef PM_LOGOUTCOM_H
 #define PM_LOGOUTCOM_H
 
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 #include <string>
 
 using namespace std;

@@ -235,3 +235,63 @@ void PM_addContactRep::setPresenceDate(string presence_date){
 	this->presence_date = presence_date;
 }
 
+Avatar PM_addContactRep::getAvatar(string username){
+    string image_bin;
+    string image_b64;
+    string format;
+    Avatar avatar;
+    int pos_split;
+    string image_enc = this->getImage();
+    int n_bytes_enc = image_enc.length();
+
+    pos_split = image_enc.find(".");
+
+    format = image_enc.substr(0,pos_split);
+    image_b64 = image_enc.substr((pos_split+1),n_bytes_enc);
+
+    image_bin = Base64::decode(image_b64);
+
+    avatar = Avatar(username, format, image_bin);
+
+    return avatar;
+}
+
+void PM_addContactRep::decode(){
+    string enc_status = this->getStatus();
+    string orig_status = Base64::decode(enc_status);
+    this->setStatus(orig_status);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-#include "date.h"
+#include "src/user_management/date.h"
 #include <string>
 
 using namespace std;
@@ -21,6 +21,7 @@ public:
     Date getDate() const;
     void setDate(Date date);
     void setDate(string date_str);
+
 private:
     string text;
     Date date;

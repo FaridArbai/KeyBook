@@ -62,12 +62,12 @@ PM_regReq::~PM_regReq() {
 
 string PM_regReq::toString(){
 	string str = "";
-    string username_encr = RSA::encrypt(this->getUsername());
-    string password_encr = RSA::encrypt((this->getPassword()));
+    string username = this->getUsername();
+    string password = this->getPassword();
 
 	str += PM_regReq::name + " ";
-    str += username_encr + " ";
-    str += password_encr + "\n";
+    str += username + " ";
+    str += password + "\n";
 	
 	return str;
 }

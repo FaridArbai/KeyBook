@@ -15,7 +15,7 @@
 #define PM_DELCONTACT_H
 
 #include<string>
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 
 using namespace std;
 

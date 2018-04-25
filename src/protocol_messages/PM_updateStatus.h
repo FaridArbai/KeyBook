@@ -17,6 +17,8 @@
 #include <string>
 #include <ctime>
 #include "src/protocol_messages/ProtocolMessage.h"
+#include "src/user_management/avatar.h"
+#include "src/protocol_messages/encoding/base64.h"
 
 using namespace std;
 
@@ -33,11 +35,11 @@ public:
     
     PM_updateStatus();
     PM_updateStatus(const PM_updateStatus& orig);
+    PM_updateStatus(string username, StatusType type, string new_status);
+    PM_updateStatus(string username, Avatar avatar);
+    PM_updateStatus(string code);
     
     virtual ~PM_updateStatus();
-
-    PM_updateStatus(string username, StatusType type, string new_status);
-    PM_updateStatus(string code);
     
     string getUsername() const;
     void setUsername(string username);
@@ -53,6 +55,11 @@ public:
     
     string toString();
     
+    Avatar getAvatar();
+
+    void encode();
+    void decode();
+
     static StatusType typeOf(string str_type);
     static string stringOf(StatusType type);
     
@@ -62,6 +69,10 @@ private:
     string date;
     StatusType type;
     
+    string encodeAvatar(Avatar avatar);
+
+    string decodeAvatarFormat();
+    string decodeAvatarBinary();
 };
 
 #endif /* PM_UPDATESTATUS_H */

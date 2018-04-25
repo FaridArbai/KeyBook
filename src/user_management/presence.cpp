@@ -73,11 +73,108 @@ string Presence::toHumanReadable(){
         presence_str = "Online";
     }
     else{
-        presence_str = "Last seen on " + this->getDate().toHumanReadable();
+        Date date = this->getDate();
+        int days_since_last_conn = date.daysFromToday();
+
+        if(days_since_last_conn==0){
+            string hour = date.getHour();
+            string minutes = date.getMinute();
+
+            presence_str = "Last seen at " + hour + ":" + minutes;
+        }
+        else if(days_since_last_conn==1){
+            string hour = date.getHour();
+            string minutes = date.getMinute();
+
+            presence_str = "Last seen yesterday at " + hour + ":" + minutes;
+        }
+        else{
+            presence_str = "Last seen on " + date.toHumanReadable();
+        }
     }
 
     return presence_str;
 }
+
+string Presence::toShortlyHumanReadable(){
+    string presence_str;
+
+    if(this->getText()=="online"){
+        presence_str = "Online";
+    }
+    else{
+        Date date = this->getDate();
+        int days_since_last_conn = date.daysFromToday();
+
+        if(days_since_last_conn==0){
+            string hour = date.getHour();
+            string minutes = date.getMinute();
+
+            presence_str = "Last seen at " + hour + ":" + minutes;
+        }
+        else if(days_since_last_conn==1){
+            presence_str = "Last seen yesterday";
+        }
+        else{
+            string month = date.getMonth();
+            string day = date.getDay();
+
+            presence_str = "Last seen on " + day + "/" + month;
+        }
+    }
+
+    return presence_str;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

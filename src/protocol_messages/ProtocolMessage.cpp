@@ -176,20 +176,25 @@ string ProtocolMessage::getGenerationDate(){
 	time_t t = time(0);
 	struct tm* todays_date = localtime(&t);
 	
-	string day = std::to_string(todays_date->tm_mday);
-	string month = std::to_string(todays_date->tm_mon + 1);
-	string year = std::to_string((todays_date->tm_year + 1900)%2000);
-	string hour = std::to_string(todays_date->tm_hour);
-	string minute = std::to_string(todays_date->tm_min);
-	string weekday = std::to_string(todays_date->tm_wday);
+    string day = stda::to_string(todays_date->tm_mday);
+    string month = stda::to_string(todays_date->tm_mon + 1);
+    string year = stda::to_string((todays_date->tm_year + 1900)%2000);
+    string hour = stda::to_string(todays_date->tm_hour);
+    string minute = stda::to_string(todays_date->tm_min);
+    string weekday = stda::to_string(todays_date->tm_wday);
 	
-	if(hour.length()==1){
+    if(hour.length()==1)
 		hour = "0" + hour;
-	}
 		
-	if(minute.length()==1){
+    if(minute.length()==1)
 		minute = "0" + minute;
-	}
+
+    if(month.length()==1)
+        month = "0" + month;
+
+    if(day.length()==1)
+        day = "0" + day;
+
 	
 	string date = weekday + "-" + day+"/"+month+"/"+year+"-"+hour+":"+minute;
 	

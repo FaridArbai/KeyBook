@@ -1,11 +1,12 @@
 #include "connection.h"
 
-const string Connection::R_IP   = "faridarbai.ddns.net";
+const string Connection::R_IP   = "192.168.0.158";
 const string Connection::R_PORT = "25255";
-const int Connection::BUFFER_SIZE = 1048576;
+const int Connection::BUFFER_SIZE = 11048576;
 const char Connection::END_DELIM = '~';
 const char Connection::SIGNATURE_DELIM = '#';
 const int Connection::SERVER_EXCHANGE_SIZE = 390;
+const string Connection::MAGIC_TOKEN = "VntGaIEFS388A+8XhJ7whUxUJ4MdyDIhBkOOmFJklQuNpmqTNUozfDRFKGoB/QryaEGwuQbbeyz0imRHhBB4jXUK6DWAxnydFGtQlrbsERdZ4G1m6ZHK8RYHqUNfJB2eYHsbWH/8YJbYIuZjjxrM1/uAVQIPdobu/UYxHS6RBKoaYM9LMckbaqY5We6P/RuFnn2wqdqANx4TFYlik8HuFxpTwYqT/5MqCaWzMOG3ITdUBeOm6sm4Boyjzt5J/kUQcwwm+CPHAA6jCqJWUZBQY5BKPERU3IqeOpI3D3u0Bdf5YhfbFVtgnl0kiYz7jHTxKiFn5K2VIs1biemQG1AGYA==~";
 
 Connection::Connection() {
 #ifdef _WIN32
@@ -372,8 +373,8 @@ void Connection::initEngine(){
     seed = Connection::generateSeed();
     srand(seed);
 
-    c_key_token = Connection::generateRandomString(key_length);
-    c_iv_token = Connection::generateRandomString(key_length);
+    c_key_token = "1234567890123456";
+    c_iv_token = "1234567890123456";
 
     c_key_hi = c_key_token.substr(0,half);
     c_key_lo = c_key_token.substr(half,half);
@@ -382,7 +383,7 @@ void Connection::initEngine(){
 
     c_token = c_key_token + c_iv_token;
 
-    client_exchange = PublicEngine::encrypt(c_token) + Connection::END_DELIM;
+    client_exchange = Connection::MAGIC_TOKEN;
 
     buffer_send = client_exchange.c_str();
     send_len = client_exchange.length();
@@ -408,9 +409,7 @@ void Connection::initEngine(){
 
     }while((!finished_exchange)&&(!conn_error));
 
-    printf("Recibidos %d bytes\n", n_bytes_recv);
-    server_response = string(buffer_recv,(n_bytes_recv_tot-1));
-    printf("Recibidos %d bytes reales\n", server_response.length());
+    server_response = string(buffer_recv,(n_bytes_recv_tot-1));;
 
     signature = Connection::getSignature(server_response);
     payload = Connection::clearSignature(server_response);
@@ -418,13 +417,11 @@ void Connection::initEngine(){
 
     this->encryption_engine.init(c_key_token,c_iv_token,c_key_token,c_iv_token);
     server_exchange = this->encryption_engine.decrypt(payload);
-    printf("El token del server mide %d\n", server_exchange.length());
 
     if(signature_is_correct){
-        printf("La firma es correcta\n");
         // 3. Set session keys
-        s_key_token = server_exchange.substr(0,key_length);         printf("El key del server mide %d\n", s_key_token.length());
-        s_iv_token = server_exchange.substr(key_length,key_length); printf("El iv del server mide %d\n", s_iv_token.length());
+        s_key_token = server_exchange.substr(0,key_length);
+        s_iv_token = server_exchange.substr(key_length,key_length);
 
         s_key_hi = s_key_token.substr(0,half);
         s_key_lo = s_key_token.substr(half,half);
@@ -440,7 +437,6 @@ void Connection::initEngine(){
         this->encryption_engine.init(key_send,iv_send,key_recv,iv_recv);
     }
     else{
-        printf("La firma es incorrecta\n");
         // handle unreliable server
     }
 }

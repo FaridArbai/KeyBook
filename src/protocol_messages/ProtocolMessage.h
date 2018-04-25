@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <ctime>
+#include "src/user_management/stda.h"
 
 using std::string;
 using std::cout;

@@ -1,9 +1,9 @@
 #ifndef USER_H
 #define USER_H
 
-#include "date.h"
-#include "status.h"
-#include "avatar.h"
+#include "src/user_management/date.h"
+#include "src/user_management/status.h"
+#include "src/user_management/avatar.h"
 
 #include <QObject>
 #include <QObject>

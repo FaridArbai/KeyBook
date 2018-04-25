@@ -135,3 +135,60 @@ string PM_msg::getMsg() const{
 void PM_msg::setMsg(string msg){
 	this->msg = msg;
 }
+
+void PM_msg::encode(){
+    string orig = this->getMsg();
+    const unsigned char* orig_c = (const unsigned char*)orig.c_str();
+    int n_bytes = orig.length();
+    string enc = Base64::encode(orig_c,n_bytes);
+    this->setMsg(enc);
+}
+
+void PM_msg::decode(){
+    string enc = this->getMsg();
+    string orig = Base64::decode(enc);
+    this->setMsg(orig);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -29,7 +29,7 @@ Date::Date(const Date& orig){
 Date::Date(string date){
     int n_weekday;
 
-    n_weekday = stoi(date.substr(0,1));
+    n_weekday = stda::stoi(date.substr(0,1));
 
     int i0, iF;
     int pos_split;
@@ -103,7 +103,9 @@ string Date::toString(){
     string weekday  = this->getWeekday();
     int n_weekday   = encodeWeekday(weekday);
 
-    string n_weekday_str = std::to_string(n_weekday);
+    string n_weekday_str = stda::to_string(n_weekday);
+
+
 
     code += n_weekday_str + FIELDS_SEP;
     code += day + DATE_SEP + month + DATE_SEP + year + FIELDS_SEP;
@@ -216,13 +218,49 @@ string Date::toHumanReadable(){
     return date_str;
 }
 
+int Date::countLeapYears(){
+    int years = stda::stoi(this->getYear().c_str());
+
+    int month = stda::stoi(this->getMonth());
+
+    if (month <= 2){
+        years--;
+    }
+
+    return (years/4) - (years/100) + (years/400);
+}
 
 
+int Date::difference(Date date){
+    int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    long int n1 = stda::stoi(this->getYear())*365 + stda::stoi(this->getDay());
 
+    for(int i=0; i<(stda::stoi(this->getMonth())-1); i++){
+        n1 += month_days[i];
+    }
 
+    n1 += this->countLeapYears();
 
+    long int n2 = stda::stoi(date.getYear())*365 + stda::stoi(date.getDay());
 
+    for (int i=0; i<(stda::stoi(date.getMonth())-1); i++){
+        n2 += month_days[i];
+    }
 
+    n2 += date.countLeapYears();
+
+    // return difference between two counts
+    return (n2 - n1);
+}
+
+int Date::daysFromToday(){
+    Date today = Date();
+    int days_from_today;
+
+    days_from_today = this->difference(today);
+
+    return days_from_today;
+}
 
 
 

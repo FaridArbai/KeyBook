@@ -12,6 +12,7 @@
 class RequestHandler{
 public:
     RequestHandler();
+    RequestHandler(const RequestHandler& orig);
 
     RequestHandler(Connection* server_conn, ServerMessage* server_message, QWaitCondition* RESPONSE_CONDITION);
 

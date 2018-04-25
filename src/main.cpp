@@ -6,8 +6,6 @@
 #include <QtQml/QQmlApplicationEngine>
 #include <QWaitCondition>
 #include <QMutex>
-#include <QtAndroid>
-#include <QAndroidJniObject>
 
 #include <thread>
 #include <iostream>
@@ -48,24 +46,21 @@ void listeningTask(Connection& server_conn, ServerMessage* server_response,QWait
 void handleTrap(ProtocolMessage* trap, MainFrame* main_frame);
 
 int main(int argc, char *argv[]){
-    // Connection
     Connection server_conn;
     ServerMessage server_response;
     QWaitCondition RESPONSE_CONDITION;
     RequestHandler request_handler(&server_conn,&server_response,&RESPONSE_CONDITION);
 
     //Context instantiation
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-
     context = engine.rootContext();
 
     // Frames
     MainFrame main_frame(&context,&request_handler);
     LogFrame log_frame(&main_frame,&request_handler);
     RegisterFrame register_frame(&request_handler);
-
 
     // Start the networking thread
     thread listening_thread = thread(listeningTask, std::ref(server_conn), &server_response,&RESPONSE_CONDITION,&main_frame);
@@ -80,18 +75,13 @@ int main(int argc, char *argv[]){
         // Initialize the IOManager
         IOManager::init();
 
+        main_frame.initScreenResources();
+
         // Load the GUI resources
+
         engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
     // END GUI
-
-        QtAndroid::runOnAndroidThread([=]()
-        {
-            QAndroidJniObject window = QtAndroid::androidActivity().callObjectMethod("getWindow", "()Landroid/view/Window;");
-            window.callMethod<void>("addFlags", "(I)V", 0x80000000);
-            window.callMethod<void>("clearFlags", "(I)V", 0x04000000);
-            window.callMethod<void>("setStatusBarColor", "(I)V", 0xff015f6a); // Desired statusbar color
-        });
-
 
     // Start the GUI thread
     int app_result;

@@ -14,7 +14,9 @@
 #ifndef PM_ADDCONTACTREP_H
 #define PM_ADDCONTACTREP_H
 
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
+#include "src/user_management/avatar.h"
+#include "src/protocol_messages/encoding/base64.h"
 #include <string>
 
 using namespace std;
@@ -55,6 +57,10 @@ public:
     string getPresenceDate() const;
     void setPresenceDate(string presence_date);
     
+    Avatar getAvatar(string username);
+
+    void decode();
+
 private:
     bool result;
     string err_msg;

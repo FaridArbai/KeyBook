@@ -16,15 +16,13 @@ void RegisterFrame::signUp(QString entered_username, QString entered_password){
     ProtocolMessage* response_pm;
     bool result;
     string feedback_message;
-    string feedback_color;
 
     response_pm = this->request_handler->recvResponseFor(&request_pm);
 
     result = ((PM_regRep*)response_pm)->getResult();
 
     if(result==true){
-        feedback_message = "Username " + username + " registered succesfully";
-        feedback_color = "green";
+        feedback_message = "User " + username + " registered";
 
         delete response_pm;
 
@@ -34,13 +32,10 @@ void RegisterFrame::signUp(QString entered_username, QString entered_password){
     }
     else{
         feedback_message = ((PM_regRep*)response_pm)->getErrMsg();
-        feedback_color = "red";
         delete response_pm;
     }
 
-    emit updateFeedbackLabel(QString::fromStdString(feedback_message),QString::fromStdString(feedback_color),result);
-
-
+    emit receivedRegisterResponse(QString::fromStdString(feedback_message),result);
 }
 
 PrivateUser* RegisterFrame::createDefaultUser(string username, string password){

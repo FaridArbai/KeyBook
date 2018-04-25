@@ -19,12 +19,13 @@ Contact::~Contact(){
 }
 
 Contact::Contact(string username, string status_text, string status_date,
-        string presence_text, string presence_date, string image_str) :
+        string presence_text, string presence_date, Avatar avatar) :
     QObject::QObject(nullptr),
-    User::User(username, status_text, status_date, image_str){
+    User::User(username, status_text, status_date, avatar.getImagePath()){
 
     this->setPresence(presence_text, presence_date);
     this->setUnreadMessages(0);
+
 }
 
 Contact::Contact(string code):
@@ -134,13 +135,13 @@ void Contact::setPresence(string presence_str){
 }
 
 void Contact::setUnreadMessages(string unread_messages_str){
-    this->unread_messages = std::stoi(unread_messages_str);
+    this->unread_messages = stda::stoi(unread_messages_str);
 }
 
 string Contact::toString(){
     string code = "";
     string presence_str = this->getPresence().toString();
-    string unread_messages_str = std::to_string(this->getUnreadMessages());
+    string unread_messages_str = stda::to_string(this->getUnreadMessages());
     string messages_str = this->messagesToString();
 
     code += User::toString() + FIELDS_SEP;
@@ -213,8 +214,15 @@ QString Contact::getPresenceGUI(){
     return presence_gui;
 }
 
+QString Contact::getShortPresenceGUI(){
+    string presence = this->getPresence().toShortlyHumanReadable();
+    QString presence_gui = QString::fromStdString(presence);
+
+    return presence_gui;
+}
+
 QString Contact::getUnreadMessagesGUI(){
-    string unread_messages_str = std::to_string(this->getUnreadMessages());
+    string unread_messages_str = stda::to_string(this->getUnreadMessages());
     QString unread_messages_gui = QString::fromStdString(unread_messages_str);
 
     return unread_messages_gui;
@@ -226,6 +234,14 @@ void Contact::changeStatus(string status_text, string date_str){
     emit this->statusChanged();
 }
 
+void Contact::changeAvatar(Avatar avatar){
+    string old_image_path = this->getAvatar().getImagePath();
+
+    this->setAvatar(avatar);
+    emit this->avatarChanged();
+    remove(old_image_path.c_str());
+}
+
 QString Contact::getUsernameGUI(){
     string username = this->getUsername();
     QString username_gui = QString::fromStdString(username);
@@ -235,6 +251,7 @@ QString Contact::getUsernameGUI(){
 
 QString Contact::getAvatarPathGUI(){
     string avatar_path = this->getAvatar().getImagePath();
+    avatar_path = IOManager::FILE_HEADER + avatar_path;
     QString avatar_path_gui = QString::fromStdString(avatar_path);
 
     return avatar_path_gui;
@@ -245,6 +262,13 @@ QString Contact::getStatusGUI(){
     QString status_gui = QString::fromStdString(status);
 
     return status_gui;
+}
+
+QString Contact::getStatusDateGUI(){
+    string status_date = this->getStatus().getDate().toHumanReadable();
+    QString status_date_gui = QString::fromStdString(status_date);
+
+    return status_date_gui;
 }
 
 void Contact::pushMessage(string sender, string recipient, string date_str, string text){

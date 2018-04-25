@@ -15,13 +15,10 @@
 #define PM_LOGREQ_H
 
 #include "src/protocol_messages/ProtocolMessage.h"
-#include "src/protocol_messages/encryption/rsa.h"
 #include <string>
 using std::string;
 using std::cout;
 using std::endl;
-
-using namespace RSA;
 
 class PM_logReq: public ProtocolMessage{
 public:

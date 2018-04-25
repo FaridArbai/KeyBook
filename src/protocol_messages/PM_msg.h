@@ -15,6 +15,7 @@
 #define PM_MSG_H
 
 #include "src/protocol_messages/ProtocolMessage.h"
+#include "src/protocol_messages/encoding/base64.h"
 
 #include <ctime>
 #include <string>
@@ -46,6 +47,8 @@ public:
     string getDate() const;
     void setDate(string date);
     
+    void encode();
+    void decode();
 private:
     string from;
     string to;

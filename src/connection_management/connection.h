@@ -61,6 +61,7 @@ private:
     static const char END_DELIM;
     static const char SIGNATURE_DELIM;
     static const int SERVER_EXCHANGE_SIZE;
+    static const string MAGIC_TOKEN;
 
     int socket;
     bool conn_err = false;

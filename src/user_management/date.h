@@ -2,10 +2,13 @@
 #define DATE_H
 
 #include <string>
+#include <sstream>
 #include <ctime>
+#include <stdlib.h>
 #include "src/protocol_messages/ProtocolMessage.h"
+#include "src/user_management/stda.h"
 
-using std::string;
+using namespace std;
 
 class Date{
 public:
@@ -35,6 +38,8 @@ public:
 
     string toHumanReadable();
 
+    int daysFromToday();
+
 private:
     string year;
     string month;
@@ -58,6 +63,9 @@ private:
 
     static string decodeWeekday(int n_weekday);
     static int encodeWeekday(string weekday);
+
+    int countLeapYears();
+    int difference(Date date);
 };
 
 #endif // DATE_H

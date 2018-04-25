@@ -3,6 +3,12 @@
 RequestHandler::RequestHandler(){
 }
 
+RequestHandler::RequestHandler(const RequestHandler& orig){
+    this->RESPONSE_CONDITION = orig.RESPONSE_CONDITION;
+    this->server_conn = orig.server_conn;
+    this->server_message = orig.server_message;
+}
+
 RequestHandler::RequestHandler(Connection* server_conn, ServerMessage* server_message, QWaitCondition* RESPONSE_CONDITION){
     this->setServerConn(server_conn);
     this->setServerMessage(server_message);

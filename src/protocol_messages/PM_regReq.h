@@ -15,7 +15,6 @@
 #define PM_REGREQ_H
 
 #include "src/protocol_messages/ProtocolMessage.h"
-#include "src/protocol_messages/encryption/rsa.h"
 #include <string>
 
 using std::string;

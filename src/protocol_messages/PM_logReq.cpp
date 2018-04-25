@@ -63,13 +63,11 @@ PM_logReq::~PM_logReq() {
 string PM_logReq::toString(){
 	string str = "";
     string username = this->getUsername();
-    string username_encr = RSA::encrypt(username);
     string password = this->getPassword();
-    string password_encr = RSA::encrypt(password);
 
 	str += PM_logReq::name + " ";
-    str += username_encr + " ";
-    str += password_encr + "\n";
+    str += username + " ";
+    str += password + "\n";
 	
 	return str;
 }

@@ -14,7 +14,7 @@
 #ifndef PM_ADDCONTACTREQ_H
 #define PM_ADDCONTACTREQ_H
 
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 
 #include <string>
 

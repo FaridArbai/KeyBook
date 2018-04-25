@@ -109,7 +109,14 @@ string PM_updateStatus::toString(){
 	
 	return code;
 }
-    
+
+PM_updateStatus::PM_updateStatus(string username, Avatar avatar){
+    this->setUsername(username);
+    this->setType(StatusType::image);
+    string avatar_str = this->encodeAvatar(avatar);
+    this->setNewStatus(avatar_str);
+}
+
 string PM_updateStatus::getUsername() const{
 	return this->username;
 }
@@ -186,12 +193,68 @@ string PM_updateStatus::stringOf(PM_updateStatus::StatusType type){
 	return str_type;
 }
 
+string PM_updateStatus::encodeAvatar(Avatar avatar){
+    string image_bin_str = avatar.getBinary();
+
+    int n_bytes = image_bin_str.length();
+    string format = avatar.getFormat();
+    string code;
+
+    const char* image_bin_c = image_bin_str.c_str();
+    const unsigned char* image_bin = (const unsigned char*)image_bin_c;
+
+    string image_b64 = Base64::encode(image_bin,n_bytes);
+
+    code = format + "." + image_b64;
+
+    return code;
+}
 
 
+Avatar PM_updateStatus::getAvatar(){
+    string image_bin;
+    string image_b64;
+    string format;
+    Avatar avatar;
+    int pos_split;
+    string image_enc = this->getNewStatus();
+    int n_bytes_enc = image_enc.length();
+
+    pos_split = image_enc.find(".");
+
+    format = image_enc.substr(0,pos_split);
+    image_b64 = image_enc.substr((pos_split+1),n_bytes_enc);
+
+    image_bin = Base64::decode(image_b64);
+    string username = this->getUsername();
+
+    avatar = Avatar(username, format, image_bin);
+
+    return avatar;
+}
 
 
+void PM_updateStatus::encode(){
+    PM_updateStatus::StatusType m_type = this->getType();
 
+    if(m_type==StatusType::status){
+        string orig_status = this->getNewStatus();
+        const unsigned char* orig_status_c = (const unsigned char*)orig_status.c_str();
+        int n_bytes = orig_status.length();
+        string enc_status = Base64::encode(orig_status_c,n_bytes);
+        this->setNewStatus(enc_status);
+    }
+}
 
+void PM_updateStatus::decode(){
+    PM_updateStatus::StatusType m_type = this->getType();
+
+    if(m_type==StatusType::status){
+        string enc_status = this->getNewStatus();
+        string orig_status = Base64::decode(enc_status);
+        this->setNewStatus(orig_status);
+    }
+}
 
 
 

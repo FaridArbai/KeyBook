@@ -1,15 +1,17 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include "user.h"
-#include "presence.h"
-#include "message.h"
+#include "src/user_management/user.h"
+#include "src/user_management/presence.h"
+#include "src/user_management/message.h"
 
 #include <QString>
 #include <QObject>
+#include <stdio.h>
 
 #include <string>
 #include <vector>
+#include "src/user_management/stda.h"
 
 using namespace std;
 
@@ -17,11 +19,13 @@ class Contact : public QObject, public User{
     Q_OBJECT
 
     Q_PROPERTY(QString presence_gui READ getPresenceGUI NOTIFY presenceChanged)
+    Q_PROPERTY(QString shortpresence_gui READ getShortPresenceGUI NOTIFY presenceChanged)
     Q_PROPERTY(QString unread_messages_gui READ getUnreadMessagesGUI NOTIFY unreadMessagesChanged)
     Q_PROPERTY(QString last_message_gui READ getLastMessageGUI NOTIFY lastMessageChanged)
     Q_PROPERTY(QString username_gui READ getUsernameGUI CONSTANT)
     Q_PROPERTY(QString avatar_path_gui READ getAvatarPathGUI NOTIFY avatarChanged)
     Q_PROPERTY(QString status_gui READ getStatusGUI NOTIFY statusChanged)
+    Q_PROPERTY(QString status_date_gui READ getStatusDateGUI NOTIFY statusChanged)
 
 public:
     static const string FIELDS_SEP;
@@ -31,7 +35,7 @@ public:
 
     Contact();
     Contact(string username, string status_text, string status_date,
-            string presence_text, string presence_date, string image_str);
+            string presence_text, string presence_date, Avatar avatar);
     Contact(string code);
     Contact(const Contact& orig) = delete;
     virtual ~Contact();
@@ -57,14 +61,17 @@ public:
     void setUser(string user_code);
 
     QString getPresenceGUI();
+    QString getShortPresenceGUI();
     QString getUnreadMessagesGUI();
 
     void changeStatus(string status_text, string date_str);
     void changeStatus(string new_status_text);
+    void changeAvatar(Avatar avatar);
 
     QString getUsernameGUI();
     QString getAvatarPathGUI();
     QString getStatusGUI();
+    QString getStatusDateGUI();
     QString getLastMessageGUI();
 
     void pushMessage(string sender, string recipient, string date_str, string text);

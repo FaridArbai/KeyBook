@@ -11,3 +11,7 @@ RequestingFrame::RequestingFrame(RequestHandler* request_handler){
 void RequestingFrame::setRequestHandler(RequestHandler* request_handler){
     this->request_handler = request_handler;
 }
+
+RequestHandler* RequestingFrame::getRequestHandler(){
+    return this->request_handler;
+}

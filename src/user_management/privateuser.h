@@ -1,13 +1,13 @@
 #ifndef PRIVATEUSER_H
 #define PRIVATEUSER_H
 
-#include "user.h"
+#include "src/user_management/user.h"
 #include "contact.h"
 
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "iostream"
+#include <iostream>
 
 #include <QList>
 #include <QVector>
@@ -34,6 +34,7 @@ public:
 
     void updatePresenceOf(string username, string presence_text, string date_str);
     void updateStatusOf(string username, string status_text, string date_str);
+    void updateAvatarOf(string username, Avatar avatar);
 
     QList<QObject*>& getContactsGUI();
     Contact* getContact(string username);

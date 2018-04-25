@@ -10,6 +10,8 @@ public:
     RequestingFrame(RequestHandler* request_handler);
 
     void setRequestHandler(RequestHandler* request_handler);
+    RequestHandler* getRequestHandler();
+
 protected:
     RequestHandler* request_handler;
 };

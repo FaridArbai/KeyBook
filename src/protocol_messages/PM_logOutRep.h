@@ -13,7 +13,7 @@
 
 #ifndef PM_LOGOUTREP_H
 #define PM_LOGOUTREP_H
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 #include <string>
 using namespace std;
 

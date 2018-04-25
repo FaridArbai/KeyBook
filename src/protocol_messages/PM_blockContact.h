@@ -14,7 +14,7 @@
 #ifndef PM_BLOCKCONTACT_H
 #define PM_BLOCKCONTACT_H
 
-#include "ProtocolMessage.h"
+#include "src/protocol_messages/ProtocolMessage.h"
 
 #include <string>
 

@@ -37,7 +37,7 @@ public:
     Q_INVOKABLE void signUp(QString entered_username, QString entered_password);
 
 signals:
-    void updateFeedbackLabel(QString feedback_message, QString feedback_color, bool success);
+    void receivedRegisterResponse(QString feedback_message, bool success);
     void userRegisteredIn();
 
 private:

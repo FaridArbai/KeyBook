@@ -131,6 +131,12 @@ void PrivateUser::updateStatusOf(string username, string status_text, string dat
     contact->changeStatus(status_text,date_str);
 }
 
+void PrivateUser::updateAvatarOf(string username, Avatar avatar){
+    Contact* contact = this->getContact(username);
+
+    contact->changeAvatar(avatar);
+}
+
 Contact* PrivateUser::getContact(string username){
     int n_contacts = (this->contacts).size();
     bool found = false;
@@ -233,6 +239,12 @@ void PrivateUser::addMessage(string sender, string recipient, string date_str, s
             contact->incrementUnreadMessages();
         }
     }
+
+    vector<Contact*>& contacts = this->contacts;
+
+    contacts.erase(std::remove(contacts.begin(),contacts.end(),contact),
+                   contacts.end());
+    this->pushContact(contact);
 
 }
 
