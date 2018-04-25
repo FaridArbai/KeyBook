@@ -1,5 +1,5 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 ApplicationWindow {
     id: window
@@ -39,3 +39,34 @@ ApplicationWindow {
         initialItem: LogPage {}
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

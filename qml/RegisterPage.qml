@@ -191,6 +191,7 @@ Page{
             verticalOffset: -reg_height/2
             horizontalRadius: reg_height
             verticalRadius: reg_height
+            cached: false
             gradient: Gradient{
                 GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
@@ -837,7 +838,7 @@ Page{
         font.bold: false
         font.pixelSize: infolabel_pixelsize
         color: Constants.LINES_WHITE
-        text: "By creating a Latchword account, you agree"
+        text: "By creating a Latchword account you agree"
     }
 
     Label{

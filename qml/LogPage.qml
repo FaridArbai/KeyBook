@@ -137,12 +137,14 @@ Page{
         anchors.fill: parent
 
         RadialGradient{
+            id: page_grad
             anchors.fill: parent
             //horizontalOffset: -root.width/2
             horizontalOffset: 0
             verticalOffset: -log_height/2
             horizontalRadius: log_height
             verticalRadius: log_height
+            cached: false
             gradient: Gradient{
                 GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}

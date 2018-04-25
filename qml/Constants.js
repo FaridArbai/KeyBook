@@ -10,7 +10,7 @@ var GRADIENT_TOOLBAR_COLOR  =   "#017379";
 //var BOTTOM_LOGIN_COLOR      =   "#2f2753";
 
 var TOP_LOGIN_COLOR         =   "#1f5a7a";
-var BOTTOM_LOGIN_COLOR      =   "#099090";
+var BOTTOM_LOGIN_COLOR      =   "#0f808a";
 
 var BRIGHTER_TOOLBAR_COLOR  =   "#63999E";
 var PRESSED_COLOR           =   "#1b5d64";
@@ -37,4 +37,66 @@ var SENDBUTTON_SIZE         =   80;
 var LOGIN_STATUSBAR_COLOR       =   0X00000000;
 var CONTACTS_STATUSBAR_COLOR    =   0xff014d60;
 
-//#0299a1
+var ContactPage = {
+    CONTACTNAME_COLOR       : "#016479",
+    PRESENCE_COLOR          : "#626665",
+    LASTMESSAGE_COLOR       : "#626665",
+    UNREAD_CONTAINER_COLOR  : "#029cbd",
+    UNREAD_TEXT_COLOR       : "#CCFFFFFF",
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

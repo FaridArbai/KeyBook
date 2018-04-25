@@ -8,6 +8,9 @@ Page{
 
     property bool buttons_blocked : false;
 
+    property int href   :   1135;
+    property int wref   :   720;
+
     property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
@@ -23,6 +26,15 @@ Page{
     property int contactname_top_margin :   (1/3)*contact_height;
     property int lastmessage_top_margin :   (2/3)*contact_height;
     property int lastconnection_right_margin    :   avatar_right_pad;
+
+    property int logo_pixelsize         :   icons_size;
+    property int contactname_pixelsize  :   (30/wref)*root.width;
+    property int lastmessage_pixelsize  :   (28/wref)*root.width;
+    property int presence_pixelsize     :   (24/wref)*root.width;
+    property int unread_pixelsize       :   (20/wref)*root.width;
+
+    property int unread_container_pixelsize :   (5/4)*lastmessage_pixelsize;
+
 
     Connections{
         target: main_frame
@@ -92,9 +104,9 @@ Page{
             anchors.leftMargin: pad_buttons
             font.bold: false
             //font.family: ""
-            font.pixelSize: 20
+            font.pixelSize: logo_pixelsize
             color: "white"
-            text: "Latchkey"
+            text: "Latchword"
         }
 
         ToolButton{
@@ -248,8 +260,8 @@ Page{
                 anchors.topMargin: contactname_top_margin-height/2
                 text: model.modelData.username_gui
                 font.bold: true
-                font.pixelSize: 15
-                color: Constants.TOOLBAR_COLOR
+                font.pixelSize: contactname_pixelsize
+                color: Constants.ContactPage.CONTACTNAME_COLOR
             }
 
             Label{
@@ -258,9 +270,9 @@ Page{
                 anchors.rightMargin: avatar_right_pad
                 anchors.top: parent.top
                 anchors.topMargin: contactname_label.anchors.topMargin+(contactname_label.font.pixelSize-font.pixelSize)
-                color: "#626665"
-                text: model.modelData.presence_gui
-                font.pixelSize: 12
+                text: model.modelData.shortpresence_gui
+                font.pixelSize: presence_pixelsize
+                color: Constants.ContactPage.PRESENCE_COLOR
             }
 
             Label{
@@ -269,36 +281,37 @@ Page{
                 anchors.top:  parent.top
                 anchors.topMargin: lastmessage_top_margin-height/2
                 text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
-                font.pixelSize: 14
-                color: "#626665"
+                font.pixelSize: lastmessage_pixelsize
+                font.bold: unread_label.has_unread_message
+                color: Constants.ContactPage.LASTMESSAGE_COLOR
             }
 
-            Label{
-                id: buttonmessagesnotread
-                visible: messagesnotread.text != "0"
+            Rectangle{
+                id: unread_container
                 anchors.right: parent.right
-                rightPadding: 30
-                anchors.rightMargin: 15
-                anchors.bottom:  parent.bottom
-                anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
+                anchors.rightMargin: avatar_right_pad
+                anchors.top: lastmessagetext.top
+                anchors.topMargin: (lastmessagetext.height-height)/2
+                height: unread_container_pixelsize
+                width: unread_container_pixelsize
+                radius: width/2
+                color: Constants.ContactPage.UNREAD_CONTAINER_COLOR
+                visible: unread_label.has_unread_message
 
-                background: Rectangle{
-                    implicitWidth: 10
-                    implicitHeight: 10
-                    anchors.rightMargin: 20
-                    color: "#206d75"
-                    border.color: "black"
-                    border.width: 0
-                    radius: 10
+                Label{
+                    id: unread_label
+                    anchors.centerIn: parent
+                    rightPadding: 0
+                    leftPadding: 0
+                    topPadding: 0
+                    bottomPadding: 0
+                    font.bold: false
+                    font.pixelSize: unread_pixelsize
+                    text: model.modelData.unread_messages_gui
+                    color: Constants.ContactPage.UNREAD_TEXT_COLOR
 
-                    Text{
-                        id: messagesnotread
-                        color: "white"
-                        anchors.centerIn: parent
-                        text: model.modelData.unread_messages_gui
-                        font.bold: true
-                    }
-
+                    property int surrounding_size       :   Math.max(height,width);
+                    property bool has_unread_message    :   (text!="0");
                 }
             }
 
@@ -321,7 +334,7 @@ Page{
                 anchors.right: parent.right
                 anchors.rightMargin: avatar_right_pad
                 height: 1
-                color: "#EEEEEE"
+                color: "#DDDDDD"
             }
 
         }
