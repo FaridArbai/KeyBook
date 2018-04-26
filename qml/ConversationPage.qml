@@ -7,6 +7,9 @@ import "Constants.js" as Constants
 Page {
     id: root
 
+    property int href   :   1135;
+    property int wref   :   720;
+
     property int send_button_size       :   (1/8)*root.width;
 
     property int send_field_margin      :   (1/32)*root.width;
@@ -25,6 +28,13 @@ Page {
     property int presence_left_padding  :   (1/16)*root.width;
     property int username_top_padding   :   (1/3)*main.toolbar_height;
     property int presence_top_padding   :   (2/3)*main.toolbar_height;
+
+
+    property int username_pixelsize     :   (32/href)*root.height;
+    property int presence_pixelsize     :   (24/href)*root.height;
+    property int message_pixelsize      :   (24/href)*root.height;
+    property int timestamp_pixelsize    :   (24/href)*root.height;
+    property int textarea_pixelsize     :   (30/href)*root.height;
 
 
 
@@ -158,7 +168,7 @@ Page {
                 text: contact.username_gui
                 color: "white"
                 font.bold: true
-                font.pixelSize: 16
+                font.pixelSize: username_pixelsize
             }
 
             Label{
@@ -168,7 +178,7 @@ Page {
                 anchors.left: parent.left
                 text: contact.presence_gui
                 color: "white"
-                font.pixelSize: 12
+                font.pixelSize: presence_pixelsize
             }
 
             onClicked: {
@@ -200,47 +210,46 @@ Page {
                 displayMarginBeginning: 0
                 displayMarginEnd: 0
                 verticalLayoutDirection: ListView.BottomToTop
-                spacing: 12
+                spacing: (24/href)*root.height
                 model: MessageModel
 
                 delegate: Column {
                     anchors.right: sentByMe ? parent.right : undefined
-                    spacing: 6
+                    spacing: (12/href)*root.height
 
                     readonly property bool sentByMe: (contact.username_gui !== model.modelData.sender_gui)
 
                     Row {
                         id: messageRow
-                        spacing: 6
+                        spacing: (12/href)*root.height
                         anchors.right: sentByMe ? parent.right : undefined
 
                         Rectangle {
-                            width: Math.min(messageText.implicitWidth + 24,
+                            width: Math.min(messageText.implicitWidth + (48/href)*root.height,
                                             listView.width - (!sentByMe ? messageRow.spacing : 0)
                                             )
-                            height: messageText.implicitHeight + 24
+                            height: messageText.implicitHeight + (48/href)*root.height
                             color: sentByMe ? "#afe3e9" : "#107087"
-                            radius: 4
+                            radius: (8/href)*root.height
 
                             Label {
                                 id: messageText
                                 text: model.modelData.text_gui
                                 color: sentByMe ? "black" : "white"
                                 anchors.fill: parent
-                                anchors.margins: 12
+                                anchors.margins: (24/href)*root.height
                                 wrapMode: Label.Wrap
-                                font.pixelSize: 12
+                                font.pixelSize: message_pixelsize
                             }
                         }
                     }
-
 
                     Label {
                            id: timestampText
                            text: model.modelData.date_gui
                            color: "lightgrey"
                            anchors.right: sentByMe ? parent.right : undefined
-                           font.pixelSize: 12
+                           font.pixelSize: timestamp_pixelsize
                     }
                 }
 
@@ -302,7 +311,7 @@ Page {
                 bottomPadding: message_field_container.anchors.bottomMargin
                 placeholderText : ("Type a message")
                 wrapMode: TextEdit.WordWrap
-                font.pixelSize: 15
+                font.pixelSize: textarea_pixelsize
 
                 onTextChanged:{
                     if((message_field.text.search("\n")!=(-1))&&(message_field.text!="\n")){

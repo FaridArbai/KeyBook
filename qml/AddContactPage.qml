@@ -11,6 +11,11 @@ Page{
     property bool buttons_blocked : false;
     property string entered_username : "";
 
+    property int href                   :   1135;
+    property int wref                   :   720;
+
+    property int pref                   :   2*(root.height/href);
+
     property int side_margin            :   (1/32)*root.width;
     property int pad_buttons            :   (1/16)*root.width;
     property int buttons_size           :   (3/32)*root.width;
@@ -29,13 +34,13 @@ Page{
 
     property int button_width           :   (3/8)*root.width;
 
-    property int indicator_pixelsize    :   18;
-    property int input_pixelsize        :   22;
+    property int indicator_pixelsize    :   (36/href)*root.height;
+    property int input_pixelsize        :   (44/href)*root.height;
 
     property int textarea_left_padding  :   (3/2)*input_pixelsize;
 
 
-    property int errorlabel_pixelsize   :   15;
+    property int errorlabel_pixelsize   :   (30/href)*root.height;
     property int erroricon_size         :   errorlabel_pixelsize;
     property int errorlabel_right_pad   :   1.5*erroricon_size;
 
@@ -44,6 +49,11 @@ Page{
     property string lk_char :   "•";
 
     property int errorlabel_width   :   (7/8)*root.width;
+
+    property int button_pixelsize   :   (30/href)*root.height;
+    property int button_height      :   3*button_pixelsize;
+
+    property int toolbar_pixelsize  :   icons_size;
 
     function handleTextChange(text_area){
         if(errorlabeladd.visible==true){
@@ -193,7 +203,7 @@ Page{
             anchors.leftMargin: pad_buttons
             font.bold: false
             //font.family: ""
-            font.pixelSize: 20
+            font.pixelSize: toolbar_pixelsize
             color: "white"
             text: "New Contact"
         }
@@ -669,7 +679,7 @@ Page{
             anchors.topMargin: label_spacing
             anchors.left : parent.left
             anchors.leftMargin: (parent.width-width)/2
-            height: 3*button_text.font.pixelSize
+            height: 3*button_pixelsize
             width: textarea_width
 
             background: Rectangle {
@@ -685,7 +695,7 @@ Page{
             Text{
                 id: button_text
                 anchors.centerIn: parent
-                font.pixelSize: 15;
+                font.pixelSize: button_pixelsize;
                 font.bold: false
                 text: "ADD CONTACT"
                 color: Constants.LINES_WHITE
