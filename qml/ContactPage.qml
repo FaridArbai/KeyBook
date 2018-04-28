@@ -11,9 +11,9 @@ Page{
     property int href   :   1135;
     property int wref   :   720;
 
-    property int side_margin            :   (1/32)*root.width;
-    property int pad_buttons            :   (1/16)*root.width;
-    property int buttons_size           :   (3/32)*root.width;
+    property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
+    property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
+    property int buttons_size           :   icons_size
     property int icons_size             :   (34/720)*root.width;
     property int backicon_size          :   (3/4)*buttons_size;
     property int left_pad_headertext    :   (1/16)*root.width;
@@ -69,6 +69,7 @@ Page{
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
+            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
             Rectangle{
                 color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
@@ -118,6 +119,7 @@ Page{
             height: buttons_size
             width: buttons_size
             enabled: !(buttons_blocked)
+            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
             MouseArea{
                 anchors.fill: parent
@@ -148,11 +150,12 @@ Page{
             id: addcontactbutton
             anchors.top: parent.top
             anchors.right: profileiconbutton.left
-            anchors.rightMargin: side_margin
+            anchors.rightMargin: pad_buttons
             anchors.topMargin: (parent.height-height)/2
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
+            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
             MouseArea{
                 anchors.fill: parent
@@ -361,37 +364,3 @@ Page{
         }
     }
 }
-
-/**
-        ToolButton {
-            id: groupbutton
-            enabled: !(buttons_blocked)
-
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
-            }
-
-            Rectangle{
-                color: groupbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
-
-                Image {
-                    id: groupicon
-                    source: "icons/whitegroupicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
-                }
-            }
-
-            anchors.left: parent.left
-            anchors.leftMargin:(((parent.width)/4-width)/2) + (parent.width/4)
-            anchors.verticalCenter: parent.verticalCenter
-
-            onClicked: {
-                root.StackView.view.push("qrc:/AddGroupPage.qml")
-            }
-        }
-**/

@@ -13,7 +13,7 @@ var TOP_LOGIN_COLOR         =   "#1f5a7a";
 var BOTTOM_LOGIN_COLOR      =   "#0f808a";
 
 var BRIGHTER_TOOLBAR_COLOR  =   "#63999E";
-var PRESSED_COLOR           =   "#1b5d64";
+var PRESSED_COLOR           =   "#1FFFFFFF";
 
 var FAILURE_COLOR           =   "#FFF2F2";
 var SUCESS_COLOR            =   "#F2FFFC";
@@ -22,6 +22,7 @@ var LINES_WHITE             =   "#7FFFFFFF";
 var GENERAL_TEXT_WHITE      =   "#AFFFFFFF"
 var RELEVANT_TEXT_WHITE     =   "#CFFFFFFF";
 var BUTTON_WHITE            =   "#1FFFFFFF";
+var TRANSPARENT             =   "#00FFFFFF";
 
 var MIN_USERNAME_LENGTH     =   3;
 var MAX_USERNAME_LENGTH     =   14;
@@ -36,6 +37,10 @@ var SENDBUTTON_SIZE         =   80;
 
 var LOGIN_STATUSBAR_COLOR       =   0X00000000;
 var CONTACTS_STATUSBAR_COLOR    =   0xff014d60;
+
+var SIDE_FACTOR         =   (157/2880);
+var SPACING_FACTOR      =   (7/90);
+var ICON_FACTOR         =   (34/720);
 
 var ContactPage = {
     CONTACTNAME_COLOR       : "#016479",

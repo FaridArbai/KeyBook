@@ -20,22 +20,24 @@ Page {
 
     property int text_area_width        :   root.width - (3*send_field_margin + send_button_size);
 
-    property int arrow_left_padding     :   (1/32)*root.width;
-    property int arrow_size             :   (3/32)*root.width;
+    property int side_margin            :   (157/2880)*root.width;
+    property int backimage_size         :   (34/wref)*root.width;
+    property int backbutton_size        :   backimage_size;
     property int image_left_paddding    :   (1/32)*root.width;
     property int image_size             :   (3/4)*main.toolbar_height;
     property int image_top_padding      :   (1/8)*main.toolbar_height;
-    property int presence_left_padding  :   (1/16)*root.width;
+
+    property int presence_left_padding  :   (16/wref)*root.width;
     property int username_top_padding   :   (1/3)*main.toolbar_height;
     property int presence_top_padding   :   (2/3)*main.toolbar_height;
 
 
     property int username_pixelsize     :   (32/href)*root.height;
     property int presence_pixelsize     :   (24/href)*root.height;
+    property int options_pixelsize      :   (28/href)*root.height
     property int message_pixelsize      :   (24/href)*root.height;
     property int timestamp_pixelsize    :   (24/href)*root.height;
     property int textarea_pixelsize     :   (30/href)*root.height;
-
 
 
     Connections{
@@ -63,11 +65,12 @@ Page {
         ToolButton {
             id:backbutton
             anchors.left: parent.left
-            anchors.leftMargin: arrow_left_padding
+            anchors.leftMargin: side_margin
             anchors.top: parent.top
             anchors.topMargin: (parent.height-height)/2
-            height: arrow_size
-            width: arrow_size
+            height: backbutton_size
+            width: backbutton_size
+            background: Rectangle{color:Constants.TOOLBAR_COLOR}
 
             MouseArea{
                 anchors.fill: parent
@@ -76,17 +79,14 @@ Page {
             }
 
             Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
                 anchors.fill: parent
 
                 Image {
                     id: backicon
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.topMargin: (parent.height-height)/2
-                    anchors.leftMargin: (parent.width-width)/2
-                    height: 3*arrow_size/4
-                    width: 3*arrow_size/4
+                    anchors.centerIn: parent
+                    height: backimage_size
+                    width: backimage_size
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitebackicon.png"
                 }
@@ -185,6 +185,84 @@ Page {
                 main_frame.refreshContactGUI(contact.username_gui)
                 root.StackView.view.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "Conversation_Page"})
+            }
+        }
+
+        ToolButton {
+            id: options_button
+            anchors.right: parent.right
+            anchors.rightMargin: side_margin
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2
+            height: backbutton_size
+            width: backbutton_size
+            background: Rectangle{color:Constants.TOOLBAR_COLOR}
+
+            MouseArea{
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: backbutton | send_button
+            }
+
+            Rectangle{
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
+                anchors.fill: parent
+
+                Image {
+                    id: optionsicon
+                    anchors.centerIn: parent
+                    height: backimage_size
+                    width: backimage_size
+                    fillMode: Image.PreserveAspectFit
+                    source: "icons/whiteoptionsicon.png"
+                }
+            }
+
+            onClicked:{
+                menu.open();
+            }
+
+            Menu {
+                id: menu
+                x: parent.width - width
+                width: (root.width/2)
+                transformOrigin: Menu.TopRight
+
+                background: Rectangle{
+                    height: menu.height
+                    width: menu.width
+                    radius: options_pixelsize
+                    color: "white"
+                }
+
+                MenuItem {
+                    text: "View contact"
+                    font.pixelSize: options_pixelsize
+                    bottomPadding: options_pixelsize
+                    topPadding: options_pixelsize
+                    onTriggered: menu.close();
+                }
+                MenuItem {
+                    text: "Change latchkey"
+                    font.pixelSize: options_pixelsize
+                    bottomPadding: options_pixelsize
+                    topPadding: options_pixelsize
+                    onTriggered: menu.close();
+                }
+                MenuItem {
+                    text: "Clear conversation"
+                    font.pixelSize: options_pixelsize
+                    bottomPadding: options_pixelsize
+                    topPadding: options_pixelsize
+                    onTriggered: menu.close();
+                }
+                MenuItem {
+                    text: "Block contact"
+                    font.pixelSize: options_pixelsize
+                    bottomPadding: options_pixelsize
+                    topPadding: options_pixelsize
+                    onTriggered: menu.close();
+                }
             }
         }
     }
