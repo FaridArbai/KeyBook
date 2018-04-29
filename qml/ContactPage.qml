@@ -2,6 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 2.1
 import QtGraphicalEffects 1.0
 import "Constants.js" as Constants
+import QtQuick.Dialogs 1.2
 
 Page{
     id: root

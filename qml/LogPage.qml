@@ -135,7 +135,7 @@ Page{
     Rectangle{
         id: page_bg
         anchors.fill: parent
-
+        smooth: true
         RadialGradient{
             id: page_grad
             anchors.fill: parent

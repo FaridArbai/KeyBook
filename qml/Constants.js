@@ -42,6 +42,12 @@ var SIDE_FACTOR         =   (157/2880);
 var SPACING_FACTOR      =   (7/90);
 var ICON_FACTOR         =   (34/720);
 
+var MENU_COLOR          =   "#F3F3F3";
+var MENU_TRANSPARENCY   =   0xF9;
+var ZERO_TRANSPARENCY   =   0x00;
+
+var MENUFONT_COLOR      =   "black";
+
 var ContactPage = {
     CONTACTNAME_COLOR       : "#016479",
     PRESENCE_COLOR          : "#626665",

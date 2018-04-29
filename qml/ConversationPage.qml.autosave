@@ -55,11 +55,11 @@ Page {
     property int menu_transparency_closed   :   Constants.ZERO_TRANSPARENCY;
     property int menu_transparency_open     :   Constants.MENU_TRANSPARENCY;
 
-    property int menu_margins   :   (1/32)*root.width;
+    property int menu_margins           :   (1/32)*root.width;
 
-    property real menu_factor    :   0;
-    property real menu_factor_closed :   0;
-    property real menu_factor_opened   :   1;
+    property real menu_factor           :   0;
+    property real menu_factor_closed    :   0;
+    property real menu_factor_opened    :   1;
 
     property bool menu_opened   :   (menu_factor>0.05);
 
