@@ -38,6 +38,15 @@ ApplicationWindow {
         anchors.fill: parent
         initialItem: LogPage {}
     }
+
+    onClosing: {
+        if(stackView.depth > 1){
+            close.accepted = false;
+            stackView.currentItem.goBack();;
+        }else{
+            return;
+        }
+    }
 }
 
 

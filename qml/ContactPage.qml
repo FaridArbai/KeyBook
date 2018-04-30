@@ -15,7 +15,7 @@ Page{
     property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
     property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
     property int buttons_size           :   icons_size
-    property int icons_size             :   (34/720)*root.width;
+    property int icons_size             :   (34/wref)*root.width;
     property int backicon_size          :   (3/4)*buttons_size;
     property int left_pad_headertext    :   (1/16)*root.width;
 

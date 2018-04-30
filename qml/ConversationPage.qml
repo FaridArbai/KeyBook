@@ -55,11 +55,11 @@ Page {
     property int menu_transparency_closed   :   Constants.ZERO_TRANSPARENCY;
     property int menu_transparency_open     :   Constants.MENU_TRANSPARENCY;
 
-    property int menu_margins   :   (1/32)*root.width;
+    property int menu_margins           :   (1/32)*root.width;
 
-    property real menu_factor    :   0;
-    property real menu_factor_closed :   0;
-    property real menu_factor_opened   :   1;
+    property real menu_factor           :   0;
+    property real menu_factor_closed    :   0;
+    property real menu_factor_opened    :   1;
 
     property bool menu_opened   :   (menu_factor>0.05);
 
@@ -261,7 +261,7 @@ Page {
             anchors.topMargin: -menu_factor*(options_button.anchors.topMargin-menu_margins);
             anchors.right: options_button.right
             anchors.rightMargin: -menu_factor*(options_button.anchors.rightMargin-menu_margins);
-            z: 1
+            z: 2
             radius: options_pixelsize/2
             color: menu_color
             height: 4*(3*options_pixelsize) + options_pixelsize
@@ -399,7 +399,6 @@ Page {
             }
 
             function open(){
-                menu.forceActiveFocus();
                 menu.enable();
                 close_menu.running = false;
                 close_factor.running = false;
@@ -434,6 +433,18 @@ Page {
             }
 
             onActiveFocusChanged: {
+                menu.hide();
+            }
+        }
+    }
+
+    Button{
+        id: background_touch
+        anchors.fill: parent
+        z: menu_opened?(menu.z-1):(-1);
+        background:Rectangle{color:"transparent"}
+        onClicked: {
+            if(menu_opened){
                 menu.hide();
             }
         }

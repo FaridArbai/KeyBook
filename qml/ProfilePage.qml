@@ -6,10 +6,19 @@ import "Constants.js" as Constants
 
 Page {
     id: root
-    visible:true
 
     property bool avatar_changed : false;
     property bool block_buttons : false;
+
+    property int href   :   1135;
+    property int wref   :   720;
+
+    property int buttons_size           :   icons_size
+    property int icons_size             :   (34/wref)*root.width;
+    property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
+    property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
+
+
 
     Connections{
         target: main_frame
@@ -33,42 +42,37 @@ Page {
         }
     }
 
-    header: ToolBar{
-
-        height: 48
-
-        Rectangle{
-            anchors.fill: parent
-            color: "#206d75"
-        }
+    Rectangle{
+        id: toolbar
+        anchors.top: parent.top
+        anchors.left: parent.left
+        width: parent.width
+        height: main.toolbar_height
+        color: "transparent"
+        z: 1
 
         ToolButton {
             id: backbutton
-            flat: true
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2
+            anchors.left: parent.left
+            anchors.leftMargin: side_margin;
+            height: buttons_size
+            width: buttons_size
 
-            MouseArea{
+            background: Rectangle{
                 anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: profileimagebutton | backbutton
-            }
-
-            Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: Constants.TOOLBUTTON_SIZE
-                width: Constants.TOOLBUTTON_SIZE
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
 
                 Image {
                     id: backicon
+                    anchors.centerIn: parent
                     source: "icons/whitebackicon.png"
-                    height: Constants.TOOLBUTTON_SIZE
-                    width: Constants.TOOLBUTTON_SIZE
+                    height: icons_size
+                    width: icons_size
                 }
             }
 
-
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
             onClicked:{
                 if(avatar_changed){
                     block_buttons = true;
@@ -80,12 +84,32 @@ Page {
             }
         }
 
-        Label{
-            text: "Profile"
-            color: "white"
-            font.pixelSize: 20
-            font.bold: true
-            anchors.centerIn: parent
+        ToolButton {
+            id: optionsbutton
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2
+            anchors.right: parent.right
+            anchors.rightMargin: side_margin;
+            height: buttons_size
+            width: buttons_size
+
+            background: Rectangle{
+                anchors.fill: parent
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
+
+                Image {
+                    id: optionsicon
+                    anchors.centerIn: parent
+                    source: "icons/whiteoptionsicon.png"
+                    height: icons_size
+                    width: icons_size
+                }
+            }
+
+            onClicked:{
+                main_frame.changeStatusbarColor(Constants.IMAGEPROCESSING_STATUSBAR_COLOR);
+                root.StackView.view.push("qrc:/ImageProcessingPage.qml");
+            }
         }
     }
 
