@@ -14,6 +14,8 @@ Page{
         color:"black";
     }
 
+    property string image_source;
+
     property int href   :   1135;
     property int wref   :   720;
 
@@ -22,7 +24,11 @@ Page{
     property int buttons_bottom_margin  :   (1/10)*root.height;
     property int rotatebutton_size      :   2*buttons_pixelsize;
 
-    property int imagecontainer_side_margin    :   (1/32)*root.width;
+    property int imagecontainer_side_margin    :   (1/16)*root.width;
+
+    property int lines_width        :   (4);
+    property real spacing_factor    :   ((3-(2*Math.sqrt(2)))/6);
+    property int lines_spacing      :   spacing_factor*canvas.width;
 
     Button{
         id: cancel_button;
@@ -76,6 +82,13 @@ Page{
         }
 
         onClicked: {
+            var x = (canvas.x/image.width)*image.sourceSize.width;
+            var width = (canvas.width/image.width)*image.sourceSize.width;
+            var y = (canvas.y/image.height)*image.sourceSize.height;
+            var height = (canvas.height/image.height)*image.sourceSize.height;
+
+            main_frame.saveRetouchedImage(image_source,x,y,width,height);
+
             root.goBack();
         }
     }
@@ -85,7 +98,7 @@ Page{
         anchors.left: parent.left;
         anchors.leftMargin: (root.width-width)/2;
         anchors.bottom: cancel_button.bottom
-        anchors.bottomMargin: -((17/16)*height-buttons_pixelsize)/2
+        anchors.bottomMargin: -((7/8)*height-buttons_pixelsize)/2
         height: rotatebutton_size
         width: rotatebutton_size
         background: Rectangle{color:Constants.TRANSPARENT}
@@ -111,8 +124,10 @@ Page{
         }
 
         onClicked: {
-            console.log(image.sourceSize.height);
-            console.log(image.sourceSize.width);
+            console.log(image.implicitHeight);
+            console.log(image.implicitWidth);
+            console.log(image.height);
+            console.log(image.width);
         }
     }
 
@@ -124,7 +139,7 @@ Page{
         anchors.leftMargin: buttons_side_margin
         width: (3/4)*root.width
         height: (3/4)*root.buttons_pixelsize
-        value: 0.5
+        value: 1
 
         background: Rectangle {
             x: slider.leftPadding
@@ -151,6 +166,33 @@ Page{
             color: slider.pressed ? "white" : "lightgrey"
             border.color: "grey"
         }
+
+        onValueChanged: {
+            var size = value*image.size;
+            var dsize = size - canvas.width;
+            var x = canvas.x - dsize/2;
+            var y = canvas.y - dsize/2;
+
+            if(x<0){
+                x = 0;
+            }
+            else if(x+size>image.width){
+                x = image.width - size;
+            }
+
+            if(y<0){
+                y = 0;
+            }
+            else if(y+size>image.height){
+                y = image.height - size;
+            }
+
+            canvas.x = x;
+            canvas.y = y;
+            canvas.height = size;
+            canvas.width = size;
+            //mask.maskSource = canvas
+        }
     }
 
 
@@ -159,16 +201,283 @@ Page{
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: slider.bottom
+        anchors.bottom: slider.top
         anchors.margins: imagecontainer_side_margin
         color: "white"
 
         Image{
             id: image
             anchors.centerIn: parent
+            height: (is_portrait)?(image_container.height):(image_container.width/image.ratio)
+            width: (is_portrait)?(image_container.height*image.ratio):(image_container.width)
+            fillMode: Image.PreserveAspectFit
+            source: image_source
+
+            property int size: Math.min(height,width);
+
+            property real ratio : (image.sourceSize.width/image.sourceSize.height);
+            property bool is_portrait: (ratio<1.0);
+
+
+            MouseArea{
+                id: image_bg
+                anchors.fill: parent
+
+                drag{
+                    target: canvas
+                    axis: Drag.XandYAxis
+                    minimumX: 0
+                    maximumX: image.width-canvas.width
+                    minimumY: 0
+                    maximumY: image.height-canvas.height
+                }
+            }
+
+            Rectangle{
+                id: canvas
+                x: 0
+                y: 0
+                height: image.size
+                width: image.size
+                //border.width: 1
+                //border.color: "red"
+                //color: "transparent"
+                visible: false
+            }
+        }
+
+        Rectangle{
+            anchors.fill: image
+            color: Constants.IMAGEPROCESSING_MASK
+        }
+
+        Rectangle{
+            id: background_mask
+            anchors.fill: image
+            color: "transparent"
+            visible: false
+
+            Rectangle{
+                id: moving_mask
+                x: canvas.x
+                y: canvas.y
+                height: canvas.height
+                width: canvas.width
+                radius: width/2
+                color: "white"
+            }
+        }
+
+
+        Image{
+            id: image2
+            anchors.fill: image
             fillMode: Image.PreserveAspectFit
             source: main_frame.getCurrentImagePath();
+            layer.enabled: true
+            layer.effect: OpacityMask{
+                maskSource: background_mask
+            }
         }
+
+
+        Rectangle{
+            id: canvas_border
+            x: image.x + canvas.x
+            y: image.y + canvas.y
+            width: canvas.width
+            height: canvas.height
+            radius: canvas.width/2
+            border.width: lines_width
+            border.color: "lightgrey"
+            color: Constants.IMAGEPROCESSING_CANVAS_COLOR
+
+            Rectangle{
+                id: vertical_line1
+                anchors.top: parent.top
+                anchors.topMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: lines_spacing
+                anchors.left: parent.left
+                anchors.leftMargin: parent.width/3-width/2
+                width: lines_width
+                color: "lightgrey"
+            }
+
+            Rectangle{
+                id: vertical_line2
+                anchors.top: parent.top
+                anchors.topMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width/3-width/2
+                width: lines_width
+                color: "lightgrey"
+            }
+
+            Rectangle{
+                id: horizontal_line1
+                anchors.left: parent.left
+                anchors.leftMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: lines_spacing
+                anchors.top: parent.top
+                anchors.topMargin: parent.height/3-height/2
+                height: lines_width
+                color: "lightgrey"
+
+            }
+
+            Rectangle{
+                id: horizontal_line2
+                anchors.left: parent.left
+                anchors.leftMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: parent.height/3-height/2
+                height: lines_width
+                color: "lightgrey"
+            }
+        }
+
+
+
+
+
+
+
+
+
+        /**
+        Rectangle{
+            x: image.x + canvas.x
+            y: image.y + canvas.y
+            height: canvas.height
+            width: canvas.width
+            clip: true
+            radius: width/2
+
+            Image{
+                x: -canvas.x
+                y: -canvas.y
+                width: Math.min(image_container.width, implicitWidth);
+                height: Math.min(image_container.height, implicitHeight);
+                fillMode: Image.PreserveAspectFit
+                source: main_frame.getCurrentImagePath();
+                layer.enabled: true
+                layer.effect: OpacityMask{
+                    maskSource: parent
+                }
+            }
+
+
+
+            Rectangle{
+                id: vertical_line1
+                anchors.top: parent.top
+                anchors.topMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: lines_spacing
+                anchors.left: parent.left
+                anchors.leftMargin: parent.width/3-width/2
+                width: lines_width
+                color: "lightgrey"
+            }
+
+            Rectangle{
+                id: vertical_line2
+                anchors.top: parent.top
+                anchors.topMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width/3-width/2
+                width: lines_width
+                color: "lightgrey"
+            }
+
+            Rectangle{
+                id: horizontal_line1
+                anchors.left: parent.left
+                anchors.leftMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: lines_spacing
+                anchors.top: parent.top
+                anchors.topMargin: parent.height/3-height/2
+                height: lines_width
+                color: "lightgrey"
+
+            }
+
+            Rectangle{
+                id: horizontal_line2
+                anchors.left: parent.left
+                anchors.leftMargin: lines_spacing
+                anchors.right: parent.right
+                anchors.rightMargin: lines_spacing
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: parent.height/3-height/2
+                height: lines_width
+                color: "lightgrey"
+            }
+        }
+        **/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+        Rectangle{
+            id: bg
+            anchors.fill: image
+            color: "#00FFFFFF"
+            visible: false
+
+            Rectangle{
+                id: fg
+                x: canvas.x
+                y: canvas.y
+                width: canvas.width
+                height: canvas.height
+                color: "#FFFFFFFF"
+                visible: false
+            }
+        }
+        **/
+
+        /**
+        OpacityMask{
+            id: mask
+            x: canvas.x + image.x
+            y: canvas.y + image.y
+            height: canvas.height
+            width: canvas.width
+            source: image
+            maskSource: canvas
+        }
+        **/
+
     }
 
 
