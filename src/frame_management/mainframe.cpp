@@ -334,14 +334,11 @@ void MainFrame::openImagePicker(){
     if(new_image_path!=""){
         string orig_image_path = new_image_path.toStdString();
         string format = Avatar::getImageFormat(orig_image_path);
-        string image_path = IOManager::getImagePath("this",format);
+        string image_path = IOManager::getImagePath("tmp",format);
 
         QImage image(QString::fromStdString(orig_image_path));
         QPixmap pixmap;
-        pixmap = pixmap.fromImage(image.scaled(600,
-                                               600,
-                                               Qt::KeepAspectRatioByExpanding,
-                                               Qt::SmoothTransformation));
+        pixmap = pixmap.fromImage(image);
         QFile file(QString::fromStdString(image_path));
         file.open(QIODevice::WriteOnly);
 
@@ -349,9 +346,27 @@ void MainFrame::openImagePicker(){
 
         file.close();
 
-        this->updateImagePath(QString::fromStdString(image_path));
+        emit this->avatarChanging(QString::fromStdString(IOManager::FILE_HEADER + image_path));
     }
-    //this->updateImagePath(new_image_path);
+}
+
+void MainFrame::saveRetouchedImage(QString source, int x, int y, int height, int width){
+    QImage source_image(source.replace(QString::fromStdString(IOManager::FILE_HEADER),""));
+    QImage retouched_image = source_image.copy(x,y,width,height);
+    string format = Avatar::getImageFormat(source.toStdString());
+    string image_path = IOManager::getImagePath("this",format);
+
+    QPixmap pixmap;
+    pixmap = pixmap.fromImage(retouched_image);
+    QFile file(QString::fromStdString(image_path));
+
+    file.open(QIODevice::WriteOnly);
+
+    pixmap.save(&file,format.c_str(),100);
+
+    file.close();
+
+    this->updateImagePath(QString::fromStdString(image_path));
 }
 
 void MainFrame::notifyThreshold(){

@@ -77,6 +77,7 @@ public:
     Q_INVOKABLE void refreshContactGUI(QString username_gui);
 
     Q_INVOKABLE void openImagePicker();
+    Q_INVOKABLE void saveRetouchedImage(QString source, int x, int y, int width, int height);
     Q_INVOKABLE void sendAvatar();
 
     Q_INVOKABLE void addContact(QString entered_username);
@@ -98,6 +99,7 @@ signals:
     void finishedUploadingImage();
     void statusChanged(QString new_status_gui, QString new_date_gui, QString err_msg = "");
     void avatarChanged();
+    void avatarChanging(QString selected_image_path);
     void receivedMessageForCurrentConversation();
     void receivedForeignContact();
     void receivedRequestedContact();
