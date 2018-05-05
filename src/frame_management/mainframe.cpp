@@ -314,6 +314,7 @@ void MainFrame::sendAvatarImpl(){
 #include <QImage>
 #include "src/user_management/avatar.h"
 #include <QFile>
+#include <QMatrix>
 
 void MainFrame::openImagePicker(){
     QMutex wait_mutex;
@@ -350,19 +351,22 @@ void MainFrame::openImagePicker(){
     }
 }
 
-void MainFrame::saveRetouchedImage(QString source, int x, int y, int height, int width){
+void MainFrame::saveRetouchedImage(QString source, int x, int y, int width, int height, int angle){
     QImage source_image(source.replace(QString::fromStdString(IOManager::FILE_HEADER),""));
     QImage retouched_image = source_image.copy(x,y,width,height);
     string format = Avatar::getImageFormat(source.toStdString());
     string image_path = IOManager::getImagePath("this",format);
-
     QPixmap pixmap;
-    pixmap = pixmap.fromImage(retouched_image);
+    QMatrix homography;
     QFile file(QString::fromStdString(image_path));
 
-    file.open(QIODevice::WriteOnly);
+    homography.rotate(angle);
+    pixmap = pixmap.fromImage(retouched_image).transformed(homography);;
 
-    pixmap.save(&file,format.c_str(),100);
+    qDebug() << angle << endl;
+
+    file.open(QIODevice::WriteOnly);
+    pixmap.save(&file,format.c_str(),70);
 
     file.close();
 

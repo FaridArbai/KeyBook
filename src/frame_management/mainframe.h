@@ -77,7 +77,7 @@ public:
     Q_INVOKABLE void refreshContactGUI(QString username_gui);
 
     Q_INVOKABLE void openImagePicker();
-    Q_INVOKABLE void saveRetouchedImage(QString source, int x, int y, int width, int height);
+    Q_INVOKABLE void saveRetouchedImage(QString source, int x, int y, int width, int height, int angle);
     Q_INVOKABLE void sendAvatar();
 
     Q_INVOKABLE void addContact(QString entered_username);
