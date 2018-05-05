@@ -49,6 +49,9 @@ var ZERO_TRANSPARENCY   =   0x00;
 
 var MENUFONT_COLOR      =   "black";
 
+var IMAGEPROCESSING_MASK    =   "#80000000";
+var IMAGEPROCESSING_CANVAS_COLOR = "#40FFFFFF";
+
 var ContactPage = {
     CONTACTNAME_COLOR       : "#016479",
     PRESENCE_COLOR          : "#626665",
@@ -57,6 +60,10 @@ var ContactPage = {
     UNREAD_TEXT_COLOR       : "#CCFFFFFF",
 };
 
+var ContactProfilePage = {
+    PADDING_COLOR           :   "#F2F2F2",
+    ICONS_COLOR             :   "#014D60",
+};
 
 
 

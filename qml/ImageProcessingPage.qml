@@ -26,9 +26,11 @@ Page{
 
     property int imagecontainer_side_margin    :   (1/16)*root.width;
 
-    property int lines_width        :   (4);
+    property int lines_width        :   (2);
     property real spacing_factor    :   ((3-(2*Math.sqrt(2)))/6);
     property int lines_spacing      :   spacing_factor*canvas.width;
+
+    property int angle  :   0;
 
     Button{
         id: cancel_button;
@@ -87,7 +89,7 @@ Page{
             var y = (canvas.y/image.height)*image.sourceSize.height;
             var height = (canvas.height/image.height)*image.sourceSize.height;
 
-            main_frame.saveRetouchedImage(image_source,x,y,width,height);
+            main_frame.saveRetouchedImage(image_source,x,y,width,height,image.angle);
 
             root.goBack();
         }
@@ -124,10 +126,8 @@ Page{
         }
 
         onClicked: {
-            console.log(image.implicitHeight);
-            console.log(image.implicitWidth);
-            console.log(image.height);
-            console.log(image.width);
+            image.last_size = image.size;
+            image.angle = (image.angle + 90)%360;
         }
     }
 
@@ -139,7 +139,7 @@ Page{
         anchors.leftMargin: buttons_side_margin
         width: (3/4)*root.width
         height: (3/4)*root.buttons_pixelsize
-        value: 1
+        value: (image_container.initial_canvas_size)/Math.min(image_container.height,image_container.width);
 
         background: Rectangle {
             x: slider.leftPadding
@@ -203,20 +203,29 @@ Page{
         anchors.right: parent.right
         anchors.bottom: slider.top
         anchors.margins: imagecontainer_side_margin
-        color: "white"
+        color: "black"
+
+        property int container_height   :   (image.keeps_axis)?(height):(width);
+        property int container_width    :   (image.keeps_axis)?(width):(height);
+        property real ratio             :   (container_width/container_height);
+        property int initial_canvas_size:   Math.min(height,width)/2;
 
         Image{
             id: image
             anchors.centerIn: parent
-            height: (is_portrait)?(image_container.height):(image_container.width/image.ratio)
-            width: (is_portrait)?(image_container.height*image.ratio):(image_container.width)
+            height: (is_portrait)?(parent.container_height):(parent.container_width/image.ratio)
+            width: (is_portrait)?(parent.container_height*image.ratio):(parent.container_width)
             fillMode: Image.PreserveAspectFit
             source: image_source
+            transformOrigin: Item.Center
+            rotation: angle
 
-            property int size: Math.min(height,width);
-
-            property real ratio : (image.sourceSize.width/image.sourceSize.height);
-            property bool is_portrait: (ratio<1.0);
+            property int size           :   Math.min(height,width);
+            property int last_size      :   0;
+            property real ratio         :   (image.sourceSize.width/image.sourceSize.height);
+            property int angle          :   0;
+            property bool keeps_axis    :   ((angle==0)||(angle==180));
+            property bool is_portrait   :   (ratio<image_container.ratio);
 
 
             MouseArea{
@@ -237,17 +246,27 @@ Page{
                 id: canvas
                 x: 0
                 y: 0
-                height: image.size
-                width: image.size
+                height: image_container.initial_canvas_size
+                width:  image_container.initial_canvas_size
                 //border.width: 1
                 //border.color: "red"
                 //color: "transparent"
                 visible: false
             }
+
+            onRotationChanged: {
+                var scale_factor = (image.size/image.last_size);
+                canvas.height = canvas.height*scale_factor;
+                canvas.width = canvas.width*scale_factor;
+                canvas.x = canvas.x*scale_factor;
+                canvas.y = canvas.y*scale_factor;
+            }
         }
 
         Rectangle{
             anchors.fill: image
+            transformOrigin: Item.Center
+            rotation: image.angle
             color: Constants.IMAGEPROCESSING_MASK
         }
 
@@ -273,7 +292,9 @@ Page{
             id: image2
             anchors.fill: image
             fillMode: Image.PreserveAspectFit
-            source: main_frame.getCurrentImagePath();
+            source: image_source
+            transformOrigin: Item.Center
+            rotation: image.angle
             layer.enabled: true
             layer.effect: OpacityMask{
                 maskSource: background_mask
@@ -282,63 +303,71 @@ Page{
 
 
         Rectangle{
-            id: canvas_border
-            x: image.x + canvas.x
-            y: image.y + canvas.y
-            width: canvas.width
-            height: canvas.height
-            radius: canvas.width/2
-            border.width: lines_width
-            border.color: "lightgrey"
-            color: Constants.IMAGEPROCESSING_CANVAS_COLOR
+            id: image_tracker
+            anchors.fill: image
+            transformOrigin: Item.Center
+            rotation: image.angle
+            color: "transparent"
 
             Rectangle{
-                id: vertical_line1
-                anchors.top: parent.top
-                anchors.topMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: lines_spacing
-                anchors.left: parent.left
-                anchors.leftMargin: parent.width/3-width/2
-                width: lines_width
-                color: "lightgrey"
-            }
+                id: canvas_border
+                x: canvas.x
+                y: canvas.y
+                height: canvas.height
+                width: canvas.width
+                radius: width/2
+                border.width: lines_width
+                border.color: "lightgrey"
+                color: Constants.IMAGEPROCESSING_CANVAS_COLOR
 
-            Rectangle{
-                id: vertical_line2
-                anchors.top: parent.top
-                anchors.topMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: parent.width/3-width/2
-                width: lines_width
-                color: "lightgrey"
-            }
+                Rectangle{
+                    id: vertical_line1
+                    anchors.top: parent.top
+                    anchors.topMargin: lines_spacing
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: lines_spacing
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.width/3-width/2
+                    width: lines_width
+                    color: "lightgrey"
+                }
 
-            Rectangle{
-                id: horizontal_line1
-                anchors.left: parent.left
-                anchors.leftMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: lines_spacing
-                anchors.top: parent.top
-                anchors.topMargin: parent.height/3-height/2
-                height: lines_width
-                color: "lightgrey"
+                Rectangle{
+                    id: vertical_line2
+                    anchors.top: parent.top
+                    anchors.topMargin: lines_spacing
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: lines_spacing
+                    anchors.right: parent.right
+                    anchors.rightMargin: parent.width/3-width/2
+                    width: lines_width
+                    color: "lightgrey"
+                }
 
-            }
+                Rectangle{
+                    id: horizontal_line1
+                    anchors.left: parent.left
+                    anchors.leftMargin: lines_spacing
+                    anchors.right: parent.right
+                    anchors.rightMargin: lines_spacing
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/3-height/2
+                    height: lines_width
+                    color: "lightgrey"
 
-            Rectangle{
-                id: horizontal_line2
-                anchors.left: parent.left
-                anchors.leftMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: parent.height/3-height/2
-                height: lines_width
-                color: "lightgrey"
+                }
+
+                Rectangle{
+                    id: horizontal_line2
+                    anchors.left: parent.left
+                    anchors.leftMargin: lines_spacing
+                    anchors.right: parent.right
+                    anchors.rightMargin: lines_spacing
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: parent.height/3-height/2
+                    height: lines_width
+                    color: "lightgrey"
+                }
             }
         }
 
@@ -362,8 +391,8 @@ Page{
             Image{
                 x: -canvas.x
                 y: -canvas.y
-                width: Math.min(image_container.width, implicitWidth);
-                height: Math.min(image_container.height, implicitHeight);
+                width: Math.min(container_width, implicitWidth);
+                height: Math.min(container_height, implicitHeight);
                 fillMode: Image.PreserveAspectFit
                 source: main_frame.getCurrentImagePath();
                 layer.enabled: true

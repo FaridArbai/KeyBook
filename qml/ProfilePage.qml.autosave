@@ -20,11 +20,16 @@ Page {
 
     property int remaining_height       :   root.height-root.width;
 
-    property int name_pixesize          :   (70/wref)*root.width;
+    property int name_pixesize          :   (70/height)*root.height;
 
     property int statuscontainer_height :   (1/2)*remaining_height;
-
-
+    
+    property int statusindicator_pixelsize  :   (36/href)*root.height; //18,16,14  
+    property int statustext_pixelsize       :   (32/href)*root.height;
+    property int statusdate_pixelsize       :   (28/href)*root.height;
+    property int statusindicator_top_margin :   (statuscontainer_height/3)-statusindicator_pixelsize/2;
+    property int statustext_top_margin      :   (2*statuscontainer_height/3)-statusindicator_pixelsize/2;
+    
 
     function openRetoucher(image_source){
         main_frame.changeStatusbarColor(Constants.IMAGEPROCESSING_STATUSBAR_COLOR);
@@ -189,7 +194,11 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         height: statuscontainer_height
-
+        
+        
+        
+        
+        
         Button{
             id: statustextbutton
             anchors.fill: parent
@@ -223,13 +232,11 @@ Page {
         }
 
     }
-
-    DropShadow{
-        anchors.fill: image_container
-        source: image_container
-    }
-
-
+    
+    
+    
+    
+    
 
 
     Rectangle{
