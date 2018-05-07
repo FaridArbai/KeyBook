@@ -52,20 +52,25 @@ var MENUFONT_COLOR      =   "black";
 var IMAGEPROCESSING_MASK    =   "#80000000";
 var IMAGEPROCESSING_CANVAS_COLOR = "#40FFFFFF";
 
+var DROPSHADOW_COLOR    =   "#42000000";
+
 var ContactPage = {
     CONTACTNAME_COLOR       : "#016479",
     PRESENCE_COLOR          : "#626665",
     LASTMESSAGE_COLOR       : "#626665",
     UNREAD_CONTAINER_COLOR  : "#029cbd",
     UNREAD_TEXT_COLOR       : "#CCFFFFFF",
+    SEPARATORS_COLOR        : "#DDDDDD",
 };
 
-var ContactProfilePage = {
+var ProfilePage = {
     PADDING_COLOR           :   "#F2F2F2",
-    ICONS_COLOR             :   "#014D60",
+    ICONS_COLOR             :   "#016479",
+    STATUSINDICATOR_COLOR   :   "#016479",
+    TEXT_COLOR              :   "#707070",
+    TEXTBOX_COLOR           :   "#F9FFFFFF",
+    STATUS_MAXCHARS         :   115,
 };
-
-
 
 
 

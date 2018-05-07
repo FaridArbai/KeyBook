@@ -20,6 +20,12 @@ Page{
     property int left_margin            :   (1/15)*root.width
     property int right_margin           :   (1/15)*root.width
 
+    property int href   :   1135;
+
+    property int statuslabel_pixelsize      :   (36/href)*root.height; //18,16,14
+    property int statustext_pixelsize       :   (32/href)*root.height;
+    property int statusdate_pixelsize       :   (28/href)*root.height;
+
 
     Rectangle{
         anchors.fill: parent
@@ -127,7 +133,7 @@ Page{
                 anchors.leftMargin: left_margin
                 text: "Status"
                 font.bold: false
-                font.pixelSize: 18
+                font.pixelSize: statuslabel_pixelsize
                 font.italic: false
                 color: Constants.TOOLBAR_COLOR
             }
@@ -140,7 +146,7 @@ Page{
                 anchors.leftMargin: left_margin
                 text: contact.status_gui
                 font.bold: false
-                font.pixelSize: 16
+                font.pixelSize: statustext_pixelsize
                 font.italic: true
                 color: "#828282"
             }
@@ -154,7 +160,7 @@ Page{
                 anchors.right: parent.right
                 text: contact.status_date_gui
                 font.bold: false
-                font.pixelSize: 14
+                font.pixelSize: statusdate_pixelsize
                 font.italic: false
                 color: "#828282"
             }
