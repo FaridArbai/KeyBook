@@ -1,88 +1,26 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
-import QtGraphicalEffects 1.0
-import "Constants.js" as Constants
-import QtQuick.Dialogs 1.2
 
 Page{
     id: root
 
-    property bool buttons_blocked : false;
-
-    property int href   :   1135;
-    property int wref   :   720;
-
-    property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
-    property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
-    property int buttons_size           :   icons_size
-    property int icons_size             :   (34/wref)*root.width;
-    property int backicon_size          :   (3/4)*buttons_size;
-    property int left_pad_headertext    :   (1/16)*root.width;
-
-    property int avatar_container_width :   (165/724)*root.width;
-    property int contact_height         :   (156/165)*avatar_container_width;
-    property int avatar_right_pad       :   (1/6)*avatar_container_width;
-    property int avatar_top_pad         :   (contact_height-avatar_image_size)/2;
-    property int avatar_image_size      :   (2/3)*avatar_container_width;
-    property int contactname_top_margin :   (1/3)*contact_height;
-    property int lastmessage_top_margin :   (2/3)*contact_height;
-    property int lastconnection_right_margin    :   avatar_right_pad;
-
-    property int logo_pixelsize         :   icons_size;
-    property int contactname_pixelsize  :   (30/wref)*root.width;
-    property int lastmessage_pixelsize  :   (28/wref)*root.width;
-    property int presence_pixelsize     :   (24/wref)*root.width;
-    property int unread_pixelsize       :   (20/wref)*root.width;
-
-    property int unread_container_pixelsize :   (5/4)*lastmessage_pixelsize;
-
-
-    Connections{
-        target: main_frame
-        onLogOut:{
-            wait_box.visible = false;
-            main_frame.changeStatusbarColor(Constants.LOGIN_STATUSBAR_COLOR);
-            root.StackView.view.pop();
-        }
-
-        onWaitingForTooLong:{
-            if(buttons_blocked==true){
-                wait_box.visible = true;
-            }
-        }
-    }
-
     header: ToolBar {
         id: toolbar
-        height: main.toolbar_height
+        height: 60
 
         Rectangle{
             anchors.fill: parent
-            color: Constants.TOOLBAR_COLOR
+            color: "#206d75"
         }
 
         ToolButton {
             id: backbutton
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.leftMargin: side_margin
-            anchors.topMargin: (parent.height-height)/2
-            enabled: !(buttons_blocked)
-            height: buttons_size
-            width: buttons_size
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
-            Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                anchors.fill: parent
-
-                Image {
-                    id: backicon                    
-                    anchors.centerIn: parent
-                    height: icons_size
-                    width:  icons_size
-                    source: "icons/whitebackicon.png"
-                }
+            BorderImage {
+                id: backiconid
+                source: "icons/whitebackicon.png"
+                height: 40
+                width: 40
             }
 
             MouseArea{
@@ -92,35 +30,43 @@ Page{
 
             }
 
+            anchors.left: parent.left
+            anchors.leftMargin: (((parent.width)/4-width)/2)
+            anchors.verticalCenter: parent.verticalCenter
             onClicked:{
-                buttons_blocked = true;
-                main_frame.logOutUser();
+                main_frame.logOutUser()
+                root.StackView.view.pop()
             }
         }
 
-        Text{
-            id: logo_text
-            anchors.top: parent.top
-            anchors.topMargin: (parent.height-height)/2
-            anchors.left: backbutton.right
-            anchors.leftMargin: pad_buttons
-            font.bold: false
-            //font.family: ""
-            font.pixelSize: logo_pixelsize
-            color: "white"
-            text: "Latchword"
+
+        ToolButton {
+             id: groupbutton
+
+            MouseArea{
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: addcontactbutton | backbutton
+            }
+
+            BorderImage {
+                id: groupicon
+                source: "icons/whitegroupicon.png"
+                height: 40
+                width: 40
+            }
+
+            anchors.left: parent.left
+            anchors.leftMargin:(((parent.width)/4-width)/2) + (parent.width/4)
+            anchors.verticalCenter: parent.verticalCenter
+
+            onClicked: {
+                root.StackView.view.push("qrc:/AddGroupPage.qml")
+            }
         }
 
         ToolButton{
             id: profileiconbutton
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.rightMargin: side_margin
-            anchors.topMargin: (parent.height-height)/2
-            height: buttons_size
-            width: buttons_size
-            enabled: !(buttons_blocked)
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
             MouseArea{
                 anchors.fill: parent
@@ -128,18 +74,16 @@ Page{
                 acceptedButtons: addcontactbutton | backbutton
             }
 
-            Rectangle{
-                color: profileiconbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                anchors.fill: parent
-
-                Image {
-                    id: profileicon
-                    anchors.centerIn: parent
-                    source: "icons/whiteprofileicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            BorderImage {
+                id: profileicon
+                source: "icons/whiteprofileicon.png"
+                height: 40
+                width: 40
             }
+
+            anchors.left: parent.left
+            anchors.leftMargin: (((parent.width)/4-width)/2) + (parent.width/4)*2
+            anchors.verticalCenter: parent.verticalCenter
 
             onClicked: {
                 root.StackView.view.push("qrc:/ProfilePage.qml")
@@ -149,14 +93,6 @@ Page{
 
         ToolButton {
             id: addcontactbutton
-            anchors.top: parent.top
-            anchors.right: profileiconbutton.left
-            anchors.rightMargin: pad_buttons
-            anchors.topMargin: (parent.height-height)/2
-            enabled: !(buttons_blocked)
-            height: buttons_size
-            width: buttons_size
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
 
             MouseArea{
                 anchors.fill: parent
@@ -164,41 +100,40 @@ Page{
                 acceptedButtons: addcontactbutton | backbutton
             }
 
-            Rectangle{
-                color: addcontactbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                height: icons_size
-                width: icons_size
-                anchors.fill: parent
-
-                Image {
-                    id: plusicon
-                    source: "icons/whiteplusicon.png"
-                    anchors.centerIn: parent
-                    height: icons_size
-                    width: icons_size
-                }
+            BorderImage {
+                id: plusicon
+                source: "icons/whiteplusicon.png"
+                height: 40
+                width: 40
             }
 
+            anchors.left: parent.left
+            anchors.leftMargin: (((parent.width)/4-width)/2) + (parent.width/4)*3
+            anchors.verticalCenter: parent.verticalCenter
             onClicked:{
                 root.StackView.view.push("qrc:/AddContactPage.qml")
             }
         }
+
+
     }
 
     ListView{
+
         id: contacts_view
         anchors.fill: parent
-        topMargin: 0
-        leftMargin: 0
-        bottomMargin: 0
-        rightMargin: 0
-        spacing: 0
+        topMargin: 15
+        leftMargin: 15
+        bottomMargin: 15
+        rightMargin: 15
+        spacing: 10
+        height: 80
         model: ContactModel
-        enabled: !(buttons_blocked)
-
         delegate: ItemDelegate {
-            width: root.width
-            height: contact_height
+
+            width: contacts_view.width - contacts_view.leftMargin - contacts_view.rightMargin
+            height: avatar.height + 15
+            leftPadding: avatar.implicitWidth + 32
 
             MouseArea{
                 anchors.fill: parent
@@ -207,115 +142,109 @@ Page{
             }
 
             Button{
-                id: avatar_button
-                anchors.top: parent.top
+                id: contactprofilebutton
+                height: 70
+                width: 70
                 anchors.left: parent.left
-                height: contact_height
-                width: avatar_container_width
-                enabled: !(buttons_blocked)
+                anchors.leftMargin: 6
+                anchors.verticalCenter: parent.verticalCenter
 
-                Rectangle{
-                    anchors.fill: parent
-                    color: "white"
-
-                    Image {
-                        id: avatar
-                        anchors.top: parent.top
-                        anchors.topMargin: avatar_top_pad
-                        anchors.left: parent.left
-                        anchors.leftMargin: avatar_right_pad
-                        height: avatar_image_size
-                        width: avatar_image_size
-                        source: model.modelData.avatar_path_gui
-                        fillMode: Image.PreserveAspectCrop
-                        layer.enabled: true
-                        layer.effect: OpacityMask {
-                            maskSource: mask
-                        }
-                    }
-
-                    Rectangle {
-                        id: mask
-                        height: avatar.height
-                        width: avatar.width
-                        radius: (avatar.height/2)
-                        visible: false
-                    }
+                Image {
+                    id: avatar
+                    height: contactprofilebutton.height
+                    width: contactprofilebutton.width
+                    anchors.centerIn: parent
+                    source: model.modelData.avatar_path_gui
+                    fillMode: Image.PreserveAspectCrop
                 }
-
 
                 MouseArea{
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: addcontactbutton | backbutton | avatar_button
+                    acceptedButtons: addcontactbutton | backbutton | contactprofilebutton
                 }
 
                 onClicked: {
                     main_frame.refreshContactGUI(model.modelData.username_gui)
-                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
-                                             {previous_page : "ContactPage"});
+                    root.StackView.view.push("qrc:/ContactProfilePage.qml", { model: model })
                 }
+
             }
 
             Label{
-                id: contactname_label
-                anchors.left: avatar_button.right
+                id: nametext
+                anchors.left: contactprofilebutton.right
+                anchors.leftMargin: 10
                 anchors.top: parent.top
-                anchors.topMargin: contactname_top_margin-height/2
+                anchors.topMargin: (parent.height/2 - height)/2
                 text: model.modelData.username_gui
                 font.bold: true
-                font.pixelSize: contactname_pixelsize
-                color: Constants.ContactPage.CONTACTNAME_COLOR
+                font.pixelSize: 15
+                color: "#206d75"
+            }
+
+            Label{
+                id: statustext
+                anchors.left: contactprofilebutton.right
+                anchors.leftMargin: 10
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin:(parent.height/2 - height)/2
+                text: (model.modelData.status_gui.length>20)?(model.modelData.status_gui.substr(0,19)+"..."):(model.modelData.status_gui)
+                font.pixelSize: 12
+                font.italic: true
+                color: "#626665"
+            }
+
+            Label{
+                id: lastmessagetext
+                anchors.right: parent.right
+                anchors.rightMargin: (messagesnotread.text == "0")?(15):(25+buttonmessagesnotread.width)
+                anchors.bottom:  parent.bottom
+                anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
+                text: (model.modelData.last_message_gui.length>20)?(model.modelData.last_message_gui.substr(0,19)+"..."):(model.modelData.last_message_gui)
+                font.pixelSize: 12
+                color: "#626665"
             }
 
             Label{
                 id: presencetext
                 anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
+                anchors.rightMargin: 15
                 anchors.top: parent.top
-                anchors.topMargin: contactname_label.anchors.topMargin+(contactname_label.font.pixelSize-font.pixelSize)
-                text: model.modelData.shortpresence_gui
-                font.pixelSize: presence_pixelsize
-                color: Constants.ContactPage.PRESENCE_COLOR
+                anchors.topMargin: (parent.height/2 - height)/2
+                color: "#626665"
+                text: model.modelData.presence_gui
+                horizontalAlignment: Text.AlignRight
+                font.pixelSize: 12
+
             }
 
             Label{
-                id: lastmessagetext
-                anchors.left: avatar_button.right
-                anchors.top:  parent.top
-                anchors.topMargin: lastmessage_top_margin-height/2
-                text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
-                font.pixelSize: lastmessage_pixelsize
-                font.bold: unread_label.has_unread_message
-                color: Constants.ContactPage.LASTMESSAGE_COLOR
-            }
-
-            Rectangle{
-                id: unread_container
+                visible: messagesnotread.text != "0"
+                id: buttonmessagesnotread
                 anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
-                anchors.top: lastmessagetext.top
-                anchors.topMargin: (lastmessagetext.height-height)/2
-                height: unread_container_pixelsize
-                width: unread_container_pixelsize
-                radius: width/2
-                color: Constants.ContactPage.UNREAD_CONTAINER_COLOR
-                visible: unread_label.has_unread_message
+                rightPadding: 30
+                anchors.rightMargin: 15
+                anchors.bottom:  parent.bottom
+                anchors.bottomMargin: (parent.height/2 - font.pixelSize)/2
 
-                Label{
-                    id: unread_label
-                    anchors.centerIn: parent
-                    rightPadding: 0
-                    leftPadding: 0
-                    topPadding: 0
-                    bottomPadding: 0
-                    font.bold: false
-                    font.pixelSize: unread_pixelsize
-                    text: model.modelData.unread_messages_gui
-                    color: Constants.ContactPage.UNREAD_TEXT_COLOR
+                background: Rectangle{
+                    implicitWidth: 10
+                    implicitHeight: 10
+                    anchors.rightMargin: 20
+                    color: "#206d75"
+                    border.color: "black"
+                    border.width: 0
+                    radius: 10
 
-                    property int surrounding_size       :   Math.max(height,width);
-                    property bool has_unread_message    :   (text!="0");
+                    Text{
+                        id: messagesnotread
+                        color: "white"
+                        anchors.centerIn: parent
+                        text: model.modelData.unread_messages_gui
+                        font.bold: true
+                    }
+
                 }
             }
 
@@ -327,41 +256,9 @@ Page{
 
             onPressAndHold: {
                 main_frame.refreshContactGUI(model.modelData.username_gui)
-                root.StackView.view.push("qrc:/ContactProfilePage.qml",
-                                         {previous_page : "ContactPage"});
+                root.StackView.view.push("qrc:/ContactProfilePage.qml")
             }
-
-            Rectangle{
-                id: separator
-                anchors.bottom: parent.bottom
-                anchors.left: avatar_button.right
-                anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
-                height: 1
-                color: "#DDDDDD"
-            }
-
-        }
-    }
-
-    Rectangle{
-        id: wait_box;
-        anchors.fill: parent
-        height: parent.height
-        width: parent.width
-        visible: false;
-        color: Qt.rgba(1,1,1,0.85);
-
-
-        AnimatedImage{
-            source: "icons/loading.gif"
-            width: 3*parent.width/8
-            height: 3*parent.width/8
-            anchors.left: parent.left
-            anchors.leftMargin: parent.width/2-width/2
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/2-height/2
-            fillMode: Image.PreserveAspectFit
         }
     }
 }
+

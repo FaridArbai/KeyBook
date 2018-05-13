@@ -10,7 +10,5 @@
         <file>ProfilePage.qml</file>
         <file>ContactProfilePage.qml</file>
         <file>AddGroupPage.qml</file>
-        <file>Constants.js</file>
-        <file>ImageProcessingPage.qml</file>
     </qresource>
 </RCC>
