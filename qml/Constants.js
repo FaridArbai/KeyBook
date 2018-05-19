@@ -1,13 +1,9 @@
 .pragma library
 
-//var TOOLBAR_COLOR           =   "#016c79";
 var TOOLBAR_COLOR           =   "#016479";
 var STATUSBAR_COLOR         =   "#014d60";
 var TOOLBAR_COLOR_2         =   "#0294bd";
 var GRADIENT_TOOLBAR_COLOR  =   "#017379";
-
-//var TOP_LOGIN_COLOR         =   "#1f5a7a";
-//var BOTTOM_LOGIN_COLOR      =   "#2f2753";
 
 var TOP_LOGIN_COLOR         =   "#1f5a7a";
 var BOTTOM_LOGIN_COLOR      =   "#0f808a";
@@ -43,11 +39,27 @@ var SIDE_FACTOR         =   (157/2880);
 var SPACING_FACTOR      =   (7/90);
 var ICON_FACTOR         =   (34/720);
 
+
+
 var MENU_COLOR          =   "#F3F3F3";
 var MENU_TRANSPARENCY   =   0xF9;
 var ZERO_TRANSPARENCY   =   0x00;
+var MENU_WIDTH_FACTOR   =   1/2;
+var MENU_RADIUS_FACTOR  =   1/32;
+
+var MENUITEM_PIXEL_FACTOR   =   28;
+var MENUITEM_HEIGHT_FACTOR  =   3;
+var MENUITEM_PRESSED_COLOR  =   "#10888888";
+
+var MENU_BORDERMARGIN_FACTOR    =   1/32;
+var MENU_VERTICALPAD_FACTOR     =   1/2;
+
+var MENU_ENABLED_THRESHOLD      =   0.05;
+var MENU_TRANSITIONS_DURATION   =   250;
 
 var MENUFONT_COLOR      =   "black";
+
+
 
 var IMAGEPROCESSING_MASK    =   "#80000000";
 var IMAGEPROCESSING_CANVAS_COLOR = "#40FFFFFF";
@@ -70,6 +82,7 @@ var ProfilePage = {
     TEXT_COLOR              :   "#707070",
     TEXTBOX_COLOR           :   "#F9FFFFFF",
     STATUS_MAXCHARS         :   115,
+    BUTTONS_BG_TRANSPARENCY :   "40",
 };
 
 
