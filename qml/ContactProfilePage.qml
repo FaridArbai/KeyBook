@@ -10,6 +10,8 @@ Page{
     property var statusbar_color    : contact.avatar_color_gui
     property string theme_color     : main.decToColor(statusbar_color);
 
+    property string previous_page;
+
     property int href   :   1135;
     property int wref   :   720;
     property int cref   :   715;
@@ -23,7 +25,7 @@ Page{
 
     property int remaining_height       :   root.height-root.width;
 
-    property int name_pixelsize         :  (70/href)*root.height;
+    property int name_pixelsize         :  (50/href)*root.height;
 
     property int statuscontainer_height :   (5/8)*remaining_height;
     property int statuscontainer_y      :   root.height-(root.width+(remaining_height-statuscontainer_height)/2);
@@ -39,35 +41,27 @@ Page{
 
     property int changestatusbutton_size    :   statustext_pixelsize;
 
-    property int shadow_offset      :   root.height/200;
 
+    property int general_shadow_offset      :   root.height/400;
+    property int relevant_shadow_offset     :   root.height/200;
 
-    property int separator_top_margin   :   statusdate_pixelsize
+    property int separator_top_margin   :   statusdate_pixelsize;
+    property int presence_pixelsize     :   statusdate_pixelsize;
     property int presence_top_margin    :   statustext_top_margin-(statusindicator_top_margin+statusindicator_pixelsize);
 
 
+    property int box_pixelsize  :   statusindicator_pixelsize;
+    property int box_height     :   3*box_pixelsize;
+    property int boxes_spacing  :   remaining_height/16;
+    property int box_top_margin :   box_pixelsize;
+    property int box_icon_size  :   (3/2)*box_pixelsize;
+    property int boxtext_left_margin    :   (3/2)*left_margin;
 
 
-
-    property int text_box_width      :   status_max_width + (root.width-status_max_width)/2;
-    property int text_box_height     :   statuscontainer_height;
-    property int text_box_radius     :   text_box_height/32;
-    property int text_box_y          :   (root.width-text_box_height)/2;
-    property int text_box_x          :   (root.width-text_box_width)/2;
-    property int text_box_buttons_height :   text_box_height/4;
-    property string text_box_buttons_bg    :   theme_color.replace("#FF",("#"+Constants.ProfilePage.BUTTONS_BG_TRANSPARENCY));
-
-    property int statusline_width           :   status_max_width;
-    property int statusline_height          :   (4/cref)*remaining_height;
-    property int statusline_top_margin      :   (1/4)*statustext_pixelsize;
-
-    property int text_box_maxchars_pixelsize    :   (3/4)*statustext_pixelsize;
-    property int text_box_maxchars_width        :   3*text_box_maxchars_pixelsize;
-
-
-    onStatusbar_colorChanged: {
-        main_frame.changeStatusbarColor(statusbar_color);
-    }
+    property int maz_z      :   10;
+    property int options_z  :   max_z;
+    property int toolbar_z  :   max_z-1;
+    property int image_z    :   max_z-2;
 
     Rectangle{
         id: background
@@ -83,7 +77,7 @@ Page{
         width: parent.width
         height: main.toolbar_height
         color: "transparent"
-        z: 1
+        z: toolbar_z
 
         ToolButton {
             id: backbutton
@@ -156,7 +150,7 @@ Page{
         opacity: a*(Constants.MENU_TRANSPARENCY/0xFF);
         visible: enabled;
         enabled: a>(Constants.MENU_ENABLED_THRESHOLD);
-        z: root.max_z;
+        z: root.options_z;
 
         property real a             :   0;
         property int n_items        :   4;
@@ -197,7 +191,7 @@ Page{
         }
 
         Button{
-            id: changeavatar_option
+            id: changelatchkey_option
             anchors.top: parent.top
             anchors.topMargin: a*options.vertical_pad
             anchors.left: parent.left
@@ -208,9 +202,9 @@ Page{
             property real a : options.a;
 
             background:Rectangle{
-                height: changeavatar_option.height
-                width: changeavatar_option.width
-                color: changeavatar_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
+                height: changelatchkey_option.height
+                width: changelatchkey_option.width
+                color: changelatchkey_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
             }
 
             Label{
@@ -226,12 +220,17 @@ Page{
             }
 
             onClicked: {
+                changelatchkey_option.action();
+            }
+
+            function action(){
+                //open text_box
             }
         }
 
         Button{
-            id: retouchavatar_option
-            anchors.top: changeavatar_option.bottom
+            id: conversation_option
+            anchors.top: changelatchkey_option.bottom
             anchors.left: parent.left
             height: a*options.item_height
             width: a*options.item_width
@@ -240,9 +239,9 @@ Page{
             property real a : options.a;
 
             background:Rectangle{
-                height: retouchavatar_option.height
-                width: retouchavatar_option.width
-                color: retouchavatar_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
+                height: conversation_option.height
+                width: conversation_option.width
+                color: conversation_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
             }
 
             Label{
@@ -257,13 +256,25 @@ Page{
                 opacity: parent.a
             }
 
-            onClicked:{
+            onClicked: {
+                conversation_option.action();
+            }
+
+            function action(){
+                if(root.previous_page=="ConversationPage"){
+                    root.StackView.view.pop();
+                }
+                else{
+                    main_frame.loadConversationWith(contact.username_gui)
+                    main_frame.refreshContactGUI(contact.username_gui);
+                    root.StackView.view.replace("qrc:/ConversationPage.qml");
+                }
             }
         }
 
         Button{
-            id: changestatus_option
-            anchors.top: retouchavatar_option.bottom
+            id: clear_option
+            anchors.top: conversation_option.bottom
             anchors.left: parent.left
             height: a*options.item_height
             width: a*options.item_width
@@ -272,9 +283,9 @@ Page{
             property real a : options.a;
 
             background:Rectangle{
-                height: changestatus_option.height
-                width: changestatus_option.width
-                color: changestatus_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
+                height: clear_option.height
+                width: clear_option.width
+                color: clear_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
             }
 
             Label{
@@ -289,13 +300,18 @@ Page{
                 opacity: parent.a
             }
 
-            onClicked:{
+            onClicked: {
+                clear_option.action();
+            }
+
+            function action(){
+                //clear_conversation
             }
         }
 
         Button{
-            id: managecontacts_option
-            anchors.top: changestatus_option.bottom
+            id: block_option
+            anchors.top: clear_option.bottom
             anchors.left: parent.left
             height: a*options.item_height
             width: a*options.item_width
@@ -304,9 +320,9 @@ Page{
             property real a : options.a;
 
             background:Rectangle{
-                height: managecontacts_option.height
-                width: managecontacts_option.width
-                color: managecontacts_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
+                height: block_option.height
+                width: block_option.width
+                color: block_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
             }
 
             Label{
@@ -321,9 +337,12 @@ Page{
                 opacity: parent.a
             }
 
-            onClicked:{
-                backbutton.action();
-                options.close();
+            onClicked: {
+                block_option.action();
+            }
+
+            function action(){
+                //open text_box
             }
         }
 
@@ -336,6 +355,7 @@ Page{
         width: parent.width
         height: parent.width
         color: "white"
+        z: image_z
 
         Image {
             id: profileimage
@@ -349,120 +369,475 @@ Page{
         DropShadow {
             anchors.fill: parent
             horizontalOffset: 0
-            verticalOffset: root.height/200
+            verticalOffset: relevant_shadow_offset
             radius: 2*(verticalOffset)
             samples: (2*radius+1)
             cached: true
             color: Constants.DROPSHADOW_COLOR
             source: profileimage
         }
+
+
+        Label {
+            id: nametext
+            anchors.left: parent.left
+            anchors.leftMargin: name_pixelsize/2
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: name_pixelsize/4
+            font.bold: true
+            font.pixelSize: name_pixelsize
+            text: contact.username_gui
+            color: "white"
+            background: Rectangle{color:"transparent"}
+        }
     }
 
-    Label {
-        id: nametext
-        anchors.left: parent.left
-        anchors.leftMargin: name_pixelsize/2
-        anchors.bottom: image_container.bottom
-        anchors.bottomMargin: name_pixelsize/4
-        font.bold: true
-        font.pixelSize: name_pixelsize
-        text: main_frame.getCurrentUsername()
-        color: "white"
-        background: Rectangle{color:"transparent"}
-    }
-
-    Rectangle{
-        id: status_container
+    ScrollView{
+        id: boxes_scroller
         anchors.top: image_container.bottom
-        anchors.topMargin: ((remaining_height-height)/2)
         anchors.left: parent.left
+        height: remaining_height
         width: root.width
-        color: "white"
+        background: Rectangle{color:"transparent"}
 
-        layer.enabled: true
-        layer.effect: DropShadow {
-            width: status_container.width
-            height: status_container.height
-            horizontalOffset: 0
-            verticalOffset: root.height/200
-            radius: 2*(verticalOffset)
-            samples: (2*radius+1)
-            cached: true
-            color: Constants.DROPSHADOW_COLOR
-            source: status_container
+        Column{
+            anchors.fill: parent
+            spacing: boxes_spacing
+
+            Rectangle{
+                id: status_container
+                width: root.width
+                height: status_container.computeHeight();
+                color: "white"
+
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    width: status_container.width
+                    height: status_container.height
+                    horizontalOffset: 0
+                    verticalOffset: general_shadow_offset
+                    radius: 2*(verticalOffset)
+                    samples: (2*radius+1)
+                    cached: true
+                    color: Constants.DROPSHADOW_COLOR
+                    source: status_container
+                }
+
+                Label{
+                    id: status_indicator
+                    anchors.top: parent.top
+                    anchors.topMargin: statusindicator_top_margin
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    padding: 0
+                    font.bold: false
+                    font.pixelSize: statusindicator_pixelsize
+                    color: root.theme_color
+                    text: "Status"
+                }
+
+                Label{
+                    id: status_text
+                    anchors.top: parent.top
+                    anchors.topMargin: statustext_top_margin
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    padding: 0
+                    font.bold: false
+                    font.pixelSize: statustext_pixelsize
+                    color: Constants.ProfilePage.TEXT_COLOR
+                    text:contact.status_gui
+                    width: status_max_width
+                    wrapMode: TextArea.Wrap
+                }
+
+                Label{
+                    id: status_date
+                    anchors.top: status_text.bottom
+                    anchors.topMargin: statustext_pixelsize/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    padding: 0
+                    font.bold: false
+                    font.pixelSize: statusdate_pixelsize
+                    color: Constants.ProfilePage.TEXT_COLOR
+                    opacity: 0.6
+                    text: "Updated " + contact.status_date_gui;
+                }
+
+                Rectangle{
+                    id: presence_separator
+                    anchors.top: status_date.bottom
+                    anchors.topMargin: separator_top_margin
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    height: 1
+                    width: status_max_width
+                    color: Constants.ContactPage.SEPARATORS_COLOR
+                }
+
+                Label{
+                    id: presence_text
+                    anchors.top: presence_separator.top
+                    anchors.topMargin: statustext_pixelsize
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    font.pixelSize: presence_pixelsize
+                    text: contact.presence_gui
+                    color: Constants.ProfilePage.TEXT_COLOR
+                    opacity: 0.6
+                }
+
+                function computeHeight(){
+                    var height =
+                            status_text.anchors.topMargin +
+                            status_text.height +
+                            status_date.anchors.topMargin +
+                            status_date.height +
+                            presence_separator.anchors.topMargin +
+                            presence_separator.height +
+                            presence_text.anchors.topMargin +
+                            presence_text.height +
+                            status_indicator.anchors.topMargin;
+
+                    return height;
+                }
+
+            }
+
+            Rectangle{
+                id: latchkeybutton_container
+                height: box_height
+                width: root.width
+                color: "white"
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    width: latchkeybutton_container.width
+                    height: latchkeybutton_container.height
+                    horizontalOffset: 0
+                    verticalOffset: general_shadow_offset
+                    radius: 2*(verticalOffset)
+                    samples: (2*radius+1)
+                    cached: true
+                    color: Constants.DROPSHADOW_COLOR
+                    source: latchkeybutton_container
+                }
+
+                OpacityMask{
+                    id: latchkey_icon
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    height: box_icon_size
+                    width: box_icon_size
+                    source: latchkeyicon_bg
+                    maskSource: latchkeyicon_mask
+                    visible: true
+
+                    Rectangle{
+                        id: latchkeyicon_bg
+                        height: parent.height
+                        width: parent.width
+                        color: theme_color
+                        visible: false
+                    }
+
+                    Image{
+                        id: latchkeyicon_mask
+                        height: parent.height
+                        width: parent.width
+                        source: "icons/whitehandkeyicon.png"
+                        visible: false
+                    }
+
+                }
+
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: latchkey_icon.right
+                    anchors.leftMargin: boxtext_left_margin/2
+                    height: box_icon_size
+                    width: 1
+                    color: theme_color
+                }
+
+                Label{
+                    anchors.top: parent.top
+                    anchors.topMargin: box_pixelsize
+                    anchors.left: latchkey_icon.right
+                    anchors.leftMargin: boxtext_left_margin
+                    padding: 0
+                    font.pixelSize: box_pixelsize
+                    text: "Change latchkey"
+                    color: root.theme_color
+                }
+
+                Button{
+                    id: latchkey_button
+                    anchors.fill: parent
+                    background: Rectangle{
+                        color: latchkey_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
+                    }
+
+                    onClicked:{
+                    }
+                }
+
+            }
+
+            Rectangle{
+                id: messagebutton_container
+                height: box_height
+                width: root.width
+                color: "white"
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    width: messagebutton_container.width
+                    height: messagebutton_container.height
+                    horizontalOffset: 0
+                    verticalOffset: general_shadow_offset
+                    radius: 2*(verticalOffset)
+                    samples: (2*radius+1)
+                    cached: true
+                    color: Constants.DROPSHADOW_COLOR
+                    source: messagebutton_container
+                }
+
+                OpacityMask{
+                    id: conversation_icon
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2-height/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    height: box_icon_size
+                    width: box_icon_size
+                    source: conversationicon_bg
+                    maskSource: conversationicon_mask
+                    visible: true
+
+                    Rectangle{
+                        id: conversationicon_bg
+                        height: parent.height
+                        width: parent.width
+                        color: theme_color
+                        visible: false
+                    }
+
+                    Image{
+                        id: conversationicon_mask
+                        height: parent.height
+                        width: parent.width
+                        source: "icons/whiteconversationicon.png"
+                        visible: false
+                    }
+
+                }
+
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: conversation_icon.right
+                    anchors.leftMargin: boxtext_left_margin/2
+                    height: box_icon_size
+                    width: 1
+                    color: theme_color
+                }
+
+                Label{
+                    anchors.top: parent.top
+                    anchors.topMargin: box_pixelsize
+                    anchors.left: conversation_icon.right
+                    anchors.leftMargin: boxtext_left_margin
+                    font.pixelSize: box_pixelsize
+                    padding: 0
+                    text: "Text contact"
+                    color: root.theme_color
+                }
+
+                Button{
+                    id: conversation_button
+                    anchors.fill: parent
+                    background: Rectangle{
+                        color: conversation_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
+                    }
+
+                    onClicked:{
+                        conversation_option.action();
+                    }
+                }
+            }
+
+            Rectangle{
+                id: clearbutton_container
+                height: box_height
+                width: root.width
+                color: "white"
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    width: clearbutton_container.width
+                    height: clearbutton_container.height
+                    horizontalOffset: 0
+                    verticalOffset: general_shadow_offset
+                    radius: 2*(verticalOffset)
+                    samples: (2*radius+1)
+                    cached: true
+                    color: Constants.DROPSHADOW_COLOR
+                    source: clearbutton_container
+                }
+
+                OpacityMask{
+                    id: clear_icon
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    height: box_icon_size
+                    width: box_icon_size
+                    source: clearicon_bg
+                    maskSource: clearicon_mask
+                    visible: true
+
+                    Rectangle{
+                        id: clearicon_bg
+                        height: parent.height
+                        width: parent.width
+                        color: theme_color
+                        visible: false
+                    }
+
+                    Image{
+                        id: clearicon_mask
+                        height: parent.height
+                        width: parent.width
+                        source: "icons/whitetrashicon.png"
+                        visible: false
+                    }
+
+                }
+
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: clear_icon.right
+                    anchors.leftMargin: boxtext_left_margin/2
+                    height: box_icon_size
+                    width: 1
+                    color: theme_color
+                }
+
+                Label{
+                    anchors.top: parent.top
+                    anchors.topMargin: box_pixelsize
+                    anchors.left: clear_icon.right
+                    anchors.leftMargin: boxtext_left_margin
+                    padding: 0
+                    font.pixelSize: box_pixelsize
+                    text: "Clear history"
+                    color: root.theme_color
+                }
+
+                Button{
+                    id: clear_button
+                    anchors.fill: parent
+                    background: Rectangle{
+                        color: clear_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
+                    }
+
+                    onClicked:{
+                    }
+                }
+
+            }
+
+            Rectangle{
+                id: blockbutton_container
+                height: box_height
+                width: root.width
+                color: "white"
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    width: blockbutton_container.width
+                    height: blockbutton_container.height
+                    horizontalOffset: 0
+                    verticalOffset: general_shadow_offset
+                    radius: 2*(verticalOffset)
+                    samples: (2*radius+1)
+                    cached: true
+                    color: Constants.DROPSHADOW_COLOR
+                    source: blockbutton_container
+                }
+
+                OpacityMask{
+                    id: block_icon
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: left_margin
+                    height: box_icon_size
+                    width: box_icon_size
+                    source: blockicon_bg
+                    maskSource: blockicon_mask
+                    visible: true
+
+                    Rectangle{
+                        id: blockicon_bg
+                        height: parent.height
+                        width: parent.width
+                        color: theme_color
+                        visible: false
+                    }
+
+                    Image{
+                        id: blockicon_mask
+                        height: parent.height
+                        width: parent.width
+                        source: "icons/whiteblockicon.png"
+                        visible: false
+                    }
+
+                }
+
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - height/2
+                    anchors.left: block_icon.right
+                    anchors.leftMargin: boxtext_left_margin/2
+                    height: box_icon_size
+                    width: 1
+                    color: theme_color
+                }
+
+                Label{
+                    anchors.top: parent.top
+                    anchors.topMargin: box_pixelsize
+                    anchors.left: block_icon.right
+                    anchors.leftMargin: boxtext_left_margin
+                    padding: 0
+                    font.pixelSize: box_pixelsize
+                    text: "Block contact"
+                    color: root.theme_color
+                }
+
+                Button{
+                    id: block_button
+                    anchors.fill: parent
+                    background: Rectangle{
+                        color: block_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
+                    }
+
+                    onClicked:{
+                    }
+                }
+
+            }
         }
-
-        Label{
-            id: status_indicator
-            anchors.top: parent.top
-            anchors.topMargin: statusindicator_top_margin
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin
-            padding: 0
-            font.bold: false
-            font.pixelSize: statusindicator_pixelsize
-            color: root.theme_color
-            text: "Status"
-        }
-
-        Label{
-            id: status_text
-            anchors.top: parent.top
-            anchors.topMargin: statustext_top_margin
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin
-            padding: 0
-            font.bold: false
-            font.pixelSize: statustext_pixelsize
-            color: Constants.ProfilePage.TEXT_COLOR
-            text:contact.status_gui
-            width: status_max_width
-            wrapMode: TextArea.Wrap
-        }
-
-        Label{
-            id: status_date
-            anchors.top: status_text.bottom
-            anchors.topMargin: statustext_pixelsize/2
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin
-            padding: 0
-            font.bold: false
-            font.pixelSize: statusdate_pixelsize
-            color: Constants.ProfilePage.TEXT_COLOR
-            opacity: 0.6
-            text: "Last updated " + contact.status_date_gui;
-        }
-
-        Rectangle{
-            id: presence_separator
-            anchors.top: status_date.bottom
-            anchors.topMargin: separator_top_margin
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin
-            height: 1
-            width: status_max_width
-            color: Constants.ContactPage.SEPARATORS_COLOR
-        }
-
-        Label{
-            id: presence_text
-            anchors.top: presence_separator.top
-            anchors.topMargin: statustext_pixelsize
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin
-            font.pixelSize: statustext_pixelsize
-            text: contact.presence_gui
-            color: Constants.ProfilePage.TEXT_COLOR
-        }
-
-        Rectangle{
-            anchors.top: presence_text.bottom
-            width: parent.width
-            height: statusindicator_top_margin
-            color: "transparent"
-        }
-
     }
 
 
