@@ -4,6 +4,7 @@
 #include "src/user_management/user.h"
 #include "src/user_management/presence.h"
 #include "src/user_management/message.h"
+#include "src/user_management/latchword.h"
 
 #include <QString>
 #include <QObject>
@@ -24,6 +25,7 @@ class Contact : public QObject, public User{
     Q_PROPERTY(QString last_message_gui READ getLastMessageGUI NOTIFY lastMessageChanged)
     Q_PROPERTY(QString username_gui READ getUsernameGUI CONSTANT)
     Q_PROPERTY(QString avatar_path_gui READ getAvatarPathGUI NOTIFY avatarChanged)
+    Q_PROPERTY(int avatar_color_gui READ getAvatarColorGUI NOTIFY avatarChanged)
     Q_PROPERTY(QString status_gui READ getStatusGUI NOTIFY statusChanged)
     Q_PROPERTY(QString status_date_gui READ getStatusDateGUI NOTIFY statusChanged)
 
@@ -35,7 +37,8 @@ public:
 
     Contact();
     Contact(string username, string status_text, string status_date,
-            string presence_text, string presence_date, Avatar avatar);
+            string presence_text, string presence_date, Avatar avatar,
+            string ptpkey);
     Contact(string code);
     Contact(const Contact& orig) = delete;
     virtual ~Contact();
@@ -60,6 +63,9 @@ public:
 
     void setUser(string user_code);
 
+    Latchword* getLatchword();
+    void setLatchword(Latchword latchword);
+
     QString getPresenceGUI();
     QString getShortPresenceGUI();
     QString getUnreadMessagesGUI();
@@ -73,6 +79,7 @@ public:
     QString getStatusGUI();
     QString getStatusDateGUI();
     QString getLastMessageGUI();
+    int getAvatarColorGUI();
 
     void pushMessage(string sender, string recipient, string date_str, string text);
 
@@ -93,6 +100,7 @@ private:
     int unread_messages;
     vector<Message*> messages;
     QList<QObject*> messages_gui;
+    Latchword latchword;
 
     string messagesToString();
 

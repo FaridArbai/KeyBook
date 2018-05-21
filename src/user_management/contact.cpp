@@ -19,12 +19,13 @@ Contact::~Contact(){
 }
 
 Contact::Contact(string username, string status_text, string status_date,
-        string presence_text, string presence_date, Avatar avatar) :
+        string presence_text, string presence_date, Avatar avatar, string ptpkey) :
     QObject::QObject(nullptr),
     User::User(username, status_text, status_date, avatar.getImagePath()){
 
     this->setPresence(presence_text, presence_date);
     this->setUnreadMessages(0);
+    this->setLatchword(Latchword(ptpkey));
 
 }
 
@@ -38,6 +39,7 @@ Contact::Contact(string code):
     string presence_code = "";
     string unread_messages_code = "";
     string messages_code;
+    string ptpkey;
 
     tmp_str = code;
 
@@ -71,6 +73,16 @@ Contact::Contact(string code):
     iF = pos_split;
     unread_messages_code = tmp_str.substr(i0,iF);
 
+    i0 = pos_split + 1;
+    iF = tmp_str.length() - i0;
+    tmp_str = tmp_str.substr(i0,iF);
+
+    pos_split = tmp_str.find(FIELDS_SEP);
+
+    i0 = 0;
+    iF = pos_split;
+    ptpkey = tmp_str.substr(i0,iF);
+
     i0 = pos_split+1;
     iF = tmp_str.length() - i0;
 
@@ -84,6 +96,7 @@ Contact::Contact(string code):
     User::setUser(user_code);
     this->setPresence(presence_code);
     this->setUnreadMessages(unread_messages_code);
+    this->setLatchword(Latchword(ptpkey));
     this->setMessages(messages_code);
 }
 
@@ -147,6 +160,7 @@ string Contact::toString(){
     code += User::toString() + FIELDS_SEP;
     code += presence_str + FIELDS_SEP;
     code += unread_messages_str + FIELDS_SEP;
+    code += this->getLatchword()->toString() + FIELDS_SEP;
     code += messages_str;
 
     return code;
@@ -257,6 +271,11 @@ QString Contact::getAvatarPathGUI(){
     return avatar_path_gui;
 }
 
+int Contact::getAvatarColorGUI(){
+    int avatar_color = this->getAvatar().getColor();
+    return avatar_color;
+}
+
 QString Contact::getStatusGUI(){
     string status = this->getStatus().getText();
     QString status_gui = QString::fromStdString(status);
@@ -265,7 +284,7 @@ QString Contact::getStatusGUI(){
 }
 
 QString Contact::getStatusDateGUI(){
-    string status_date = this->getStatus().getDate().toHumanReadable();
+    string status_date = this->getStatus().getDate().toShortlyHumanReadable();
     QString status_date_gui = QString::fromStdString(status_date);
 
     return status_date_gui;
@@ -284,11 +303,12 @@ QList<QObject*>& Contact::getMessagesGUI(){
     vector<Message*> messages = this->getMessages();
     int n_messages = messages.size();
     QObject* message;
+    Latchword* latchword = this->getLatchword();
 
     messages_list.reserve(messages.size());
 
     for(int i=0; i<n_messages; i++){
-        message = messages.at(i);
+        message = latchword->decrypt(messages.at(i));
         messages_list.insert(i,message);
     }
 
@@ -317,14 +337,22 @@ QString Contact::getLastMessageGUI(){
         last_message_gui = QString::fromStdString("");
     }
     else{
-        Message* last_message = this->messages.at(0);
+        Latchword* latchword = this->getLatchword();
+        Message* last_message_encr = this->messages.at(0);
+        Message* last_message = latchword->decrypt(last_message_encr);
         last_message_gui = last_message->getTextGUI();
     }
 
     return last_message_gui;
 }
 
+Latchword* Contact::getLatchword(){
+    return &(this->latchword);
+}
 
+void Contact::setLatchword(Latchword latchword){
+    this->latchword = latchword;
+}
 
 
 
