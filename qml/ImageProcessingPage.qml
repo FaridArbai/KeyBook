@@ -14,6 +14,8 @@ Page{
         color:"black";
     }
 
+    property var statusbar_color    :   0xFF000000;
+
     property string image_source;
 
     property int href   :   1135;
@@ -583,7 +585,6 @@ Page{
 
 
     function goBack(){
-        main_frame.changeStatusbarColor(Constants.CONTACTS_STATUSBAR_COLOR);
         root.StackView.view.pop();
     }
 }

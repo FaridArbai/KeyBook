@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.1
+import "Constants.js" as Constants
 
 Page {
 
@@ -25,11 +26,17 @@ Page {
                 acceptedButtons: backbutton | backbutton
             }
 
-            BorderImage {
-                id: backicon
-                source: "icons/whitebackicon.png"
-                height: 40
-                width: 40
+            Rectangle{
+                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+                height: Constants.TOOLBUTTON_SIZE
+                width: Constants.TOOLBUTTON_SIZE
+
+                Image {
+                    id: backicon
+                    source: "icons/whitebackicon.png"
+                    height: Constants.TOOLBUTTON_SIZE
+                    width: Constants.TOOLBUTTON_SIZE
+                }
             }
 
             anchors.left: parent.left
@@ -40,7 +47,7 @@ Page {
 
         Label {
             id: pageTitle
-            text: qsTr("Add group")
+            text: "Add group"
             color: "white"
             font.bold: true
             font.pixelSize: 25
@@ -49,7 +56,7 @@ Page {
     }
 
     Text{
-        text:qsTr("Building...")
+        text:"Building..."
         font.bold: true
         font.pixelSize: 70
         color: "#16323d"

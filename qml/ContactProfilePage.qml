@@ -861,7 +861,7 @@ Page{
 
     Rectangle{
         id: text_box
-        y: (1-a)*(latchkey_icon.y + boxes_scroller.y) + a*(text_box_y);
+        y: (1-a)*(latchkeybutton_container.y + boxes_scroller.y) + a*(text_box_y);
         x: (1-a)*latchkey_icon.x + a*(text_box_x);
         width: (1-a)*changestatusbutton_size + a*text_box_width
         height: (1-a)*changestatusbutton_size + a*text_box_height
