@@ -18,7 +18,7 @@ Page{
 
     property int max_z  :   5;
 
-    property int buttons_size           :   icons_size
+    property int buttons_size           :   2*icons_size
     property int icons_size             :   (34/wref)*root.width;
     property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
     property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
@@ -171,7 +171,7 @@ Page{
         z: root.options_z;
 
         property real a             :   0;
-        property int n_items        :   4;
+        property int n_items        :   3;
         property int pixelsize      :   (Constants.MENUITEM_PIXEL_FACTOR/root.href)*root.height;
         property int vertical_pad   :   (Constants.MENU_VERTICALPAD_FACTOR)*pixelsize;
         property int max_height     :   n_items*(Constants.MENUITEM_HEIGHT_FACTOR)*pixelsize + 2*vertical_pad;
@@ -326,44 +326,6 @@ Page{
                 //clear_conversation
             }
         }
-
-        Button{
-            id: block_option
-            anchors.top: clear_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: block_option.height
-                width: block_option.width
-                color: block_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Block contact"
-                opacity: parent.a
-            }
-
-            onClicked: {
-                block_option.action();
-            }
-
-            function action(){
-                //open text_box
-            }
-        }
-
     }
 
     Rectangle{
@@ -773,89 +735,6 @@ Page{
                 }
 
             }
-
-            Rectangle{
-                id: blockbutton_container
-                height: box_height
-                width: root.width
-                color: "white"
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    width: blockbutton_container.width
-                    height: blockbutton_container.height
-                    horizontalOffset: 0
-                    verticalOffset: general_shadow_offset
-                    radius: 2*(verticalOffset)
-                    samples: (2*radius+1)
-                    cached: true
-                    color: Constants.DROPSHADOW_COLOR
-                    source: blockbutton_container
-                }
-
-                OpacityMask{
-                    id: block_icon
-                    anchors.top: parent.top
-                    anchors.topMargin: parent.height/2 - height/2
-                    anchors.left: parent.left
-                    anchors.leftMargin: left_margin
-                    height: box_icon_size
-                    width: box_icon_size
-                    source: blockicon_bg
-                    maskSource: blockicon_mask
-                    visible: true
-
-                    Rectangle{
-                        id: blockicon_bg
-                        height: parent.height
-                        width: parent.width
-                        color: theme_color
-                        visible: false
-                    }
-
-                    Image{
-                        id: blockicon_mask
-                        height: parent.height
-                        width: parent.width
-                        source: "icons/whiteblockicon.png"
-                        visible: false
-                    }
-
-                }
-
-                Rectangle{
-                    anchors.top: parent.top
-                    anchors.topMargin: parent.height/2 - height/2
-                    anchors.left: block_icon.right
-                    anchors.leftMargin: boxtext_left_margin/2
-                    height: box_icon_size
-                    width: 1
-                    color: theme_color
-                }
-
-                Label{
-                    anchors.top: parent.top
-                    anchors.topMargin: box_pixelsize
-                    anchors.left: block_icon.right
-                    anchors.leftMargin: boxtext_left_margin
-                    padding: 0
-                    font.pixelSize: box_pixelsize
-                    text: "Block contact"
-                    color: root.theme_color
-                }
-
-                Button{
-                    id: block_button
-                    anchors.fill: parent
-                    background: Rectangle{
-                        color: block_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
-                    }
-
-                    onClicked:{
-                    }
-                }
-
-            }
         }
     }
 
@@ -934,7 +813,7 @@ Page{
             font.bold:  true
             font.pixelSize: statusindicator_pixelsize*text_box.a
             color: root.theme_color;
-            text: "Update status"
+            text: "Change point-to-point key"
         }
 
         Flickable{
@@ -952,7 +831,7 @@ Page{
                 width: new_status_container.width
                 font.bold: false
                 font.pixelSize: statustext_pixelsize*text_box.a
-                text: status_text.text
+                placeholderText: "Type new key here"
                 background: Rectangle{color:"transparent"}
 
                 onActiveFocusChanged: {
@@ -1054,6 +933,7 @@ Page{
 
             onClicked:{
                 main_frame.changePTPKeyOf(contact.username_gui, new_status.text);
+                text_box.close();
             }
         }
     }
