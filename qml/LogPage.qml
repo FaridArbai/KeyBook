@@ -516,6 +516,11 @@ Page{
         height: root.height-(root.log_height);
         color: "#000000";
     }
+
+    function goBack(){
+        console.log("LogPage goBack was called");
+        log_frame.closeApp();
+    }
 }
 
 
