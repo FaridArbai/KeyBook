@@ -65,6 +65,24 @@ Page {
 
     property bool menu_opened   :   (menu_factor>0.05);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function addTransparency(transparency,color){
         var has_one_character = transparency<=0x0F;
         var transparency_str = (has_one_character?("0"):("")) + transparency.toString(16);
@@ -127,8 +145,12 @@ Page {
             }
 
             onClicked:{
-                main_frame.finishCurrentConversation()
-                root.StackView.view.pop()
+                action();
+            }
+
+            function action(){
+                main_frame.finishCurrentConversation();
+                root.StackView.view.pop();
             }
         }
 
@@ -173,6 +195,10 @@ Page {
             }
 
             onClicked: {
+                action();
+            }
+
+            function action(){
                 main_frame.refreshContactGUI(contact.username_gui)
                 root.StackView.view.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ConversationPage"})
@@ -266,7 +292,7 @@ Page {
             z: 2
             radius: options_pixelsize/2
             color: menu_color
-            height: 4*(3*options_pixelsize) + options_pixelsize
+            height: 1*(3*options_pixelsize) + options_pixelsize
             width: menu_width
             enabled: false
 
@@ -299,103 +325,7 @@ Page {
                     anchors.fill: parent
                     background: Rectangle{color:"transparent"}
                     onClicked: {
-                        menu.hide();
-                    }
-                }
-            }
-
-            Rectangle{
-                id: changelatchkey_option
-                anchors.top: viewcontact_option.bottom
-                anchors.left: parent.left
-                width: menu_width
-                height: 3*options_pixelsize
-                color: "transparent"
-
-                Label{
-                    anchors.top: parent.top
-                    anchors.topMargin: options_pixelsize
-                    anchors.left: parent.left
-                    anchors.leftMargin: options_pixelsize
-                    topPadding: 0
-                    leftPadding: 0
-                    bottomPadding: 0
-                    rightPadding: 0
-                    font.pixelSize: options_pixelsize
-                    color: options_color
-                    text: "Change latchkey"
-                    visible: menu_opened
-                }
-
-                Button{
-                    anchors.fill: parent
-                    background: Rectangle{color:"transparent"}
-                    onClicked: {
-                        menu.hide();
-                    }
-                }
-            }
-
-            Rectangle{
-                id: clearconversation_option
-                anchors.top: changelatchkey_option.bottom
-                anchors.left: parent.left
-                width: menu_width
-                height: 3*options_pixelsize
-                color: "transparent"
-
-                Label{
-                    anchors.top: parent.top
-                    anchors.topMargin: options_pixelsize
-                    anchors.left: parent.left
-                    anchors.leftMargin: options_pixelsize
-                    topPadding: 0
-                    leftPadding: 0
-                    bottomPadding: 0
-                    rightPadding: 0
-                    font.pixelSize: options_pixelsize
-                    color: options_color
-                    text: "Clear conversation"
-                    visible: menu_opened
-                }
-
-                Button{
-                    anchors.fill: parent
-                    background: Rectangle{color:"transparent"}
-                    onClicked: {
-                        menu.hide();
-                    }
-                }
-            }
-
-            Rectangle{
-                id: blockcontact_option
-                anchors.top: clearconversation_option.bottom
-                anchors.left: parent.left
-                width: menu_width
-                height: 3*options_pixelsize
-                color: "transparent"
-
-                Label{
-                    anchors.top: parent.top
-                    anchors.topMargin: options_pixelsize
-                    anchors.left: parent.left
-                    anchors.leftMargin: options_pixelsize
-                    topPadding: 0
-                    leftPadding: 0
-                    bottomPadding: 0
-                    rightPadding: 0
-                    font.pixelSize: options_pixelsize
-                    color: options_color
-                    text: "Block contact"
-                    visible: menu_opened
-                }
-
-                Button{
-                    anchors.fill: parent
-                    background: Rectangle{color:"transparent"}
-                    onClicked: {
-                        menu.hide();
+                        avatar_button.action();
                     }
                 }
             }
@@ -488,21 +418,35 @@ Page {
                         anchors.right: sentByMe ? parent.right : undefined
 
                         Rectangle {
+                            id: message_box
                             width: Math.min(messageText.implicitWidth + (48/href)*root.height,
                                             listView.width - (!sentByMe ? messageRow.spacing : 0)
                                             )
                             height: messageText.implicitHeight + (48/href)*root.height
-                            color: sentByMe ? "#afe3e9" : "#107087"
+                            color: (model.modelData.reliability_gui ? (sentByMe ? "#afe3e9" : "#107087") : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
                             radius: (8/href)*root.height
 
                             Label {
                                 id: messageText
-                                text: model.modelData.text_gui
-                                color: sentByMe ? "black" : "white"
+                                text: (model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE)
+                                color: ((model.modelData.reliability_gui)?(sentByMe ? "black" : "white"):("white"))
                                 anchors.fill: parent
                                 anchors.margins: (24/href)*root.height
                                 wrapMode: Label.Wrap
                                 font.pixelSize: message_pixelsize
+                            }
+
+                            layer.enabled: true
+                            layer.effect: DropShadow{
+                                width: message_box.width
+                                height: message_box.height
+                                horizontalOffset: 0
+                                verticalOffset: 10
+                                radius: 2*verticalOffset
+                                samples: (2*radius+1)
+                                cached: true
+                                color: Constants.DROPSHADOW_COLOR
+                                source: message_box
                             }
                         }
                     }
@@ -519,6 +463,33 @@ Page {
                 ScrollBar.vertical: ScrollBar {}
             }
         }
+
+        /**
+                        Button{
+                            id: change_latchkey_button
+                            anchors.left: message_box.right
+                            anchors.top: message_box.top
+                            anchors.topMargin: (message_box.height - height)/2
+                            anchors.leftMargin: height/4
+                            height: message_box.height
+                            width: message_box.height
+                            visible: !model.modelData.reliability_gui
+                            enabled: !model.modelData.reliability_gui
+
+                            background: Rectangle{
+                                height: change_latchkey_button.height
+                                width: change_latchkey_button.width
+                                radius: width/2
+                                color: Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND
+                            }
+
+                            Image{
+                                anchors.fill: parent
+                                source: "icons/whitehandkeyicon.png"
+                                opacity: 0.8
+                            }
+                        }
+                        **/
     }
 
     Pane{
@@ -712,126 +683,11 @@ Page {
         to: menu_transparency_closed
         duration: 250
     }
+
+    function goBack(){
+        backbutton.action();
+    }
 }
 
 
-/**
-        Rectangle{
-            height: 60
-            width: 60
-            anchors.centerIn: parent
-            anchors.left: backbutton.right
-            anchors.leftMargin: 30
-            anchors.verticalCenter: parent.verticalCenter
-            color: "#206d75"
 
-            Image{
-                id: contactprofilebutton
-                height: 60
-                width: 60
-                anchors.centerIn: parent
-                anchors.left: backbutton.right
-                anchors.leftMargin: 30
-                anchors.verticalCenter: parent.verticalCenter
-                source: contact.avatar_path_gui
-                fillMode: Image.PreserveAspectCrop
-                layer.enabled: true
-                layer.effect: OpacityMask {
-                    maskSource: mask
-                }
-            }
-
-            Rectangle {
-                id: mask
-                height: contactprofilebutton.height
-                width: contactprofilebutton.width
-                radius: (contactprofilebutton.height/2)
-                visible: false
-            }
-        }
-
-            Menu {
-                id: menu
-                x: parent.width - width
-                width: menu_width
-                transformOrigin: Menu.TopRight
-                topPadding: background.radius
-                bottomPadding: background.radius
-
-                background: Rectangle{
-                    height: menu.height
-                    width: menu.width
-                    radius: options_pixelsize/2
-                    color: Constants.MENU_COLOR
-                }
-
-                MenuItem {
-                    bottomPadding: options_pixelsize
-                    leftPadding: options_pixelsize
-                    topPadding: options_pixelsize
-                    font.pixelSize: options_pixelsize
-                    text: "View contact"
-                    checkable: false
-                    background: Rectangle{color:"transparent"}
-                    onTriggered: {
-                        background.color = "transparent"
-                        menu.hide();
-                    }
-                }
-                MenuItem {
-                    bottomPadding: options_pixelsize
-                    leftPadding: options_pixelsize
-                    topPadding: options_pixelsize
-                    font.pixelSize: options_pixelsize
-                    text: "Change latchkey"
-                    background: Rectangle{color:"transparent"}
-                    onTriggered: {
-                        background.color = "transparent"
-                        menu.hide();
-                    }
-                }
-                MenuItem {
-                    bottomPadding: options_pixelsize
-                    leftPadding: options_pixelsize
-                    topPadding: options_pixelsize
-                    font.pixelSize: options_pixelsize
-                    text: "Clear conversation"
-                    background: Rectangle{color:"transparent"}
-                    onTriggered: {
-                        background.color = "transparent";
-                        menu.hide();
-                    }
-                }
-                MenuItem {
-                    bottomPadding: options_pixelsize
-                    leftPadding: options_pixelsize
-                    topPadding: options_pixelsize
-                    font.pixelSize: options_pixelsize
-                    text: "Block contact"
-                    background: Rectangle{color:"transparent"}
-                    onTriggered: {
-                        background.color = "transparent";
-                        menu.hide();
-                    }
-                }
-
-                onAboutToShow: {
-                    close_menu.running = false;
-                    close_options.running = false;
-                    clarify_menu.running = false;
-                    open_menu.running = true;
-                    open_options.running = true;
-                    colorize_menu.running = true;
-                }
-
-                function hide() {
-                    open_menu.running = false;
-                    open_options.running = false;
-                    colorize_menu.running = false;
-                    close_menu.running = true;
-                    close_options.running = true;
-                    clarify_menu.running = true;
-                    menu.close();
-                }
-            }
-**/
