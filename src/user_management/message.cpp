@@ -106,15 +106,13 @@ QString Message::getTextGUI(){
     return text_gui;
 }
 
-void Message::setSenderGUI(QString sender_gui){
+void Message::setReliability(bool reliable){
+    this->reliable = reliable;
 }
 
-void Message::setDateGUI(QString date_gui){
+bool Message::getReliability(){
+    return this->reliable;
 }
-
-void Message::setTextGUI(QString text_gui){
-}
-
 
 
 

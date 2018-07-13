@@ -15,6 +15,7 @@ class Message : public QObject{
     Q_PROPERTY(QString sender_gui READ getSenderGUI CONSTANT)
     Q_PROPERTY(QString date_gui READ getDateGUI CONSTANT)
     Q_PROPERTY(QString text_gui READ getTextGUI CONSTANT)
+    Q_PROPERTY(bool reliability_gui READ getReliability CONSTANT)
 public:
     static const string FIELDS_SEP;
     static const QString MODEL_NAME;
@@ -35,20 +36,17 @@ public:
     string getText() const;
     void setText(string text);
 
-    void setSenderGUI(QString sender_gui);
-    void setDateGUI(QString date_gui);
-    void setTextGUI(QString text_gui);
-
     QString getSenderGUI();
     QString getDateGUI();
     QString getTextGUI();
 
+    void setReliability(bool reliability);
+    bool getReliability();
 private:
     string sender;
     Date date;
     string text;
-
-
+    bool reliable;
 };
 
 #endif // MESSAGE_H
