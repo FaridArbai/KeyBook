@@ -3,7 +3,10 @@
 
 #include <string>
 #include <src/encryption_engines/symmetricengine.h>
+#include <src/encryption_engines/publicengine.h>
 #include <src/user_management/message.h>
+#include <src/user_management/signedtext.h>
+#include <QDebug>
 
 using namespace std;
 
@@ -17,7 +20,7 @@ public:
     void setPTPKey(string ptp_key);
 
     string encrypt(string message);
-    string decrypt(string encr);
+    SignedText decrypt(string& encr);
 
     Message* decrypt(Message* encr);
 
@@ -25,6 +28,7 @@ public:
 private:
     string ptp_key;
     SymmetricEngine ptp_engine;
+    static const string HASH_SEPARATOR;
 };
 
 #endif // LATCHWORD_H
