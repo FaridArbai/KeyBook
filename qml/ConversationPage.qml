@@ -39,7 +39,7 @@ Page {
     property int username_pixelsize     :   (32/href)*root.height;
     property int presence_pixelsize     :   (24/href)*root.height;
     property int message_pixelsize      :   (24/href)*root.height;
-    property int timestamp_pixelsize    :   (24/href)*root.height;
+    property int timestamp_pixelsize    :   (20/href)*root.height;
     property int textarea_pixelsize     :   (30/href)*root.height;
 
     property int options_pixelsize              :   0;
@@ -396,100 +396,113 @@ Page {
             anchors.fill: parent
 
             ListView {
-                id: listView
+                id: contacts_view
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.margins: messages_field_margin
                 displayMarginBeginning: 0
                 displayMarginEnd: 0
-                verticalLayoutDirection: ListView.BottomToTop
-                spacing: (24/href)*root.height
+                verticalLayoutDirection: ListView.TopToBottom
+                spacing: Constants.ConversationPage.Message.SEPARATION*root.height
                 model: MessageModel
 
-                delegate: Column {
-                    anchors.right: sentByMe ? parent.right : undefined
-                    spacing: (12/href)*root.height
+                delegate: Rectangle{
+                    width: root.width
+                    color: "transparent"
 
-                    readonly property bool sentByMe: (contact.username_gui !== model.modelData.sender_gui)
+                    readonly property bool mine: (contact.username_gui !== model.modelData.sender_gui)
+                    readonly property int border_pad    :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
+                    readonly property int text_pad      :   Constants.ConversationPage.Message.PAD_INNER*root.width;
+                    readonly property int min_sep       :   Constants.ConversationPage.Message.MIN_PAD*root.width;
+                    readonly property int time_pad      :   Constants.ConversationPage.Message.TIME_PAD*root.width;
+                    readonly property int max_width     :   root.width - border_pad - min_sep;
+                    readonly property int max_text_width        :   max_width - 2*text_pad;
+                    readonly property int messages_separation   :   Constants.ConversationPage.Message.SEPARATION*root.height;
+                    readonly property int timestamp_fits        :   (message.width - text_pad - time_pad - last_line_width) > ((5/4)*timestamp.paintedWidth)
+                    readonly property int last_line_width       :   (message_text_unwrapped.paintedWidth > messageText.paintedWidth)?(message_text_unwrapped.paintedWidth%messageText.paintedWidth):(messageText.paintedWidth);
 
-                    Row {
-                        id: messageRow
-                        spacing: (12/href)*root.height
-                        anchors.right: sentByMe ? parent.right : undefined
+                    Rectangle{
+                        id: new_day_box
+                        anchors.left: parent.left
+                        anchors.leftMargin: (parent.width - width)/2
+                        radius: Constants.ConversationPage.Message.RADIUS*root.height;
+                        color: "blue"
+                        visible: model.modelData.first_of_its_day_gui
+                        enabled: model.modelData.first_of_its_day_gui
 
-                        Rectangle {
-                            id: message_box
-                            width: Math.min(messageText.implicitWidth + (48/href)*root.height,
-                                            listView.width - (!sentByMe ? messageRow.spacing : 0)
-                                            )
-                            height: messageText.implicitHeight + (48/href)*root.height
-                            color: (model.modelData.reliability_gui ? (sentByMe ? "#afe3e9" : "#107087") : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
-                            radius: (8/href)*root.height
 
-                            Label {
-                                id: messageText
-                                text: (model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE)
-                                color: ((model.modelData.reliability_gui)?(sentByMe ? "black" : "white"):("white"))
-                                anchors.fill: parent
-                                anchors.margins: (24/href)*root.height
-                                wrapMode: Label.Wrap
-                                font.pixelSize: message_pixelsize
-                            }
-
-                            layer.enabled: true
-                            layer.effect: DropShadow{
-                                width: message_box.width
-                                height: message_box.height
-                                horizontalOffset: 0
-                                verticalOffset: 10
-                                radius: 2*verticalOffset
-                                samples: (2*radius+1)
-                                cached: true
-                                color: Constants.DROPSHADOW_COLOR
-                                source: message_box
-                            }
+                        Label{
+                            font.pixelSize: (model.modelData.first_of_its_day_gui)?message_pixelsize:0
+                            text: (model.modelData.first_of_its_day_gui)?"new_day":""
+                            visible: model.modelData.first_of_its_day_gui
+                            enabled: model.modelData.first_of_its_day_gui
                         }
                     }
 
-                    Label {
-                           id: timestampText
-                           text: model.modelData.date_gui
-                           color: "lightgrey"
-                           anchors.right: sentByMe ? parent.right : undefined
-                           font.pixelSize: timestamp_pixelsize
+                    Rectangle {
+                    id: message
+                    anchors.top: model.modelData.first_of_its_day_gui ? new_day_box.top : undefined
+                    anchors.topMargin: model.modelData.first_of_its_day_gui ? Constants.ConversationPage.Message.SEPARATION*root.height : undefined
+                    anchors.right: mine ? parent.right : undefined
+                    anchors.rightMargin: mine ? border_pad : 0
+                    anchors.leftMargin: mine ? 0 : border_pad
+                    width: Math.min(messageText.implicitWidth + 2*text_pad, max_width)
+                    height: messageText.height
+                    color: (model.modelData.reliability_gui ? (mine ? "#afe3e9" : "#107087") : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
+                    radius: Constants.ConversationPage.Message.RADIUS*root.height;
+                    layer.enabled: true
+                    layer.effect: DropShadow{
+                        width: message.width
+                        height: message.height
+                        horizontalOffset: 0
+                        verticalOffset: Math.round(messages_separation/2)
+                        radius: 2*verticalOffset
+                        samples: (2*radius+1)
+                        cached: true
+                        color: Constants.DROPSHADOW_COLOR
+                        source: message
                     }
+
+                    Label{
+                        id: messageText
+                        color: ((model.modelData.reliability_gui)?(mine ? "black" : "white"):("white"))
+                        anchors.left: parent.left
+                        padding: text_pad
+                        wrapMode: Label.Wrap
+                        width: max_text_width
+                        font.pixelSize: message_pixelsize
+                        text: ((model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE) + (timestamp_fits?(""):("\n")))
+                    }
+
+                    Label {
+                        id: timestamp
+                        color: "white"
+                        anchors.right: parent.right
+                        anchors.rightMargin: time_pad
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: time_pad
+                        font.pixelSize: timestamp_pixelsize
+                        text: model.modelData.timestamp_gui
+                    }
+
+                    Label{
+                        id: message_text_unwrapped
+                        color: ((model.modelData.reliability_gui)?(mine ? "black" : "white"):("white"))
+                        anchors.left: parent.left
+                        padding: text_pad
+                        wrapMode: Label.NoWrap
+                        width: max_text_width
+                        font.pixelSize: message_pixelsize
+                        text: ((model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE))
+                        visible: false
+                    }
+                }
                 }
 
                 ScrollBar.vertical: ScrollBar {}
             }
         }
 
-        /**
-                        Button{
-                            id: change_latchkey_button
-                            anchors.left: message_box.right
-                            anchors.top: message_box.top
-                            anchors.topMargin: (message_box.height - height)/2
-                            anchors.leftMargin: height/4
-                            height: message_box.height
-                            width: message_box.height
-                            visible: !model.modelData.reliability_gui
-                            enabled: !model.modelData.reliability_gui
-
-                            background: Rectangle{
-                                height: change_latchkey_button.height
-                                width: change_latchkey_button.width
-                                radius: width/2
-                                color: Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND
-                            }
-
-                            Image{
-                                anchors.fill: parent
-                                source: "icons/whitehandkeyicon.png"
-                                opacity: 0.8
-                            }
-                        }
-                        **/
     }
 
     Pane{
