@@ -36,7 +36,7 @@ var CONTACTS_STATUSBAR_COLOR    =   0xff014d60;
 var IMAGEPROCESSING_STATUSBAR_COLOR    =   0xFF000000;
 
 var SIDE_FACTOR         =   (157/2880);
-var SPACING_FACTOR      =   (7/90);
+var SPACING_FACTOR      =   (7/180);
 var ICON_FACTOR         =   (34/720);
 
 
@@ -87,7 +87,24 @@ var ProfilePage = {
 };
 
 
+var WREF = 720;
+var HREF = 1080;
 
+var ConversationPage = {
+    PERSONAL_MESSAGE_BACKGROUND :   "#AFE3E9",
+    CONTACT_MESSAGE_BACKGROUND  :   "#107087",
+    ERROR_MESSAGE_BACKGROUND    :   "#E53935",
+    ERROR_MESSAGE               :   "This message couldn't be decrypted correctly. Please change this contact latchkey.",
+
+    Message : {
+        MIN_PAD     :   114/WREF,
+        PAD_OUTTER  :   36/WREF,
+        PAD_INNER   :   20/WREF,
+        RADIUS      :   8/HREF,
+        TIME_PAD    :   14/WREF,
+        SEPARATION  :   5/HREF,
+    }
+};
 
 
 
