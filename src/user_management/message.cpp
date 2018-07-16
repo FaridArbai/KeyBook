@@ -4,13 +4,16 @@ const string Message::FIELDS_SEP = "\n";
 const QString Message::MODEL_NAME = QString::fromStdString("MessageModel");
 
 Message::Message() : QObject::QObject(nullptr){
-
+    this->setFirstOfGroup(false);
+    this->setFirstOfItsDay(false);
 }
 
 Message::Message(string sender, string date_str, string text):QObject::QObject(nullptr){
     this->setSender(sender);
     this->setDate(date_str);
     this->setText(text);
+    this->setFirstOfGroup(false);
+    this->setFirstOfItsDay(false);
 }
 
 Message::Message(string code):QObject::QObject(nullptr){
@@ -94,10 +97,20 @@ QString Message::getSenderGUI(){
 }
 
 QString Message::getDateGUI(){
-    string date = this->getDate().toHumanReadable();
+    string date = this->getDate().toShortlyHumanReadable();
 
     QString date_gui = QString::fromStdString(date);
     return date_gui;
+}
+
+QString Message::getTimestampGUI(){
+    string hour = this->getDate().getHour();
+    string minute = this->getDate().getMinute();
+
+    string timestamp = hour + ":" + minute;
+
+    QString timestamp_gui = QString::fromStdString(timestamp);
+    return timestamp_gui;
 }
 
 QString Message::getTextGUI(){
@@ -114,13 +127,37 @@ bool Message::getReliability(){
     return this->reliable;
 }
 
+void Message::setFirstOfItsDay(bool first){
+    this->first_of_its_day = first;
+}
 
+void Message::setFirstOfGroup(bool first){
+    this->first_of_group = first;
+}
 
+bool Message::isFirstOfItsDay(){
+    return this->first_of_its_day;
+}
 
+bool Message::isFirstOfGroup(){
+    return this->first_of_group;
+}
 
+void Message::setFirstOfGroup(Message* previous){
+    string previous_sender = previous->getSender();
+    string my_sender = this->getSender();
+    bool first_of_group = (my_sender!=previous_sender);
 
+    this->setFirstOfGroup(first_of_group);
+}
 
+void Message::setFirstOfItsDay(Message* previous){
+    Date previous_date = previous->getDate();
+    int diff_days = this->getDate().difference(previous_date);
+    bool first_of_the_day = (diff_days!=0);
 
+    this->setFirstOfItsDay(first_of_the_day);
+}
 
 
 
