@@ -16,7 +16,7 @@ Page {
 
     property int send_button_size       :   (1/8)*root.width;
 
-    property int send_field_margin      :   (1/32)*root.width;
+    property int send_field_margin      :   (Constants.ConversationPage.SEND_FIELD_MARGIN)*root.height;
     property int messages_field_margin  :   (1/16)*root.width;
 
     property int send_field_height      :   send_button_size + 2*send_field_margin;
@@ -66,21 +66,19 @@ Page {
     property bool menu_opened   :   (menu_factor>0.05);
 
 
+    background: Rectangle{
+        color:"#F2F2F2"
+        width: root.width
+        height: root.height
+        z: -1000
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        Image{
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            source: "backgrounds/chatbackground.png"
+            opacity: 0.2
+        }
+    }
 
 
     function addTransparency(transparency,color){
@@ -108,6 +106,18 @@ Page {
         topPadding: 0
         bottomPadding: 0
 
+        layer.enabled: true
+        layer.effect: DropShadow{
+            width: toolbar.width
+            height: toolbar.height
+            horizontalOffset: 0
+            verticalOffset: 5
+            radius: 2*verticalOffset
+            samples: (2*radius+1)
+            cached: true
+            color: Constants.DROPSHADOW_COLOR
+            source: toolbar
+        }
 
         Rectangle{
             anchors.fill: parent
@@ -385,77 +395,117 @@ Page {
     Rectangle{
         id: messages_container
         anchors.top: parent.top
-        //anchors.topMargin: toolbar.height
         anchors.left: parent.left
+        anchors.leftMargin: messages_field_margin/4
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: send_field_height
+        anchors.rightMargin: messages_field_margin/4
+        anchors.bottom: pane.top
+        color: "transparent"
 
-        ColumnLayout{
-            id: messages_layout
+        ListView {
+            id: contacts_view
             anchors.fill: parent
+            bottomMargin: (8/href)*root.height
+            displayMarginBeginning: 0
+            displayMarginEnd: 0
+            verticalLayoutDirection: ListView.BottomToTop
+            spacing: Constants.ConversationPage.Message.SEPARATION*root.height
+            model: MessageModel
+            clip: true
 
-            ListView {
-                id: contacts_view
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.margins: messages_field_margin
-                displayMarginBeginning: 0
-                displayMarginEnd: 0
-                verticalLayoutDirection: ListView.TopToBottom
-                spacing: Constants.ConversationPage.Message.SEPARATION*root.height
-                model: MessageModel
+            delegate: Rectangle{
+                width: contacts_view.width
+                height: new_day ? (new_day_box.height + message.height + new_day_box.anchors.topMargin + message.anchors.topMargin) : (message.height + message.anchors.topMargin)
+                color: "transparent"
 
-                delegate: Rectangle{
-                    width: root.width
-                    color: "transparent"
+                readonly property bool new_day          : model.modelData.first_of_its_day_gui;
+                readonly property bool first_of_group   : model.modelData.first_of_group_gui;
+                readonly property bool mine             : (contact.username_gui !== model.modelData.sender_gui)
+                readonly property int border_pad    :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
+                readonly property int text_pad      :   Constants.ConversationPage.Message.PAD_INNER*root.width;
+                readonly property int min_sep       :   Constants.ConversationPage.Message.MIN_PAD*root.width;
+                readonly property int time_pad      :   Constants.ConversationPage.Message.TIME_PAD*root.width;
 
-                    readonly property bool mine: (contact.username_gui !== model.modelData.sender_gui)
-                    readonly property int border_pad    :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
-                    readonly property int text_pad      :   Constants.ConversationPage.Message.PAD_INNER*root.width;
-                    readonly property int min_sep       :   Constants.ConversationPage.Message.MIN_PAD*root.width;
-                    readonly property int time_pad      :   Constants.ConversationPage.Message.TIME_PAD*root.width;
-                    readonly property int max_width     :   root.width - border_pad - min_sep;
-                    readonly property int max_text_width        :   max_width - 2*text_pad;
-                    readonly property int messages_separation   :   Constants.ConversationPage.Message.SEPARATION*root.height;
-                    readonly property int timestamp_fits        :   (message.width - text_pad - time_pad - last_line_width) > ((5/4)*timestamp.paintedWidth)
-                    readonly property int last_line_width       :   (message_text_unwrapped.paintedWidth > messageText.paintedWidth)?(message_text_unwrapped.paintedWidth%messageText.paintedWidth):(messageText.paintedWidth);
+                readonly property int max_width             :   contacts_view.width - border_pad - min_sep;
 
-                    Rectangle{
-                        id: new_day_box
-                        anchors.left: parent.left
-                        anchors.leftMargin: (parent.width - width)/2
-                        radius: Constants.ConversationPage.Message.RADIUS*root.height;
-                        color: "blue"
-                        visible: model.modelData.first_of_its_day_gui
-                        enabled: model.modelData.first_of_its_day_gui
+                readonly property int max_text_width        :   max_width;
+
+                readonly property int messages_separation   :   Constants.ConversationPage.Message.SEPARATION*root.height;
+                readonly property int timestamp_fits        :   (message.width - text_pad -  last_line_width) > (timestamp.paintedWidth)
 
 
-                        Label{
-                            font.pixelSize: (model.modelData.first_of_its_day_gui)?message_pixelsize:0
-                            text: (model.modelData.first_of_its_day_gui)?"new_day":""
-                            visible: model.modelData.first_of_its_day_gui
-                            enabled: model.modelData.first_of_its_day_gui
-                        }
+                readonly property int last_line_width       :   (message_text_unwrapped.paintedWidth > message_text.paintedWidth)?(message_text_unwrapped.paintedWidth%message_text.paintedWidth):(message_text.paintedWidth);
+
+
+
+
+
+                readonly property int box_radius            :   Constants.ConversationPage.Message.RADIUS*root.height;
+
+                readonly property int new_day_pad           :   Constants.ConversationPage.Message.NEW_DAY_VPAD*root.height;
+                readonly property int first_of_group_separation :   Constants.ConversationPage.Message.FIRST_OF_GROUP_SEPARATION*root.height;
+
+                readonly property int bubble_width  :   Constants.ConversationPage.Message.BUBBLE_WIDTH*root.height;
+                readonly property int bubble_height :   Constants.ConversationPage.Message.BUBBLE_HEIGHT*root.height;
+
+
+                Rectangle{
+                    id: new_day_box
+                    anchors.top: parent.top
+                    anchors.topMargin: new_day ? (new_day_pad - contacts_view.spacing):0
+                    anchors.left: parent.left
+                    anchors.leftMargin: (parent.width - width)/2
+                    width: new_day ? new_day_text.width : 0
+                    height: new_day ? new_day_text.height : 0
+                    radius: box_radius
+                    color: Constants.ConversationPage.NEW_DAY_BACKGROUND
+                    visible: new_day
+                    enabled: new_day
+                    layer.enabled: true
+                    layer.effect: DropShadow{
+                        source: new_day_box
+                        width: source.width
+                        height: source.height
+                        horizontalOffset: 0
+                        verticalOffset: Math.round(messages_separation/4)
+                        radius: 2*verticalOffset
+                        samples: (2*radius+1)
+                        cached: true
+                        color: Constants.DROPSHADOW_COLOR
                     }
 
-                    Rectangle {
+                    Label{
+                        id: new_day_text
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        padding: text_pad
+                        font.pixelSize: (new_day)?message_pixelsize:0
+                        color: "black"
+                        text: (new_day)?"JUL 15, 2018":""
+                        visible: new_day
+                        enabled: new_day
+                        opacity: 0.7
+                    }
+                }
+
+                Rectangle {
                     id: message
-                    anchors.top: model.modelData.first_of_its_day_gui ? new_day_box.top : undefined
-                    anchors.topMargin: model.modelData.first_of_its_day_gui ? Constants.ConversationPage.Message.SEPARATION*root.height : undefined
+                    anchors.top: new_day_box.bottom
+                    anchors.topMargin: ((new_day)?(new_day_pad):((first_of_group?(first_of_group_separation):(0))))
                     anchors.right: mine ? parent.right : undefined
+                    anchors.left: mine ? undefined : parent.left
                     anchors.rightMargin: mine ? border_pad : 0
                     anchors.leftMargin: mine ? 0 : border_pad
-                    width: Math.min(messageText.implicitWidth + 2*text_pad, max_width)
-                    height: messageText.height
-                    color: (model.modelData.reliability_gui ? (mine ? "#afe3e9" : "#107087") : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
+                    width: Math.min(Math.max(message_text.implicitWidth, timestamp.implicitWidth), max_width)
+                    height: message_text.height
+                    color: (model.modelData.reliability_gui ? (mine ? Constants.ConversationPage.PERSONAL_MESSAGE_BACKGROUND : Constants.ConversationPage.CONTACT_MESSAGE_BACKGROUND) : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
                     radius: Constants.ConversationPage.Message.RADIUS*root.height;
                     layer.enabled: true
                     layer.effect: DropShadow{
                         width: message.width
                         height: message.height
                         horizontalOffset: 0
-                        verticalOffset: Math.round(messages_separation/2)
+                        verticalOffset: Math.round(messages_separation/4)
                         radius: 2*verticalOffset
                         samples: (2*radius+1)
                         cached: true
@@ -464,23 +514,24 @@ Page {
                     }
 
                     Label{
-                        id: messageText
-                        color: ((model.modelData.reliability_gui)?(mine ? "black" : "white"):("white"))
+                        id: message_text
+                        color: ((model.modelData.reliability_gui)?("black"):("white"))
                         anchors.left: parent.left
                         padding: text_pad
                         wrapMode: Label.Wrap
                         width: max_text_width
+                        height: timestamp_fits ? implicitHeight : implicitHeight + font.pixelSize
                         font.pixelSize: message_pixelsize
-                        text: ((model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE) + (timestamp_fits?(""):("\n")))
+                        text: ((model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE))
                     }
 
                     Label {
                         id: timestamp
-                        color: "white"
+                        color: "black"
+                        opacity: 0.56
                         anchors.right: parent.right
-                        anchors.rightMargin: time_pad
                         anchors.bottom: parent.bottom
-                        anchors.bottomMargin: time_pad
+                        padding: time_pad
                         font.pixelSize: timestamp_pixelsize
                         text: model.modelData.timestamp_gui
                     }
@@ -497,30 +548,74 @@ Page {
                         visible: false
                     }
                 }
+
+                Rectangle{
+                    id: arrow
+                    width: message.radius - 1
+                    height: bubble_height
+                    color: message.color
+                    anchors.right: mine ? message.right : undefined
+                    anchors.left: mine ? undefined : message.left
+                    anchors.top: message.top
+                    visible: (first_of_group || new_day)
+                    z: bubble.z + 1
                 }
 
-                ScrollBar.vertical: ScrollBar {}
+                OpacityMask{
+                    id: bubble
+                    width: bubble_width
+                    height: bubble_height
+                    anchors.top: arrow.top
+                    anchors.left: mine ? arrow.right : undefined
+                    anchors.leftMargin: mine ? -1 : undefined
+                    anchors.right: mine ? undefined : arrow.left
+                    anchors.rightMargin: mine ? undefined : -1
+                    source: bubble_bg
+                    maskSource: bubble_image
+                    visible: (first_of_group || new_day)
+
+                    layer.enabled: true
+                    layer.effect: DropShadow{
+                        source: bubble
+                        width: source.width
+                        height: source.height
+                        horizontalOffset: 0
+                        verticalOffset: 2
+                        radius: 2*verticalOffset
+                        samples: (2*radius+1)
+                        cached: true
+                        color: Constants.DROPSHADOW_COLOR
+                    }
+
+                    Image{
+                        id: bubble_image
+                        anchors.fill: parent
+                        source: mine ? "icons/whitebubblemineicon.png" : "icons/whitebubbleicon.png"
+                        visible: false
+                    }
+
+                    Rectangle{
+                        id: bubble_bg
+                        anchors.fill: parent
+                        color: message.color
+                        visible: false
+                    }
+
+                }
             }
+
+            ScrollBar.vertical: ScrollBar {}
         }
 
     }
 
-    Pane{
+    Rectangle{
         id: pane
-        anchors.top: messages_container.bottom
-        anchors.right: parent.right
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        //height: send_field_height
-        //width: parent.width
-        contentHeight: send_field_height
-        contentWidth: parent.width
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        leftPadding: 0
-        rightPadding: 0
-        topPadding: 0
-        bottomPadding: 0
+        height: send_field_height
+        width: parent.width
+        color:"transparent"
 
         Rectangle{
             id: message_field_container
@@ -532,10 +627,22 @@ Page {
             anchors.leftMargin: send_field_margin
             //height: send_button_size
             width: text_area_width
-            color: "#d7f1f4"
+            color: "white"
             Layout.fillWidth: true
             Layout.fillHeight: true
             radius: height/2
+            layer.enabled: true
+            layer.effect: DropShadow{
+                source: message_field_container
+                width: source.width
+                height: source.height
+                horizontalOffset: 0
+                verticalOffset: 5
+                radius: 2*verticalOffset
+                samples: (2*radius+1)
+                cached: true
+                color: Constants.DROPSHADOW_COLOR
+            }
         }
 
         Flickable{
@@ -589,9 +696,20 @@ Page {
             anchors.rightMargin: send_field_margin
             //height: send_button_size
             //width: send_button_size
-            color: "transparent"
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            color: Constants.ConversationPage.SENDBUTTON_COLOR
+            radius: width/2
+            layer.enabled: true
+            layer.effect: DropShadow{
+                source: send_button_container
+                width: source.width
+                height: source.height
+                horizontalOffset: 0
+                verticalOffset: 5
+                radius: 2*verticalOffset
+                samples: (2*radius+1)
+                cached: true
+                color: Constants.DROPSHADOW_COLOR
+            }
 
             ToolButton{
                 id: send_button
@@ -611,9 +729,12 @@ Page {
 
                 Image {
                     id: sendicon
-                    anchors.fill: parent
+                    anchors.centerIn: parent
+                    width: 0.66*(parent.width/Math.sqrt(2))
+                    height: 0.66*(parent.width/Math.sqrt(2))
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitesendicon.png"
+                    opacity: 0.7
                 }
 
                 onClicked:{
