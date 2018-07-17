@@ -74,6 +74,9 @@ public:
     void notifyUserLoaded();
     QWaitCondition* getUserLoadedCondition();
 
+    static void showProgressDialog(std::string message);
+    static void dismissProgressDialog();
+
     Q_INVOKABLE void loadConversationWith(QString contact_name);
     Q_INVOKABLE void finishCurrentConversation();
 
@@ -126,7 +129,7 @@ signals:
 
 private:
     static const int WAIT_THRESHOLD_SEC;
-    PrivateUser* user;
+    PrivateUser* user = nullptr;
     bool user_is_loaded = false;
     QWaitCondition USER_LOADED;
     QQmlContext** context_ptr;
@@ -153,10 +156,19 @@ private:
     int getNumberOfDelegateThreads();
     void changeNumberOfDelegateThreads(int delta);
 
+
+    QWaitCondition ASYNC_CHANGED;
+    void changeNumberOfAsyncThreads(int delta);
+    QMutex async_mutex;
+    int n_async_threads=0;
+    int getNumberOfAsyncThreads();
+
+
     void sendAvatarImpl();
     void addContactImpl(QString entered_username);
     void logOutUserImpl();
     void notifyThreshold();
+    void updateUserStatusNet(PM_updateStatus update);
 
     void setStatusbarHeight(int statusbar_height);
     void setNavigationbarHeight(int navigationbar_height);
