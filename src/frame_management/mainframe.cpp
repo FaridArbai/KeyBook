@@ -30,7 +30,6 @@ void MainFrame::addContact(QString entered_username){
 }
 
 void MainFrame::addContactImpl(QString entered_username){
-    this->changeNumberOfDelegateThreads(1);
     string username = entered_username.toStdString();
     string this_username = this->user->getUsername();
     bool result;
@@ -44,12 +43,15 @@ void MainFrame::addContactImpl(QString entered_username){
     if(username==this_username){
         result = false;
         err_msg = "You cannot add yourself as a contact";
+        //dialog
     }
     else if (is_already_a_contact){
         result = false;
         err_msg = username + " is already in your contact list";
+        //dialog
     }
     else{
+        MainFrame::showProgressDialog("Adding contact");
         PM_addContactReq add_req(this->user->getUsername(), username);
         ProtocolMessage* add_rep;
 
@@ -57,16 +59,17 @@ void MainFrame::addContactImpl(QString entered_username){
 
         result = ((PM_addContactRep*)add_rep)->getResult();
 
+        MainFrame::dismissProgressDialog();
         if(result==true){
             this->current_add_rep = add_rep;
             emit this->receivedRequestedContact();
+            //dialog
         }
         else{
             err_msg = ((PM_addContactRep*)add_rep)->getErrMsg();
+            //dialog
         }
     }
-
-    this->changeNumberOfDelegateThreads(-1);
 
     if(result==false){
         emit finishedAddingContact(result, QString::fromStdString(err_msg));
@@ -96,16 +99,23 @@ void MainFrame::addRequestedContact(QString entered_username, QString entered_pt
 void MainFrame::updateUserStatus(QString entered_status){
     string status_text = entered_status.toStdString();
     this->user->updateStatus(status_text);
-    string username = this->user->getUsername();
-    PM_updateStatus::StatusType update_type = PM_updateStatus::StatusType::status;
-    PM_updateStatus update = PM_updateStatus(username, update_type, status_text);
-
-    this->request_handler->sendTrap(&update);
 
     QString new_status_gui = entered_status;
     QString new_date_gui = QString::fromStdString(this->user->getStatus().getDate().toShortlyHumanReadable());
 
     emit statusChanged(new_status_gui, new_date_gui);
+
+    string username = this->user->getUsername();
+    PM_updateStatus::StatusType update_type = PM_updateStatus::StatusType::status;
+    PM_updateStatus update = PM_updateStatus(username, update_type, status_text);
+
+    this->updateUserStatusNet(update);
+}
+
+void MainFrame::updateUserStatusNet(PM_updateStatus update){
+    this->changeNumberOfAsyncThreads(1);
+    this->request_handler->sendTrap(&update);
+    this->changeNumberOfAsyncThreads(-1);
 }
 
 PrivateUser* MainFrame::getPrivateUser() const{
@@ -136,17 +146,33 @@ void MainFrame::setContext(QQmlContext** context_ptr){
 
 void MainFrame::logOutUser(){
     QFuture<void> future = QtConcurrent::run(this,&MainFrame::logOutUserImpl);
-    QFuture<void> time_notifier = QtConcurrent::run(this,&MainFrame::notifyThreshold);
 }
 
 void MainFrame::logOutUserImpl(){
     bool is_loaded = this->userIsLoaded();
+    qDebug() << "SERVER STARTS LOG OUT" << endl;
+    this->showProgressDialog("Logging out");
 
     if(is_loaded){
+        int n_async_threads = this->getNumberOfAsyncThreads();
+        QMutex mtx;
+
+        qDebug() << n_async_threads << endl;
+
+        while(n_async_threads>0){
+            mtx.lock();
+            this->ASYNC_CHANGED.wait(&mtx);
+            mtx.unlock();
+
+            n_async_threads = this->getNumberOfAsyncThreads();
+        }
+
         PM_logOutReq log_out_req = PM_logOutReq();
         ProtocolMessage* log_out_rep;
 
+        qDebug() << "SERVER SENDS LOG OUT REQ" << endl;
         log_out_rep = this->request_handler->recvResponseFor(&log_out_req);
+        qDebug() << "SERVER RECEIVES LOG OUT REP" << endl;
 
         delete log_out_rep;
 
@@ -157,6 +183,7 @@ void MainFrame::logOutUserImpl(){
         this->user = nullptr;
     }
     emit this->logOut();
+    this->dismissProgressDialog();
 }
 
 QString MainFrame::getCurrentUsername(){
@@ -302,21 +329,39 @@ void MainFrame::updateImagePath(QString entered_image_path){
 }
 
 void MainFrame::sendAvatar(){
+    this->changeNumberOfAsyncThreads(1);
     QFuture<void> future = QtConcurrent::run(this,&MainFrame::sendAvatarImpl);
-    QFuture<void> time_notifier = QtConcurrent::run(this,&MainFrame::notifyThreshold);
 }
 
 void MainFrame::sendAvatarImpl(){
-    this->changeNumberOfDelegateThreads(1);
     Avatar new_avatar = this->getPrivateUser()->getAvatar();
     string username = this->getPrivateUser()->getUsername();
     PM_updateStatus update_avatar(username,new_avatar);
 
     this->getRequestHandler()->sendTrap(&update_avatar);
-    this->changeNumberOfDelegateThreads(-1);
 
-    emit this->finishedUploadingImage();
+    this->changeNumberOfAsyncThreads(-1);
 }
+
+void MainFrame::changeNumberOfAsyncThreads(int delta){
+    this->async_mutex.lock();
+        this->n_async_threads += delta;
+    this->async_mutex.unlock();
+    this->ASYNC_CHANGED.notify_all();
+
+    qDebug() << "ASYNC THREADS : " << delta  << endl;
+}
+
+int MainFrame::getNumberOfAsyncThreads(){
+    int n_async_threads;
+
+    this->async_mutex.lock();
+        n_async_threads = this->n_async_threads;
+    this->async_mutex.unlock();
+
+    return n_async_threads;
+}
+
 
 void MainFrame::openImagePicker(){
     QMutex wait_mutex;
@@ -377,7 +422,7 @@ void MainFrame::saveRetouchedImage(QString source, int x, int y, int width, int 
 
 int MainFrame::extractMedianColor(QString source){
     QImage image(source);
-    int height = image.height()/4;
+    int height = image.height()/64;
     int width = image.width();
     QColor color;
     vector<int> v_red;
@@ -498,8 +543,6 @@ void MainFrame::changeStatusbarColor(int color){
         }
     });
 }
-
-
 
 void MainFrame::initScreenResources(){
     QtAndroid::runOnAndroidThreadSync([=](){
@@ -658,6 +701,48 @@ void MainFrame::measureVKeyboardHeight(){
     });
     **/
 }
+
+
+void MainFrame::showProgressDialog(std::string message){
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+    QAndroidJniObject decor_view = window.callObjectMethod("getDecorView", "()Landroid/view/View;");
+    QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
+    QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
+
+    QtAndroid::runOnAndroidThreadSync([=](){
+        QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
+                                                  "showProgressDialog",
+                                                  "(Ljava/lang/String;Landroid/content/Context;)V",
+                                                  QAndroidJniObject::fromString(message.c_str()).object<jstring>(),
+                                                  context.object<jclass>());
+    });
+
+}
+
+void MainFrame::dismissProgressDialog(){
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+    QAndroidJniObject decor_view = window.callObjectMethod("getDecorView", "()Landroid/view/View;");
+    QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
+    QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
+
+    QtAndroid::runOnAndroidThreadSync([=](){
+        QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
+                                                  "dismissProgressDialog",
+                                                  "()V");
+    });
+
+}
+
+
+
+
+
+
+
+
+
 
 void MainFrame::setStatusbarHeight(int statusbar_height){
     this->statusbar_height = (statusbar_height);
