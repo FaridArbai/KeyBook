@@ -9,8 +9,9 @@ import java.io.InputStreamReader;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-
+import java.lang.String;
 import javax.crypto.Cipher;
+import java.security.MessageDigest;
 
 public class AndroidEncryptionUtils {
 	private static final String TAG = "AndroidEncryptionUtils";
@@ -78,18 +79,18 @@ public class AndroidEncryptionUtils {
 	}
 
 
-	public static String rsaPublicEncrypt(String message){
-		message = message + "\0";
+	public static String rsaPublicEncrypt(String stream_base64){
+		byte[] stream = Base64.decode(stream_base64, Base64.DEFAULT);
 		String encoded = null;
 
 		try {
-			Cipher cipher = Cipher.getInstance("RSA/NONE/PKCS1Padding");
-
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, PUBLIC_KEY);
 
-			byte[] encrypted = cipher.doFinal(message.getBytes());
+			byte[] encrypted = cipher.doFinal(stream);
 
 			encoded = Base64.encodeToString(encrypted, Base64.DEFAULT);
+			encoded = encoded.replace("\n", "");
 
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -97,6 +98,182 @@ public class AndroidEncryptionUtils {
 
 		return encoded;
 	}
+
+
+	public static String rsaPublicDecrypt(String encoded){
+		byte[] decrypted = null;
+		String decrypted_base64 = null;
+
+		try {
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			cipher.init(Cipher.DECRYPT_MODE, PUBLIC_KEY);
+
+			byte[] encrypted = Base64.decode(encoded, Base64.DEFAULT);
+
+			decrypted = cipher.doFinal(encrypted);
+
+			decrypted_base64 = Base64.encodeToString(decrypted, Base64.DEFAULT);
+			decrypted_base64.replace("\n","");
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return decrypted_base64;
+	}
+
+	public static String sha256(String data_b64){
+		String hash_b64 = null;
+		byte[] data = Base64.decode(data_b64, Base64.DEFAULT);
+
+		try{
+			MessageDigest engine = MessageDigest.getInstance("SHA-256");
+			byte[] hash = engine.digest(data);
+
+			hash_b64 = Base64.encodeToString(hash, Base64.DEFAULT);
+			hash_b64.replace("\n","");
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+
+		return hash_b64;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static void logd(String logstr){
+		Log.d(TAG, "LOGD : " + logstr);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
