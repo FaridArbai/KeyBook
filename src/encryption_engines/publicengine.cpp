@@ -14,17 +14,44 @@ const char PublicEngine::PUBLIC_KEY[] = "-----BEGIN PUBLIC KEY-----\n"
                             "qwIDAQAB\n"
                             "-----END PUBLIC KEY-----";
 
-string PublicEngine::encrypt(const string& message){
+void PublicEngine::logchars(string name, string str){
+    const char* chars = str.c_str();
+    int n_chars = strlen(chars);
+    int n_str = str.length();
+    int val;
+    string logstr = "";
+
+    qDebug() << endl;
+    qDebug() << endl;
+
+    qDebug() << "<<<<<<<<<" << QString::fromStdString(name) << ">>>>>>>>" << endl;
+    qDebug() << "LONGITUD : [" << n_chars << "/" << n_str << "]" << endl;
+
+    for(int i=0; i<n_chars; i++){
+        val = (int)chars[i];
+        qDebug() << i << " : " << val << endl;
+    }
+
+    qDebug() << endl;
+    qDebug() << endl;
+}
+
+
+string PublicEngine::encrypt(string message){
     string encr;
+
 #ifdef ANDROID
-    QAndroidJniObject obj = QAndroidJniObject::callStaticMethod<jclass>("org/qtproject/example/EncrypTalkBeta3/AndroidEncryptionUtils",
-                                              "rsaPublicEncrypt",
-                                              "(Ljava/lang/String;)Ljava/lang/String",
-                                              QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
+    string message_base64 = Base64::encode(message);
+    QString qmessage_base64 = QString::fromStdString(message_base64);
+
+    QAndroidJniObject obj = QAndroidJniObject::callStaticObjectMethod(
+                                            "org/qtproject/example/EncrypTalkBeta3/AndroidEncryptionUtils",
+                                            "rsaPublicEncrypt",
+                                            "(Ljava/lang/String;)Ljava/lang/String;",
+                                            QAndroidJniObject::fromString(qmessage_base64).object<jstring>());
+
     QString qstr = obj.toString();
     encr = qstr.toStdString();
-
-    qDebug() << "HERE IS THE ENCRYPTED STRING : " << qstr << endl;
 #else
     int message_len = message.length();
     const char* message_c = message.c_str();
@@ -37,7 +64,7 @@ string PublicEngine::encrypt(const string& message){
 
     encr_c = (char*)malloc(RSA_size(public_key_rsa));
 
-    encr_len = RSA_public_encrypt((message_len+1),
+    encr_len = RSA_public_encrypt((message_len),
                                   (unsigned char*)message_c,
                                   (unsigned char*)encr_c,
                                   public_key_rsa,
@@ -65,11 +92,29 @@ bool PublicEngine::verifySignature(const string &payload, const string &signatur
 
     is_correct = (expected_hash==received_hash);
 
+    qDebug() << "HASH RECIBIDO  : {" << received_hash.c_str() << "}" << endl;
+    qDebug() << "HASH CALCULADO : {" << expected_hash.c_str() << "}" << endl;
+
     return is_correct;
 }
 
-string PublicEngine::sha256(const string& msg){
+string PublicEngine::sha256(string msg){
     string hash_str;
+
+#ifdef ANDROID
+    string msg_b64 = Base64::encode(msg);
+    QString qmessage = QString::fromStdString(msg_b64);
+
+    QAndroidJniObject obj = QAndroidJniObject::callStaticObjectMethod(
+                                            "org/qtproject/example/EncrypTalkBeta3/AndroidEncryptionUtils",
+                                            "sha256",
+                                            "(Ljava/lang/String;)Ljava/lang/String;",
+                                            QAndroidJniObject::fromString(qmessage).object<jstring>());
+
+    QString qstr = obj.toString();
+    string hash_b64 = qstr.toStdString();
+    hash_str = Base64::decode(hash_b64);
+#else
     const char* msg_c = msg.c_str();
     int msg_len = msg.length();
     unsigned char hash[SHA256_DIGEST_LENGTH+1];
@@ -81,16 +126,31 @@ string PublicEngine::sha256(const string& msg){
     hash[SHA256_DIGEST_LENGTH] = (unsigned char)'\0';
 
     hash_str = string((const char*)hash);
-
+#endif
     return hash_str;
 }
 
 string PublicEngine::decryptHash(const string& signature_b64){
+    string hash;
+
+#ifdef ANDROID
+    QString qmessage = QString::fromStdString(signature_b64);
+
+
+    QAndroidJniObject obj = QAndroidJniObject::callStaticObjectMethod(
+                                            "org/qtproject/example/EncrypTalkBeta3/AndroidEncryptionUtils",
+                                            "rsaPublicDecrypt",
+                                            "(Ljava/lang/String;)Ljava/lang/String;",
+                                            QAndroidJniObject::fromString(qmessage).object<jstring>());
+
+    QString qstr = obj.toString();
+    string hash_b64 = qstr.toStdString();
+    hash = Base64::decode(hash_b64);
+#else
     string signature = Base64::decode(signature_b64);
     int encr_len = signature.length();
     const char* signature_c = signature.c_str();
     char* decr_c;
-    string hash;
 
     BIO* public_bio = BIO_new_mem_buf((char*)PUBLIC_KEY,(int)sizeof(PUBLIC_KEY));
     EVP_PKEY* public_key_evp = PEM_read_bio_PUBKEY(public_bio,NULL,NULL,NULL);
@@ -98,14 +158,59 @@ string PublicEngine::decryptHash(const string& signature_b64){
 
     decr_c = (char*)malloc(RSA_size(public_key_rsa));
 
-    RSA_public_decrypt(encr_len,
+    int decr_len = RSA_public_decrypt(encr_len,
                        (unsigned char*)signature_c,
                        (unsigned char*)decr_c,
                        public_key_rsa,
                        RSA_PKCS1_PADDING);
 
+    decr_c[decr_len] = '\0';
+
     hash = string(decr_c);
     free(decr_c);
+#endif
 
     return hash;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
