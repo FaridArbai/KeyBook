@@ -2,18 +2,23 @@
 #define PUBLICENGINE_H
 
 #include "src/protocol_messages/encoding/base64.h"
+#include "src/user_management/stda.h"
+#include <QDebug>
 
 #ifndef ANDROID
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/bio.h>
-#endif
-
 #include <openssl/sha.h>
-
+#else
+#include <QtAndroid>
+#include <QAndroidJniObject>
+#include <QString>
+#endif
 
 #include <string.h>
 #include <string>
+
 
 using std::string;
 
@@ -30,7 +35,7 @@ private:
     static const char PUBLIC_KEY[];
 
     static string decryptHash(const string& signature);
-    static void logchars(string name, string s);
+    static string computeLog(string str);
 };
 
 #endif // PUBLICENGINE_H

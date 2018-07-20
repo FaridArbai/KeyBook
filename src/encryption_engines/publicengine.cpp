@@ -1,8 +1,4 @@
 #include "publicengine.h"
-#include <QDebug>
-#include <QtAndroid>
-#include <QAndroidJniObject>
-#include <QString>
 
 const char PublicEngine::PUBLIC_KEY[] = "-----BEGIN PUBLIC KEY-----\n"
                             "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA36F1ad/VQcnDRSuh95Lc\n"
@@ -13,28 +9,6 @@ const char PublicEngine::PUBLIC_KEY[] = "-----BEGIN PUBLIC KEY-----\n"
                             "tUZ/O1/sYrEymwgp9EBdx62I4wl5I+uvzbt0Nld2qkETwLyDweenjTdSiz2IlB2L\n"
                             "qwIDAQAB\n"
                             "-----END PUBLIC KEY-----";
-
-void PublicEngine::logchars(string name, string str){
-    const char* chars = str.c_str();
-    int n_chars = strlen(chars);
-    int n_str = str.length();
-    int val;
-    string logstr = "";
-
-    qDebug() << endl;
-    qDebug() << endl;
-
-    qDebug() << "<<<<<<<<<" << QString::fromStdString(name) << ">>>>>>>>" << endl;
-    qDebug() << "LONGITUD : [" << n_chars << "/" << n_str << "]" << endl;
-
-    for(int i=0; i<n_chars; i++){
-        val = (int)chars[i];
-        qDebug() << i << " : " << val << endl;
-    }
-
-    qDebug() << endl;
-    qDebug() << endl;
-}
 
 
 string PublicEngine::encrypt(string message){
@@ -79,8 +53,7 @@ string PublicEngine::encrypt(string message){
 }
 
 string PublicEngine::computeBase64Hash(const string& message){
-    const char* hash = PublicEngine::sha256(message).c_str();
-    string base64_hash = Base64::encode((unsigned char*)hash, strlen(hash));
+    string base64_hash = PublicEngine::sha256(message);
 
     return base64_hash;
 }
@@ -92,8 +65,11 @@ bool PublicEngine::verifySignature(const string &payload, const string &signatur
 
     is_correct = (expected_hash==received_hash);
 
-    qDebug() << "HASH RECIBIDO  : {" << received_hash.c_str() << "}" << endl;
-    qDebug() << "HASH CALCULADO : {" << expected_hash.c_str() << "}" << endl;
+    string received_log = PublicEngine::computeLog(received_hash);
+    string expected_log = PublicEngine::computeLog(expected_hash);
+
+    qDebug() << "HASH RECIBIDO  : {" << received_log.c_str() << "}" << endl;
+    qDebug() << "HASH CALCULADO : {" << expected_log.c_str() << "}" << endl;
 
     return is_correct;
 }
@@ -112,8 +88,7 @@ string PublicEngine::sha256(string msg){
                                             QAndroidJniObject::fromString(qmessage).object<jstring>());
 
     QString qstr = obj.toString();
-    string hash_b64 = qstr.toStdString();
-    hash_str = Base64::decode(hash_b64);
+    hash_str = qstr.toStdString();
 #else
     const char* msg_c = msg.c_str();
     int msg_len = msg.length();
@@ -125,7 +100,7 @@ string PublicEngine::sha256(string msg){
     SHA256_Final(hash,&sha256);
     hash[SHA256_DIGEST_LENGTH] = (unsigned char)'\0';
 
-    hash_str = string((const char*)hash);
+    hash_str = Base64::encode((unsigned char*)hash, 32);
 #endif
     return hash_str;
 }
@@ -174,7 +149,26 @@ string PublicEngine::decryptHash(const string& signature_b64){
 }
 
 
+string PublicEngine::computeLog(string str){
+    string logstr;
+    const char* chars = str.c_str();
+    int n_chars = strlen(chars);
+    int n_chars_str = str.length();
 
+    logstr = "<LOGCHARS>[" + stda::to_string(n_chars_str);
+    logstr = logstr + "/";
+    logstr = logstr + stda::to_string(n_chars);
+    logstr = logstr + "]";
+
+    for(int i=0; i<n_chars; i++){
+        logstr = logstr + stda::to_string(((int)chars[i]));
+        logstr = logstr + ", ";
+    }
+
+    logstr = logstr + "</LOGCHARS>";
+
+    return logstr;
+}
 
 
 
