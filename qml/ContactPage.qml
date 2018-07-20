@@ -16,7 +16,7 @@ Page{
 
     property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
     property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
-    property int buttons_size           :   icons_size
+    property int buttons_size           :   2*icons_size
     property int icons_size             :   (34/wref)*root.width;
     property int backicon_size          :   (3/4)*buttons_size;
     property int left_pad_headertext    :   (1/16)*root.width;
@@ -93,6 +93,10 @@ Page{
             }
 
             onClicked:{
+                action();
+            }
+
+            function action(){
                 buttons_blocked = true;
                 main_frame.logOutUser();
             }
@@ -284,10 +288,12 @@ Page{
                 anchors.left: avatar_button.right
                 anchors.top:  parent.top
                 anchors.topMargin: lastmessage_top_margin-height/2
-                text: (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui)
+                text: reliable ? (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui) : "Change latchkey"
                 font.pixelSize: lastmessage_pixelsize
-                font.bold: unread_label.has_unread_message
-                color: Constants.ContactPage.LASTMESSAGE_COLOR
+                font.bold: reliable ? unread_label.has_unread_message : true
+                color: reliable ? Constants.ContactPage.LASTMESSAGE_COLOR : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND;
+
+                property bool reliable : model.modelData.last_message_reliability;
             }
 
             Rectangle{
@@ -363,5 +369,9 @@ Page{
             anchors.topMargin: parent.height/2-height/2
             fillMode: Image.PreserveAspectFit
         }
+    }
+
+    function goBack(){
+        backbutton.action();
     }
 }

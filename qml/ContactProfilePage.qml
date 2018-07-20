@@ -933,6 +933,7 @@ Page{
 
             onClicked:{
                 main_frame.changePTPKeyOf(contact.username_gui, new_status.text);
+                main_frame.refreshMessagesGUI();
                 text_box.close();
             }
         }

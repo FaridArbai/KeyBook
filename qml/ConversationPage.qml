@@ -98,13 +98,24 @@ Page {
         }
     }
 
-    header: ToolBar {
+    CustomInputDialog{
+        id: latchkey_dialog
+        anchors.fill: parent
+
+        onDone:{
+            main_frame.changePTPKeyOf(contact.username_gui, text);
+            main_frame.refreshMessagesGUI();
+            latchkey_dialog.close();
+        }
+    }
+
+
+    Rectangle{
         id:toolbar
+        anchors.top: parent.top
+        anchors.left: parent.left
         height: main.toolbar_height
-        leftPadding: 0
-        rightPadding: 0
-        topPadding: 0
-        bottomPadding: 0
+        width: root.width
 
         layer.enabled: true
         layer.effect: DropShadow{
@@ -300,11 +311,15 @@ Page {
             anchors.right: options_button.right
             anchors.rightMargin: -menu_factor*(options_button.anchors.rightMargin-menu_margins);
             z: 2
-            radius: options_pixelsize/2
+            radius: width/128
             color: menu_color
             height: 1*(3*options_pixelsize) + options_pixelsize
             width: menu_width
             enabled: false
+            layer.enabled: true
+            layer.effect: CustomElevation{
+                source: menu
+            }
 
 
             Rectangle{
@@ -394,7 +409,7 @@ Page {
 
     Rectangle{
         id: messages_container
-        anchors.top: parent.top
+        anchors.top: toolbar.bottom
         anchors.left: parent.left
         anchors.leftMargin: messages_field_margin/4
         anchors.right: parent.right
@@ -418,6 +433,7 @@ Page {
                 height: new_day ? (new_day_box.height + message.height + new_day_box.anchors.topMargin + message.anchors.topMargin) : (message.height + message.anchors.topMargin)
                 color: "transparent"
 
+                readonly property bool reliable         :   model.modelData.reliability_gui;
                 readonly property bool new_day          : model.modelData.first_of_its_day_gui;
                 readonly property bool first_of_group   : model.modelData.first_of_group_gui;
                 readonly property bool mine             : (contact.username_gui !== model.modelData.sender_gui)
@@ -520,20 +536,46 @@ Page {
                         padding: text_pad
                         wrapMode: Label.Wrap
                         width: max_text_width
-                        height: timestamp_fits ? implicitHeight : implicitHeight + font.pixelSize
+                        height: reliable ? ((timestamp_fits) ? implicitHeight : implicitHeight + font.pixelSize) : implicitHeight + 1.5*font.pixelSize
+                        opacity: reliable ? 1 : 0.9
                         font.pixelSize: message_pixelsize
                         text: ((model.modelData.reliability_gui ? model.modelData.text_gui : Constants.ConversationPage.ERROR_MESSAGE))
                     }
 
                     Label {
                         id: timestamp
-                        color: "black"
+                        color: reliable ? "black" : "white"
                         opacity: 0.56
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         padding: time_pad
                         font.pixelSize: timestamp_pixelsize
                         text: model.modelData.timestamp_gui
+                    }
+
+                    Label {
+                        id: changelatchkey_text
+                        color: "white"
+                        anchors.left: parent.left
+                        anchors.bottom: parent.bottom
+                        padding: text_pad
+                        font.pixelSize: message_pixelsize
+                        font.bold: !changelatchkey_button.pressed
+                        text: "CHANGE LATCHKEY"
+                        opacity: 0.9
+                        visible: !reliable
+                        enabled: !reliable
+
+                        Button{
+                            id: changelatchkey_button
+                            anchors.fill: parent
+                            background: Rectangle{color: "transparent"}
+                            visible: !reliable
+                            enabled: !reliable
+                            onClicked:{
+                                latchkey_dialog.open();
+                            }
+                        }
                     }
 
                     Label{
