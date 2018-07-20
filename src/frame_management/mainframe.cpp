@@ -812,6 +812,8 @@ int MainFrame::getAndroidThreadBusy(){
 void MainFrame::changePTPKeyOf(QString contact_name, QString ptpkey){
     Contact* contact = this->user->getContact(contact_name.toStdString());
     contact->setLatchword(Latchword(ptpkey.toStdString()));
+    emit contact->lastMessageChanged();
+
 }
 
 
