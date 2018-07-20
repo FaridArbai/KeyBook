@@ -71,7 +71,7 @@ public class AndroidEncryptionUtils {
 
 			public_key = factory.generatePublic(
 					new X509EncodedKeySpec(Base64.decode(content.toString(),
-							Base64.DEFAULT)));
+							Base64.NO_WRAP)));
 		}
 
 
@@ -80,7 +80,7 @@ public class AndroidEncryptionUtils {
 
 
 	public static String rsaPublicEncrypt(String stream_base64){
-		byte[] stream = Base64.decode(stream_base64, Base64.DEFAULT);
+		byte[] stream = Base64.decode(stream_base64, Base64.NO_WRAP);
 		String encoded = null;
 
 		try {
@@ -89,9 +89,7 @@ public class AndroidEncryptionUtils {
 
 			byte[] encrypted = cipher.doFinal(stream);
 
-			encoded = Base64.encodeToString(encrypted, Base64.DEFAULT);
-			encoded = encoded.replace("\n", "");
-
+			encoded = Base64.encodeToString(encrypted, Base64.NO_WRAP);
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -108,12 +106,11 @@ public class AndroidEncryptionUtils {
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.DECRYPT_MODE, PUBLIC_KEY);
 
-			byte[] encrypted = Base64.decode(encoded, Base64.DEFAULT);
+			byte[] encrypted = Base64.decode(encoded, Base64.NO_WRAP);
 
 			decrypted = cipher.doFinal(encrypted);
 
-			decrypted_base64 = Base64.encodeToString(decrypted, Base64.DEFAULT);
-			decrypted_base64.replace("\n","");
+			decrypted_base64 = Base64.encodeToString(decrypted, Base64.NO_WRAP);
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -123,14 +120,13 @@ public class AndroidEncryptionUtils {
 
 	public static String sha256(String data_b64){
 		String hash_b64 = null;
-		byte[] data = Base64.decode(data_b64, Base64.DEFAULT);
+		byte[] data = Base64.decode(data_b64, Base64.NO_WRAP);
 
 		try{
 			MessageDigest engine = MessageDigest.getInstance("SHA-256");
 			byte[] hash = engine.digest(data);
 
-			hash_b64 = Base64.encodeToString(hash, Base64.DEFAULT);
-			hash_b64.replace("\n","");
+			hash_b64 = Base64.encodeToString(hash, Base64.NO_WRAP);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
