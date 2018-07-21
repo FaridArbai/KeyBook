@@ -19,15 +19,16 @@ Item {
     function open(){
         container.enabled = true;
         opening();
+        main_frame.changeStatusbarColor(parseInt(Qt.darker(statusbar_color,5).toString().replace("#","0xFF")));
         open_animation.start();
     }
 
     function close(){
         container.enabled = false;
         closing();
+        main_frame.changeStatusbarColor(parseInt(statusbar_color.replace("#",""),16), 100);
         close_animation.start();
     }
-
 
     SequentialAnimation{
         id: open_animation
@@ -84,6 +85,8 @@ Item {
     property int max_chars          :   16;
     property int min_chars          :   6;
     property int max_z              :   1000;
+    property string statusbar_color;
+    property string dark_color      :   Qt.darker(statusbar_color,5).toString();
 
     property int vert_padding          :   0.15*dialog.height;
     property int hor_padding           :   0.07*dialog.width;
