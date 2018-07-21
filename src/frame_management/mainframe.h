@@ -99,6 +99,7 @@ public:
     Q_INVOKABLE void addRequestedContact(QString entered_username, QString entered_ptpkey);
 
     Q_INVOKABLE void changeStatusbarColor(int color);
+    Q_INVOKABLE void changeStatusbarColor(int color, int delay);
     Q_INVOKABLE void changePTPKeyOf(QString contact_name, QString ptpkey);
 
     Q_INVOKABLE void initScreenResources();
