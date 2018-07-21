@@ -544,6 +544,13 @@ void MainFrame::changeStatusbarColor(int color){
     });
 }
 
+void MainFrame::changeStatusbarColor(int color, int delay){
+    QtConcurrent::run([=](){
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+        this->changeStatusbarColor(color);
+    });
+}
+
 void MainFrame::initScreenResources(){
     QtAndroid::runOnAndroidThreadSync([=](){
         int app_height;
