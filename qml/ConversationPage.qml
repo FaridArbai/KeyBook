@@ -65,6 +65,7 @@ Page {
 
     property bool menu_opened   :   (menu_factor>0.05);
 
+    property alias dialog   :   latchkey_dialog;
 
     background: Rectangle{
         color:"#F2F2F2"
@@ -101,6 +102,7 @@ Page {
     CustomInputDialog{
         id: latchkey_dialog
         anchors.fill: parent
+        statusbar_color: main.decToColor(root.statusbar_color);
 
         onDone:{
             main_frame.changePTPKeyOf(contact.username_gui, text);
@@ -497,7 +499,7 @@ Page {
                         padding: text_pad
                         font.pixelSize: (new_day)?message_pixelsize:0
                         color: "black"
-                        text: (new_day)?"JUL 15, 2018":""
+                        text: (new_day)?model.modelData.day_gui:""
                         visible: new_day
                         enabled: new_day
                         opacity: 0.7
