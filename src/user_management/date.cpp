@@ -13,6 +13,19 @@ const string Date::FIELDS_SEP  = "-";
 const string Date::DATE_SEP    = "/";
 const string Date::TIME_SEP    = ":";
 
+const string Date::MONTH_NAMES[12] = {"January",
+                                      "February",
+                                      "March",
+                                      "April",
+                                      "May",
+                                      "June",
+                                      "July",
+                                      "August",
+                                      "September",
+                                      "October",
+                                      "November",
+                                      "December"};
+
 Date::Date() : Date(ProtocolMessage::getGenerationDate()){
 }
 
@@ -261,6 +274,97 @@ int Date::daysFromToday(){
 
     return days_from_today;
 }
+
+
+
+string Date::toShortlyHumanReadable(){
+    int days_from_today = this->daysFromToday();
+    string text;
+
+    if(days_from_today==0){
+        string hour = this->getHour();
+        string minute = this->getMinute();
+
+        text = "at " + hour + ":" + minute;
+    }
+    else if(days_from_today==1){
+        string hour = this->getHour();
+        string minute = this->getMinute();
+
+        text = "yesterday at " + hour + ":" + minute;;
+    }
+    else{
+        int month_index = atoi(this->getMonth().c_str()) - 1;
+        string month_name = Date::MONTH_NAMES[month_index];
+        string day_number = this->getDay();
+
+        if(day_number.substr(0,1)=="0"){
+            day_number = day_number.at(1);
+        }
+
+        text = "on " + month_name + " " + day_number;
+    }
+
+    return text;
+}
+
+
+string Date::getMonthName(){
+    string name = Date::MONTH_NAMES[stda::stoi(this->getMonth())-1];
+    return name;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -40,6 +40,11 @@ public:
 
     int daysFromToday();
 
+    string toShortlyHumanReadable();
+    string getMonthName();
+
+    int difference(Date date);
+
 private:
     string year;
     string month;
@@ -61,11 +66,12 @@ private:
     static const string DATE_SEP;
     static const string TIME_SEP;
 
+    static const string MONTH_NAMES[12];
+
     static string decodeWeekday(int n_weekday);
     static int encodeWeekday(string weekday);
 
     int countLeapYears();
-    int difference(Date date);
 };
 
 #endif // DATE_H
