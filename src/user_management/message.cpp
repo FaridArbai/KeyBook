@@ -103,6 +103,24 @@ QString Message::getDateGUI(){
     return date_gui;
 }
 
+QString Message::getDayGUI(){
+    Date date = this->getDate();
+    string month_name = date.getMonthName();
+    string day = date.getDay();
+    string year = "20" + date.getYear();
+    string month = "";
+    int month_len = month_name.length();
+
+    for(int i=0; i<month_len; i++){
+        month += ::toupper(month_name.at(i));
+    }
+
+
+    QString day_gui = QString::fromStdString(month + " " + day + ", " + year);
+
+    return day_gui;
+}
+
 QString Message::getTimestampGUI(){
     string hour = this->getDate().getHour();
     string minute = this->getDate().getMinute();

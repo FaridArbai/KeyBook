@@ -5,7 +5,9 @@
 #include <QString>
 #include <QDebug>
 
+
 #include <string>
+
 #include "src/user_management/date.h"
 
 using namespace std;
@@ -16,11 +18,10 @@ class Message : public QObject{
     Q_PROPERTY(QString sender_gui READ getSenderGUI CONSTANT)
     Q_PROPERTY(QString date_gui READ getDateGUI CONSTANT)
     Q_PROPERTY(QString timestamp_gui READ getTimestampGUI CONSTANT)
+    Q_PROPERTY(QString day_gui READ getDayGUI CONSTANT)
     Q_PROPERTY(QString text_gui READ getTextGUI CONSTANT)
     Q_PROPERTY(bool reliability_gui READ getReliability CONSTANT)
-
     Q_PROPERTY(bool first_of_its_day_gui READ isFirstOfItsDay CONSTANT)
-
     Q_PROPERTY(bool first_of_group_gui READ isFirstOfGroup CONSTANT)
 
 public:
@@ -51,6 +52,7 @@ public:
 
     QString getSenderGUI();
     QString getDateGUI();
+    QString getDayGUI();
     QString getTimestampGUI();
     QString getTextGUI();
 
