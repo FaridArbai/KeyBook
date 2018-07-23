@@ -93,7 +93,6 @@ public:
     Q_INVOKABLE void openImagePicker();
     Q_INVOKABLE void saveRetouchedImage(QString source, int x, int y, int width, int height, int angle);
     Q_INVOKABLE void sendAvatar();
-    Q_INVOKABLE int extractMedianColor(QString source);
 
     Q_INVOKABLE void addContact(QString entered_username);
     Q_INVOKABLE void addRequestedContact(QString entered_username, QString entered_ptpkey);
@@ -181,8 +180,6 @@ private:
 
     int getVKeyboardHeight();
     int getAndroidThreadBusy();
-
-    int calculateMedian(vector<int>& v);
 };
 
 #endif // MAINFRAME_H

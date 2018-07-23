@@ -420,56 +420,6 @@ void MainFrame::saveRetouchedImage(QString source, int x, int y, int width, int 
     this->updateImagePath(QString::fromStdString(image_path));
 }
 
-int MainFrame::extractMedianColor(QString source){
-    QImage image(source);
-    int height = image.height()/64;
-    int width = image.width();
-    QColor color;
-    vector<int> v_red;
-    vector<int> v_green;
-    vector<int> v_blue;
-    int red;
-    int green;
-    int blue;
-    int final_color;
-
-    for(int y=0; y<height; y++){
-        for(int x=0; x<width; x++){
-            color = QColor(image.pixel(y,x));
-            v_red.push_back(color.red());
-            v_green.push_back(color.green());
-            v_blue.push_back(color.blue());
-        }
-    }
-
-    red = calculateMedian(v_red);
-    green = calculateMedian(v_green);
-    blue = calculateMedian(v_blue);
-
-    QColor rgb = QColor::fromRgb(red,green,blue);
-    int brightness_th = 255/2;
-    int brightness_level = rgb.value();
-
-    if(brightness_level>brightness_th){
-        rgb = QColor::fromHsv(rgb.hue(),rgb.saturation(),brightness_th).toRgb();
-    }
-
-    final_color = (rgb.red()<<16) + (rgb.green()<<8) + (rgb.blue()) + 0xFF000000;
-
-    return final_color;
-}
-
-int MainFrame::calculateMedian(vector<int>& v){
-    int median;
-    int size = v.size();
-
-    std::sort(v.begin(),v.end());
-
-    median = v[size/2];
-
-    return median;
-}
-
 
 void MainFrame::notifyThreshold(){
     std::this_thread::sleep_for(std::chrono::seconds(MainFrame::WAIT_THRESHOLD_SEC));
@@ -818,7 +768,8 @@ int MainFrame::getAndroidThreadBusy(){
 
 void MainFrame::changePTPKeyOf(QString contact_name, QString ptpkey){
     Contact* contact = this->user->getContact(contact_name.toStdString());
-    contact->setLatchword(Latchword(ptpkey.toStdString()));
+    contact->updateLatchword(Latchword(ptpkey.toStdString()));
+    this->refreshMessagesGUI();
     emit contact->lastMessageChanged();
 
 }
