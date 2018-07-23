@@ -79,13 +79,24 @@ Page{
     property int text_box_maxchars_pixelsize    :   (3/4)*statustext_pixelsize;
     property int text_box_maxchars_width        :   3*text_box_maxchars_pixelsize;
 
-
+    property alias dialog   :   latchkey_dialog;
 
     Rectangle{
         id: background
         anchors.fill: parent
         color: Constants.ProfilePage.PADDING_COLOR
         z:-1
+    }
+
+    CustomInputDialog{
+        id: latchkey_dialog
+        anchors.fill: parent
+        statusbar_color: main.decToColor(root.statusbar_color);
+
+        onDone:{
+            main_frame.changePTPKeyOf(contact.username_gui, text);
+            latchkey_dialog.close();
+        }
     }
 
     Rectangle{
@@ -242,7 +253,7 @@ Page{
             }
 
             function action(){
-                text_box.open();
+                latchkey_dialog.open();
             }
         }
 
@@ -738,219 +749,7 @@ Page{
         }
     }
 
-    Rectangle{
-        id: text_box
-        y: (1-a)*(latchkeybutton_container.y + boxes_scroller.y) + a*(text_box_y);
-        x: (1-a)*latchkey_icon.x + a*(text_box_x);
-        width: (1-a)*changestatusbutton_size + a*text_box_width
-        height: (1-a)*changestatusbutton_size + a*text_box_height
-        radius: text_box_radius
-        visible: enabled
-        enabled: (a>ath)
-        color: Constants.ProfilePage.TEXTBOX_COLOR
-        z: 3
-        opacity: a
 
-        layer.enabled: visible
-        layer.effect: DropShadow{
-            height: text_box.height
-            width: text_box.width
-            verticalOffset: shadow_offset
-            horizontalOffset: shadow_offset
-            radius: 2*verticalOffset
-            samples: 2*radius+1
-            color: Constants.DROPSHADOW_COLOR
-        }
-
-        property real a     :   0;
-        property real ath   :   0.05;
-
-
-
-        function open(){
-            show.start();
-        }
-
-        function close(){
-            hide.start();
-        }
-
-        PropertyAnimation{
-            id: show
-            target: text_box
-            property: "a"
-            to: 1
-            duration: 500
-
-            onRunningChanged:{
-                if(running==false){
-                    new_status.forceActiveFocus();
-                }
-            }
-        }
-
-        PropertyAnimation{
-            id: hide
-            target: text_box
-            property: "a"
-            to: 0
-            duration: 500
-        }
-
-        Button{
-            id: text_box_touch_protector
-            anchors.fill: parent
-            background:Rectangle{color:"transparent"}
-            onClicked:{}
-        }
-
-        Label{
-            id: text_box_indicator
-            anchors.top: parent.top
-            anchors.topMargin: (statusindicator_top_margin)*text_box.a
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin*(text_box.a)
-            font.bold:  true
-            font.pixelSize: statusindicator_pixelsize*text_box.a
-            color: root.theme_color;
-            text: "Change point-to-point key"
-        }
-
-        Flickable{
-            id: new_status_container
-            anchors.top: parent.top
-            anchors.topMargin: (statustext_top_margin)*text_box.a
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin*(text_box.a)
-            width: (status_max_width - text_box_maxchars_width)*text_box.a
-            height: new_status.height
-            flickableDirection: Flickable.HorizontalFlick
-
-            TextArea.flickable:  TextArea{
-                id: new_status
-                width: new_status_container.width
-                font.bold: false
-                font.pixelSize: statustext_pixelsize*text_box.a
-                placeholderText: "Type new key here"
-                background: Rectangle{color:"transparent"}
-
-                onActiveFocusChanged: {
-                    if(activeFocus){
-                        cursorPosition = length;
-                    }
-                }
-            }
-        }
-
-        Rectangle{
-            id: status_line
-            anchors.bottom: new_status_container.bottom
-            anchors.bottomMargin: -statusline_top_margin*(text_box.a)
-            anchors.left: new_status_container.left
-            width: statusline_width*(text_box.a)
-            height: (statusline_height)*(text_box.a)
-            color: root.theme_color;
-        }
-
-        Label{
-            id: remaining_chars
-            anchors.top: new_status_container.top
-            anchors.topMargin: new_status_container.height/2 - height/2
-            anchors.right: status_line.right
-            anchors.rightMargin: ((text_box_maxchars_width/2)*text_box.a)-width/2
-            font.pixelSize: text_box_maxchars_pixelsize*text_box.a
-            font.bold: false
-            text: Constants.ProfilePage.STATUS_MAXCHARS - new_status.length
-            opacity: 0.75
-        }
-
-        Rectangle{
-            id: horizontal_line
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: (text_box.a)*(text_box_buttons_height)
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: Constants.ContactPage.SEPARATORS_COLOR
-        }
-
-        Rectangle{
-            id: vertical_line
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.leftMargin: parent.width/2
-            height: (text_box_buttons_height)*(text_box.a)
-            width: 1
-            color: Constants.ContactPage.SEPARATORS_COLOR
-        }
-
-        Button{
-            id: cancel_button
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            height: text_box_buttons_height
-            width: parent.width/2
-            background: Rectangle{
-                height: cancel_button.height
-                width: cancel_button.width
-                color: cancel_button.down?(text_box_buttons_bg):("transparent");
-            }
-
-            Label{
-                id: cancel_text
-                anchors.centerIn: parent
-                font.bold: false
-                font.pixelSize: (text_box.a)*statusindicator_pixelsize
-                color: root.theme_color
-                text: "Cancel"
-            }
-
-            onClicked: {
-                text_box.close();
-            }
-        }
-
-        Button{
-            id: ok_button
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: text_box_buttons_height
-            width: parent.width/2
-            background: Rectangle{
-                height: ok_button.height
-                width: ok_button.width
-                color: ok_button.down?(text_box_buttons_bg):("transparent");
-            }
-
-            Label{
-                id: ok_text
-                anchors.centerIn: parent
-                font.bold: false
-                font.pixelSize: (text_box.a)*statusindicator_pixelsize
-                color: root.theme_color
-                text: "OK"
-            }
-
-            onClicked:{
-                main_frame.changePTPKeyOf(contact.username_gui, new_status.text);
-                main_frame.refreshMessagesGUI();
-                text_box.close();
-            }
-        }
-    }
-
-    Button{
-        id: textbox_antifocus
-        anchors.fill: parent
-        background:Rectangle{color:"transparent"}
-        z: (text_box.enabled)?(text_box.z-1):(-1)
-        enabled: text_box.enabled
-
-        onClicked:{
-            text_box.close();
-        }
-
-    }
 
 
     Button{

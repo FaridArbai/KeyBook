@@ -18,7 +18,7 @@ Page {
 
     property int max_z  :   5;
 
-    property int buttons_size           :   icons_size
+    property int buttons_size           :   2*icons_size
     property int icons_size             :   (34/wref)*root.width;
     property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
     property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
@@ -45,7 +45,7 @@ Page {
 
     property int text_box_width      :   status_max_width + (root.width-status_max_width)/2;
     property int text_box_height     :   statuscontainer_height;
-    property int text_box_radius     :   text_box_height/32;
+    property int text_box_radius     :   text_box_width/128;
     property int text_box_y          :   (root.width-text_box_height)/2;
     property int text_box_x          :   (root.width-text_box_width)/2;
     property int text_box_buttons_height :   text_box_height/4;
@@ -90,14 +90,6 @@ Page {
             openRetoucher(selected_image_path,StackView.Immediate);
         }
 
-        onFinishedUploadingImage:{
-            avatar_changed = false;
-            root.goBack();
-        }
-
-        onWaitingForTooLong:{
-            wait_box.visible = true;
-        }
     }
 
     Rectangle{
@@ -137,12 +129,9 @@ Page {
 
             function action(){
                 if(avatar_changed){
-                    block_buttons = true;
                     main_frame.sendAvatar();
                 }
-                else{
-                    root.goBack();
-                }
+                root.StackView.view.pop();
             }
         }
 
@@ -181,12 +170,16 @@ Page {
         width:  (1-a)*options_button.width + (a)*max_width;
         y:  (1-a)*options_button.y + (a)*max_y;
         x:  (1-a)*options_button.x + (a)*max_x;
-        radius: (Constants.MENU_RADIUS_FACTOR)*width
+        radius: width/128;
         color: Constants.MENU_COLOR;
         opacity: a*(Constants.MENU_TRANSPARENCY/0xFF);
         visible: enabled;
         enabled: a>(Constants.MENU_ENABLED_THRESHOLD);
         z: root.max_z;
+        layer.enabled: true
+        layer.effect: DropShadow{
+            source: options
+        }
 
         property real a             :   0;
         property int n_items        :   4;
@@ -373,6 +366,11 @@ Page {
         width: parent.width
         height: parent.width
         color: "white"
+        smooth: true
+        layer.enabled: true
+        layer.effect: CustomElevation{
+            source: image_container;
+        }
 
         Image {
             id: profileimage
@@ -380,19 +378,10 @@ Page {
             height: parent.width
             source: main_frame.getCurrentImagePath()
             fillMode: Image.PreserveAspectCrop
-            visible: false
+            visible: true
+            smooth: true
         }
 
-        DropShadow {
-            anchors.fill: parent
-            horizontalOffset: 0
-            verticalOffset: root.height/200
-            radius: 2*(verticalOffset)
-            samples: (2*radius+1)
-            cached: true
-            color: Constants.DROPSHADOW_COLOR
-            source: profileimage
-        }
 
         Button{
             id: changeavatar_button
@@ -436,15 +425,7 @@ Page {
         color: "white"
 
         layer.enabled: true
-        layer.effect: DropShadow {
-            width: status_container.width
-            height: status_container.height
-            horizontalOffset: 0
-            verticalOffset: root.height/200
-            radius: 2*(verticalOffset)
-            samples: (2*radius+1)
-            cached: true
-            color: Constants.DROPSHADOW_COLOR
+        layer.effect: CustomElevation{
             source: status_container
         }
 
@@ -567,14 +548,8 @@ Page {
         opacity: a
 
         layer.enabled: visible
-        layer.effect: DropShadow{
-            height: text_box.height
-            width: text_box.width
-            verticalOffset: shadow_offset
-            horizontalOffset: shadow_offset
-            radius: 2*verticalOffset
-            samples: 2*radius+1
-            color: Constants.DROPSHADOW_COLOR
+        layer.effect: CustomElevation{
+            source: text_box;
         }
 
         property real a     :   0;
@@ -807,7 +782,7 @@ Page {
     }
 
     function goBack(){
-        root.StackView.view.pop();
+        backbutton.action();
     }
 }
 
