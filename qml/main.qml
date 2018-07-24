@@ -40,7 +40,6 @@ ApplicationWindow {
 
         onCurrentItemChanged: {
             var statusbar_color = currentItem.statusbar_color;
-
             if(statusbar_color!==null){
                 main_frame.changeStatusbarColor(statusbar_color)
             }
@@ -49,12 +48,20 @@ ApplicationWindow {
     }
 
     onClosing: {
-        if(stackView.depth > 1){
-            close.accepted = false;
-            stackView.currentItem.goBack();;
-        }else{
-            return;
+        close.accepted = false;
+
+        if(stackView.currentItem.dialog!==undefined){
+            if(stackView.currentItem.dialog.opened===true){
+               stackView.currentItem.dialog.close();
+            }
+            else{
+                stackView.currentItem.goBack();
+            }
         }
+        else{
+            stackView.currentItem.goBack();
+        }
+
     }
 
     function decToColor(dec){
