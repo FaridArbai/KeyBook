@@ -1,9 +1,11 @@
 .pragma library
 
+var STD_ELEVATION           =   5;
 var TOOLBAR_COLOR           =   "#016479";
 var STATUSBAR_COLOR         =   "#014d60";
 var TOOLBAR_COLOR_2         =   "#0294bd";
 var GRADIENT_TOOLBAR_COLOR  =   "#017379";
+var VIBRANT_COLOR           =   "#0097A7";
 
 var TOP_LOGIN_COLOR         =   "#1f5a7a";
 var BOTTOM_LOGIN_COLOR      =   "#0f808a";
@@ -31,9 +33,9 @@ var USERNAME_REGEX          =   /^[0-9a-zA-Z]+$/;
 var TOOLBUTTON_SIZE         =   40;
 var SENDBUTTON_SIZE         =   80;
 
-var LOGIN_STATUSBAR_COLOR       =   0X00000000;
-var CONTACTS_STATUSBAR_COLOR    =   0xff014d60;
-var IMAGEPROCESSING_STATUSBAR_COLOR    =   0xFF000000;
+var LOGIN_STATUSBAR_COLOR               =   0X00000000;
+var CONTACTS_STATUSBAR_COLOR            =   0xff014d60;
+var IMAGEPROCESSING_STATUSBAR_COLOR     =   0xFF000000;
 
 var SIDE_FACTOR         =   (157/2880);
 var SPACING_FACTOR      =   (7/180);
@@ -42,7 +44,7 @@ var ICON_FACTOR         =   (34/720);
 
 
 var MENU_COLOR          =   "#F3F3F3";
-var MENU_TRANSPARENCY   =   0xF9;
+var MENU_TRANSPARENCY   =   0xFF;
 var ZERO_TRANSPARENCY   =   0x00;
 var MENU_WIDTH_FACTOR   =   1/2;
 var MENU_RADIUS_FACTOR  =   1/32;
@@ -91,18 +93,25 @@ var WREF = 720;
 var HREF = 1080;
 
 var ConversationPage = {
-    PERSONAL_MESSAGE_BACKGROUND :   "#AFE3E9",
-    CONTACT_MESSAGE_BACKGROUND  :   "#107087",
+    PERSONAL_MESSAGE_BACKGROUND :   "#E1FFC7",
+    CONTACT_MESSAGE_BACKGROUND  :   "#FFFFFF",
     ERROR_MESSAGE_BACKGROUND    :   "#E53935",
-    ERROR_MESSAGE               :   "This message couldn't be decrypted correctly. Please change this contact latchkey.",
+    NEW_DAY_BACKGROUND          :   "#D4EAF4",
+    SENDBUTTON_COLOR            :   "#0097A7",
+    ERROR_MESSAGE               :   "This message couldn't be decrypted, please change this contact's latchkey.",
+    SEND_FIELD_MARGIN           :   9/HREF,
 
     Message : {
         MIN_PAD     :   114/WREF,
-        PAD_OUTTER  :   36/WREF,
+        PAD_OUTTER  :   25/WREF,
         PAD_INNER   :   20/WREF,
         RADIUS      :   8/HREF,
         TIME_PAD    :   14/WREF,
+        NEW_DAY_VPAD:   26/HREF,
         SEPARATION  :   5/HREF,
+        FIRST_OF_GROUP_SEPARATION   :   17/HREF,
+        BUBBLE_HEIGHT   :   23/HREF,
+        BUBBLE_WIDTH    :   17/HREF,
     }
 };
 
