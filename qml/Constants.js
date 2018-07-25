@@ -115,6 +115,15 @@ var ConversationPage = {
     }
 };
 
+var TextInput = {
+    PASSWORD_CHARACTER  :   "•",
+    MASK_DELAY          :   250,
+
+    HINT_COLOR          :   "#9e9e9e",
+    SEPARATOR_COLOR     :   "#757575",
+    TEXT_COLOR          :   "#4d4d4d",
+}
+
 
 
 
