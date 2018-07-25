@@ -26,7 +26,7 @@ Item {
     function close(){
         container.enabled = false;
         closing();
-        main_frame.changeStatusbarColor(parseInt(statusbar_color.replace("#",""),16), 100);
+        main_frame.changeStatusbarColor(parseInt(statusbar_color.replace("#","0xFF")), 100);
         close_animation.start();
     }
 
@@ -77,7 +77,7 @@ Item {
     }
 
 
-    property bool opened            :   false;
+    property bool opened            :   visible;
     property string icon_source     :   "icons/whitehandkeyicon.png";
     property string title_text      :   "Update latchkey";
     property string initial_text    :   "";
@@ -88,14 +88,15 @@ Item {
     property string statusbar_color;
     property string dark_color      :   Qt.darker(statusbar_color,5).toString();
 
-    property int vert_padding          :   0.15*dialog.height;
-    property int hor_padding           :   0.07*dialog.width;
-    property int title_pixelsize       :   0.13*dialog.height;
-    property int text_toppadding       :   0.15*dialog.height;
-    property int text_pixelsize        :   0.105*dialog.height;
-    property int buttons_pixelsize     :   0.09*dialog.height;
-    property int buttons_bottompadding :   0.15*dialog.height;
-    property int buttons_spacing       :   0.086*dialog.width;
+    property int vert_padding           :   0.073*dialog.height;
+    property int hor_padding            :   0.07*dialog.width;
+    property int title_pixelsize        :   0.9*dialog.height;
+    property int text_toppadding        :   0.075*dialog.height;
+    property int text_pixelsize         :   0.105*dialog.height;
+    property int error_pixelsize        :   0.7*text_pixelsize;
+    property int buttons_pixelsize      :   0.09*dialog.height;
+    property int buttons_bottompadding  :   0.1*dialog.height;
+    property int buttons_spacing        :   0.086*dialog.width;
 
     Rectangle{
         id: background
@@ -169,63 +170,57 @@ Item {
             }
         }
 
-        TextArea{
+        CustomTextInput{
             id: dialog_text
             anchors.top: title.bottom
             anchors.topMargin: text_toppadding
             anchors.left: parent.left
             anchors.leftMargin: hor_padding
-            anchors.right: parent.right
-            anchors.rightMargin: hor_padding
-            rightPadding: 2*text_pixelsize
-            font.pixelSize: text_pixelsize
-            placeholderText: "Enter new latchkey here"
-            text: ""
-            color: "black"
-            opacity: 0.7
-
-            Label{
-                id: counter
-                anchors.right: parent.right
-                anchors.rightMargin: text_pixelsize/2
-                anchors.bottom: parent.bottom
-                text: max_chars - dialog_text.text.length
-                color: "black"
-                font.pixelSize: (7/8)*text_pixelsize
-            }
-
-            onTextChanged:{
-                var new_line = text.charAt(text.length-1)=='\n';
-                var exceeds = (text.length>max_chars);
-                var too_short = (text.length<min_chars);
-
-                if(new_line||exceeds){
-                    text = text.substring(0,text.length-1);
-                    dialog_text.cursorPosition = dialog_text.length;
-                }
-            }
-
-            onActiveFocusChanged: {
-                if(activeFocus){
-                    dialog_text.cursorPosition = dialog_text.length;
-                }
-            }
+            width: parent.width - 2*hor_padding
+            pixelsize: text_pixelsize
+            //echoMode: TextInput.Password
+            counter_visible: true
+            max_chars: 16
+            hint: "Enter latchkey"
         }
 
         Rectangle{
-            anchors.left: dialog_text.left
+            id: error_container
             anchors.top: dialog_text.bottom
-            height: 5
-            width: dialog_text.width
-            color: Constants.TOOLBAR_COLOR
+            anchors.topMargin: ((done_text.y - (dialog_text.y + dialog_text.height)) - error_pixelsize)/2
+            anchors.left: parent.left
+            anchors.leftMargin: (parent.width-(error_mask.width + error_label.anchors.leftMargin + error_label.implicitWidth))/2
+            visible: error
+
+            property bool error : ((dialog_text.text.length<min_chars));
+
+            CustomMask{
+                id: error_mask
+                anchors.left: parent.left
+                anchors.top: parent.top
+                width: error_pixelsize
+                height: error_pixelsize
+                source: "icons/whitenokicon.png"
+                color: Constants.TextInput.TEXT_COLOR
+            }
+
+            Label{
+                id: error_label
+                anchors.left: error_mask.right
+                anchors.leftMargin: 0.5*error_pixelsize
+                anchors.top: parent.top
+                font.pixelSize: error_pixelsize
+                text: error_container.error ? "Latchkey too weak (6 characters min.)":"";
+            }
         }
+
 
         Label{
             id: done_text
             anchors.right: parent.right
             anchors.rightMargin: buttons_spacing
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: vert_padding
+            anchors.bottomMargin: buttons_bottompadding
             font.pixelSize: buttons_pixelsize
             text: "DONE"
             font.bold: done_button.pressed
@@ -246,7 +241,7 @@ Item {
             anchors.right: done_text.left
             anchors.rightMargin: buttons_spacing
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: vert_padding
+            anchors.bottomMargin: buttons_bottompadding
             font.pixelSize: buttons_pixelsize
             text: "CANCEL"
             font.bold: cancel_button.pressed
