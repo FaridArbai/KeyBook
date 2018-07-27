@@ -95,6 +95,11 @@ Page{
 
         onDone:{
             main_frame.changePTPKeyOf(contact.username_gui, text);
+
+            if(root.previous_page=="ConversationPage"){
+                main_frame.refreshMessagesGUI();
+            }
+
             latchkey_dialog.close();
         }
     }
@@ -347,6 +352,11 @@ Page{
         height: parent.width
         color: "white"
         z: image_z
+        smooth: true
+        layer.enabled: true
+        layer.effect: CustomElevation{
+            source: image_container
+        }
 
         Image {
             id: profileimage
@@ -354,18 +364,7 @@ Page{
             height: parent.width
             source: contact.avatar_path_gui
             fillMode: Image.PreserveAspectCrop
-            visible: false
-        }
-
-        DropShadow {
-            anchors.fill: parent
-            horizontalOffset: 0
-            verticalOffset: relevant_shadow_offset
-            radius: 2*(verticalOffset)
-            samples: (2*radius+1)
-            cached: true
-            color: Constants.DROPSHADOW_COLOR
-            source: profileimage
+            smooth: true
         }
 
 
@@ -403,15 +402,7 @@ Page{
 
 
                 layer.enabled: true
-                layer.effect: DropShadow {
-                    width: status_container.width
-                    height: status_container.height
-                    horizontalOffset: 0
-                    verticalOffset: general_shadow_offset
-                    radius: 2*(verticalOffset)
-                    samples: (2*radius+1)
-                    cached: true
-                    color: Constants.DROPSHADOW_COLOR
+                layer.effect: CustomElevation{
                     source: status_container
                 }
 
@@ -504,15 +495,7 @@ Page{
                 color: "white"
 
                 layer.enabled: true
-                layer.effect: DropShadow {
-                    width: latchkeybutton_container.width
-                    height: latchkeybutton_container.height
-                    horizontalOffset: 0
-                    verticalOffset: general_shadow_offset
-                    radius: 2*(verticalOffset)
-                    samples: (2*radius+1)
-                    cached: true
-                    color: Constants.DROPSHADOW_COLOR
+                layer.effect: CustomElevation {
                     source: latchkeybutton_container
                 }
 
@@ -588,15 +571,7 @@ Page{
                 color: "white"
 
                 layer.enabled: true
-                layer.effect: DropShadow {
-                    width: messagebutton_container.width
-                    height: messagebutton_container.height
-                    horizontalOffset: 0
-                    verticalOffset: general_shadow_offset
-                    radius: 2*(verticalOffset)
-                    samples: (2*radius+1)
-                    cached: true
-                    color: Constants.DROPSHADOW_COLOR
+                layer.effect: CustomElevation {
                     source: messagebutton_container
                 }
 
@@ -671,15 +646,7 @@ Page{
                 color: "white"
 
                 layer.enabled: true
-                layer.effect: DropShadow {
-                    width: clearbutton_container.width
-                    height: clearbutton_container.height
-                    horizontalOffset: 0
-                    verticalOffset: general_shadow_offset
-                    radius: 2*(verticalOffset)
-                    samples: (2*radius+1)
-                    cached: true
-                    color: Constants.DROPSHADOW_COLOR
+                layer.effect: CustomElevation {
                     source: clearbutton_container
                 }
 
