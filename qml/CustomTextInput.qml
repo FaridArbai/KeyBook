@@ -8,6 +8,7 @@ import "Constants.js" as Constants
 
 
 Item{
+    id: root
     height: input.height + bottom_line.opened_height + indicator.opened_spacing;
 
     property bool counter_visible   :   false;
@@ -17,6 +18,7 @@ Item{
     property real pixelsize         :   10;
     property int echo_mode          :   TextInput.Normal;
     property string text            :   input.text;
+    property string initial_text    :   "";
 
     Component.onCompleted: {
         if(input.text.length==0){
@@ -39,14 +41,15 @@ Item{
         width: parent.width
         bottomPadding: 0.26*font.pixelSize
         rightPadding: counter_visible?(2*font.pixelSize):(0)
-        font.letterSpacing: (echoMode==TextInput.Password)?(font.pixelSize/8):(0)
-        //echoMode: echo_mode
+        font.letterSpacing: (echo_mode==TextInput.Password)?(pixelsize/8):(0)
+        echoMode: echo_mode
         passwordCharacter: Constants.TextInput.PASSWORD_CHARACTER
         passwordMaskDelay: Constants.TextInput.MASK_DELAY
         font.pixelSize: pixelsize
-        text: ""
+        text: root.initial_text
         color: Constants.TextInput.TEXT_COLOR
         clip: true
+        maximumLength: max_chars
         cursorDelegate: Rectangle{
             width: 7
             height: input.font.pixelSize
