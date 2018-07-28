@@ -97,6 +97,10 @@ Page {
         onReceivedMessageForCurrentConversation:{
             main_frame.refreshMessagesGUI();
         }
+
+        onVkeyboardClosed:{
+            pane.anchors.bottomMargin = 0;
+        }
     }
 
     CustomInputDialog{
@@ -650,7 +654,6 @@ Page {
 
             ScrollBar.vertical: ScrollBar {}
         }
-
     }
 
     Rectangle{
@@ -723,6 +726,22 @@ Page {
                         message_field.placeholderText = ("Type a valid message")
                     }
                 }
+
+
+                Button{
+                    anchors.fill: parent
+                    background: Rectangle{color:"transparent"}
+                    onClicked:{
+                        pane.anchors.bottomMargin = main.vkeyboard_height;
+                        message_field.forceActiveFocus();
+                    }
+                }
+
+                onActiveFocusChanged: {
+                    if(activeFocus==false){
+                        pane.anchors.bottomMargin = 0;
+                    }
+                }
             }
 
             ScrollBar.vertical: ScrollBar {}
@@ -773,12 +792,15 @@ Page {
 
                 Image {
                     id: sendicon
-                    anchors.centerIn: parent
+                    anchors.top: parent.top
+                    anchors.topMargin: (parent.height-height)/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: (parent.width-width)/2 + (3*width/32)
                     width: 0.66*(parent.width/Math.sqrt(2))
                     height: 0.66*(parent.width/Math.sqrt(2))
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitesendicon.png"
-                    opacity: 0.7
+                    opacity: 0.9
                 }
 
                 onClicked:{
