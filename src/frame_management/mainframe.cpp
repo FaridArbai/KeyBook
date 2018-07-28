@@ -1,12 +1,14 @@
 #include "mainframe.h"
 
 const int MainFrame::WAIT_THRESHOLD_SEC = 2;
+MainFrame* MainFrame::instance = nullptr;
 
 MainFrame::MainFrame(QQmlContext** context_ptr, RequestHandler* request_handler) :
 RequestingFrame::RequestingFrame(request_handler){
     this->setContext(context_ptr);
     this->setUserLoaded(false);
     this->setInConversation(false);
+    MainFrame::instance = this;
 }
 
 void MainFrame::refreshContactsGUI(){
@@ -521,14 +523,12 @@ void MainFrame::initScreenResources(){
         QAndroidJniObject resources = context.callObjectMethod("getResources", "()Landroid/content/res/Resources;");
         QAndroidJniObject display_metrics = resources.callObjectMethod("getDisplayMetrics", "()Landroid/util/DisplayMetrics;");
 
-        int kbdh = QAndroidJniObject::callStaticMethod<jint>("org/qtproject/example/EncrypTalkBeta3/Utils",
-                                                            "measure",
-                                                            "(Landroid/view/View;Landroid/view/View;Landroid/content/Context;)I",
-                                                            view.object<jclass>(),
-                                                            decor_view.object<jclass>(),
-                                                            context.object<jclass>());
-
         //1. Get app dimensions
+
+        QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
+                                                  "initOnGlobalLayoutListener",
+                                                  "(Landroid/app/Activity;)V",
+                                                  activity.object<jclass>());
 
         app_height =
              QAndroidJniObject::callStaticMethod<jint>("org/qtproject/example/EncrypTalkBeta3/Utils",
@@ -623,47 +623,28 @@ void MainFrame::initScreenResources(){
         qDebug() << "******************* STATBAR : " << statusbar_height << endl;
         qDebug() << "******************* NAVBAR : " << navigationbar_height << endl;
     });
-
-    int kbdh2 = QAndroidJniObject::callStaticMethod<jint>("org/qtproject/example/EncrypTalkBeta3/Utils",
-                                                     "get",
-                                                     "()I");
-
-    kbdh2 = (this->getAppHeight()-kbdh2);
-
-    qDebug() << "******************* KBD : " << kbdh2 << endl;
 }
 
-void MainFrame::measureVKeyboardHeight(){
-    /**
+void MainFrame::measureVKeyboardHeight(int app_height){
     QtAndroid::runOnAndroidThread([=](){
         int vkeyboard_height;
-        int visible_height;
         QAndroidJniObject activity = QtAndroid::androidActivity();
-        QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-        QAndroidJniObject decor_view = window.callObjectMethod("getDecorView", "()Landroid/view/View;");
-        QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
-        QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
 
-        visible_height =
+        vkeyboard_height =
                 QAndroidJniObject::callStaticMethod<jint>("org/qtproject/example/EncrypTalkBeta3/Utils",
-                                                  "getKeyboardHeight",
-                                                  "(Landroid/view/View;Landroid/content/Context;)I",
-                                                  decor_view.object<jclass>(),
-                                                  context.object<jclass>());
-
-        vkeyboard_height = (this->app_height - visible_height);
+                                                  "measureVKeyboardHeight",
+                                                  "(ILandroid/app/Activity;)I",
+                                                  app_height,
+                                                  activity.object<jclass>());
 
         this->setVKeyboardHeight(vkeyboard_height);
-        emit vkeyboardHeightChanged(this->getVKeyboardHeight());
+        emit vkeyboardMeasured(vkeyboard_height);
     });
-    **/
 }
 
 
 void MainFrame::showProgressDialog(std::string message){
     QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-    QAndroidJniObject decor_view = window.callObjectMethod("getDecorView", "()Landroid/view/View;");
     QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
     QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
 
@@ -678,12 +659,6 @@ void MainFrame::showProgressDialog(std::string message){
 }
 
 void MainFrame::dismissProgressDialog(){
-    QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-    QAndroidJniObject decor_view = window.callObjectMethod("getDecorView", "()Landroid/view/View;");
-    QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
-    QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
-
     QtAndroid::runOnAndroidThreadSync([=](){
         QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
                                                   "dismissProgressDialog",
@@ -769,12 +744,21 @@ int MainFrame::getAndroidThreadBusy(){
 void MainFrame::changePTPKeyOf(QString contact_name, QString ptpkey){
     Contact* contact = this->user->getContact(contact_name.toStdString());
     contact->updateLatchword(Latchword(ptpkey.toStdString()));
-    this->refreshMessagesGUI();
     emit contact->lastMessageChanged();
 
 }
 
+#include <jni.h>
 
+extern "C"{
+#include "src/frame_management/mainframe.h"
+JNIEXPORT void JNICALL
+    Java_org_qtproject_example_EncrypTalkBeta3_MyJavaNatives_notifyVKeyboardClosed(JNIEnv*, jobject){
+
+        qDebug() << "Called from Java" << endl;
+        emit MainFrame::instance->vkeyboardClosed();
+    }
+}
 
 
 

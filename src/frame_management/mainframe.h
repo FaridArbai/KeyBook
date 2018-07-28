@@ -48,6 +48,8 @@ using namespace std;
 class MainFrame : public QObject, public RequestingFrame{
     Q_OBJECT
 public:
+    static MainFrame* instance;
+
     MainFrame(QQmlContext** context, RequestHandler* request_handler);
 
     Q_INVOKABLE void updateUserStatus(QString entered_status);
@@ -103,7 +105,7 @@ public:
 
     Q_INVOKABLE void initScreenResources();
 
-    Q_INVOKABLE void measureVKeyboardHeight();
+    Q_INVOKABLE void measureVKeyboardHeight(int app_height);
     Q_INVOKABLE int getStatusbarHeight();
     Q_INVOKABLE int getNavigationbarHeight();
     Q_INVOKABLE int getAppHeight();
@@ -125,7 +127,9 @@ signals:
     void statusbarHeightChanged(int statusbar_height);
     void navigationbarHeightChanged(int navigationbar_height);
     void appHeightChanged(int app_height);
-    void vkeyboardHeightChanged(int vkeyboard_height);
+
+    void vkeyboardMeasured(int vkeyboard_height);
+    void vkeyboardClosed();
 
 private:
     static const int WAIT_THRESHOLD_SEC;
