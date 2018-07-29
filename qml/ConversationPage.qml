@@ -8,7 +8,7 @@ import "Constants.js" as Constants
 
 Page {
     id: root
-
+    opacity: 0
     property var statusbar_color    :   Constants.CONTACTS_STATUSBAR_COLOR;
 
     property int href   :   1135;
@@ -26,7 +26,7 @@ Page {
 
     property int side_margin            :   (157/2880)*root.width;
     property int backimage_size         :   (34/wref)*root.width;
-    property int backbutton_size        :   backimage_size;
+    property int backbutton_size        :   2*backimage_size;
     property int image_left_paddding    :   (1/32)*root.width;
     property int image_size             :   (3/4)*main.toolbar_height;
     property int image_top_padding      :   (1/8)*main.toolbar_height;
@@ -122,17 +122,8 @@ Page {
         anchors.left: parent.left
         height: main.toolbar_height
         width: root.width
-
         layer.enabled: true
-        layer.effect: DropShadow{
-            width: toolbar.width
-            height: toolbar.height
-            horizontalOffset: 0
-            verticalOffset: 5
-            radius: 2*verticalOffset
-            samples: (2*radius+1)
-            cached: true
-            color: Constants.DROPSHADOW_COLOR
+        layer.effect: CustomElevation{
             source: toolbar
         }
 
@@ -141,7 +132,7 @@ Page {
             color: Constants.TOOLBAR_COLOR
         }
 
-        ToolButton {
+        CustomButton {
             id:backbutton
             anchors.left: parent.left
             anchors.leftMargin: side_margin
@@ -149,26 +140,17 @@ Page {
             anchors.topMargin: (parent.height-height)/2
             height: backbutton_size
             width: backbutton_size
-            background: Rectangle{color:Constants.TOOLBAR_COLOR}
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+            circular: true
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: backbutton | send_button
-            }
-
-            Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:"transparent"
-                anchors.fill: parent
-
-                Image {
-                    id: backicon
-                    anchors.centerIn: parent
-                    height: backimage_size
-                    width: backimage_size
-                    fillMode: Image.PreserveAspectFit
-                    source: "icons/whitebackicon.png"
-                }
+            Image {
+                id: backicon
+                anchors.centerIn: parent
+                height: backimage_size
+                width: backimage_size
+                fillMode: Image.PreserveAspectFit
+                source: "icons/whitebackicon.png"
+                z: -1
             }
 
             onClicked:{
@@ -181,7 +163,7 @@ Page {
             }
         }
 
-        Button{
+        CustomButton{
             id: avatar_button
             anchors.left: backbutton.right
             anchors.leftMargin: image_left_paddding
@@ -189,36 +171,27 @@ Page {
             anchors.topMargin: image_top_padding
             height: image_size
             width: image_size
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+            circular: true
 
-            Rectangle{
-                id: avatar_container
+            Image {
+                id: avatar
                 anchors.fill: parent
-                color: avatar_button.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-
-                Image {
-                    id: avatar
-                    anchors.fill: parent
-                    source: contact.avatar_path_gui
-                    fillMode: Image.PreserveAspectCrop
-                    layer.enabled: true
-                    layer.effect: OpacityMask {
-                        maskSource: mask
-                    }
+                source: contact.avatar_path_gui
+                fillMode: Image.PreserveAspectCrop
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: mask
                 }
-
-                Rectangle {
-                    id: mask
-                    height: image_size
-                    width: image_size
-                    radius: (image_size/2)
-                    visible: false
-                }
+                z:-1
             }
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: backbutton | avatar_button
+            Rectangle {
+                id: mask
+                height: image_size
+                width: image_size
+                radius: (image_size/2)
+                visible: false
             }
 
             onClicked: {
@@ -232,20 +205,16 @@ Page {
             }
         }
 
-        Button{
+        CustomButton{
             id: contact_info_container
             anchors.top: parent.top
             anchors.left: avatar_button.right
             anchors.leftMargin: presence_left_padding
             anchors.bottom: parent.bottom
-            width: Math.max(username_label.width,presence_label.width)
-            background: bg
-
-            Rectangle{
-                id: bg
-                anchors.fill: contact_info_container
-                color: contact_info_container.pressed ? Constants.PRESSED_COLOR : "transparent"
-            }
+            anchors.right: options_button.left
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+            animationDuration: Constants.VISIBLE_DURATION
+            easingType: Easing.OutQuad
 
             Label{
                 id: username_label
@@ -275,7 +244,7 @@ Page {
             }
         }
 
-        ToolButton {
+        CustomButton {
             id: options_button
             anchors.right: parent.right
             anchors.rightMargin: side_margin
@@ -283,26 +252,17 @@ Page {
             anchors.topMargin: (parent.height-height)/2
             height: backbutton_size
             width: backbutton_size
-            background: Rectangle{color:Constants.TOOLBAR_COLOR}
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+            circular: true
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: backbutton | send_button
-            }
-
-            Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:"transparent"
-                anchors.fill: parent
-
-                Image {
-                    id: optionsicon
-                    anchors.centerIn: parent
-                    height: backimage_size
-                    width: backimage_size
-                    fillMode: Image.PreserveAspectFit
-                    source: "icons/whiteoptionsicon.png"
-                }
+            Image {
+                id: optionsicon
+                anchors.centerIn: parent
+                height: backimage_size
+                width: backimage_size
+                fillMode: Image.PreserveAspectFit
+                source: "icons/whiteoptionsicon.png"
+                z:-1
             }
 
             onClicked:{
@@ -672,79 +632,66 @@ Page {
             anchors.bottomMargin: send_field_margin
             anchors.left: parent.left
             anchors.leftMargin: send_field_margin
-            //height: send_button_size
             width: text_area_width
-            color: "white"
-            Layout.fillWidth: true
-            Layout.fillHeight: true
             radius: height/2
+            color: "white"
             layer.enabled: true
-            layer.effect: DropShadow{
+            layer.effect: CustomElevation{
                 source: message_field_container
-                width: source.width
-                height: source.height
-                horizontalOffset: 0
-                verticalOffset: 5
-                radius: 2*verticalOffset
-                samples: (2*radius+1)
-                cached: true
-                color: Constants.DROPSHADOW_COLOR
+            }
+
+            Flickable{
+                id: flick
+                anchors.fill: parent
+                flickableDirection: Flickable.VerticalFlick
+
+                TextArea.flickable: TextArea{
+                    id: message_field
+                    leftPadding: message_field_container.radius
+                    rightPadding: message_field_container.radius
+                    topPadding: (flick.height-textarea_pixelsize)/2
+                    bottomPadding: message_field_container.anchors.bottomMargin
+                    placeholderText : ("Type a message")
+                    width: flick.width
+                    wrapMode: TextEdit.Wrap
+                    font.pixelSize: textarea_pixelsize
+                    activeFocusOnPress: true
+
+                    onTextChanged:{
+                        if((message_field.text.search("\n")!=(-1))&&(message_field.text!="\n")){
+                            main_frame.sendMessage(contact.username_gui,
+                                                   message_field.text.replace('\n',""));
+                            message_field.text = ""
+                            message_field.placeholderText = ("Type another message")
+                        }
+                        else if(message_field.text=="\n"){
+                            message_field.text = ""
+                            message_field.placeholderText = ("Type a valid message")
+                        }
+                    }
+
+                    onActiveFocusChanged: {
+                        if(activeFocus==false){
+                            pane.anchors.bottomMargin = 0;
+                            flick_controller.enabled = true;
+                        }
+                    }
+
+                }
+
+                ScrollBar.vertical: ScrollBar {}
             }
         }
 
-        Flickable{
-            id: flick
-            anchors.top: message_field_container.top
-            anchors.topMargin: message_field_container.height/2-message_field.font.pixelSize/2
-            anchors.bottom: parent.bottom
-            anchors.left: message_field_container.left
-            anchors.leftMargin: message_field_container.radius
-            anchors.right: message_field_container.right
-            anchors.rightMargin: message_field_container.radius
-            width: message_field_container.width-2*message_field_container.radius
-            flickableDirection: Flickable.VerticalFlick
-
-            TextArea.flickable: TextArea{
-                id: message_field
-                leftPadding: 0
-                rightPadding: 0
-                topPadding: 0
-                bottomPadding: message_field_container.anchors.bottomMargin
-                placeholderText : ("Type a message")
-                wrapMode: TextEdit.WordWrap
-                font.pixelSize: textarea_pixelsize
-
-                onTextChanged:{
-                    if((message_field.text.search("\n")!=(-1))&&(message_field.text!="\n")){
-                        main_frame.sendMessage(contact.username_gui,
-                                               message_field.text.replace('\n',""));
-                        message_field.text = ""
-                        message_field.placeholderText = ("Type another message")
-                    }
-                    else if(message_field.text=="\n"){
-                        message_field.text = ""
-                        message_field.placeholderText = ("Type a valid message")
-                    }
-                }
-
-
-                Button{
-                    anchors.fill: parent
-                    background: Rectangle{color:"transparent"}
-                    onClicked:{
-                        pane.anchors.bottomMargin = main.vkeyboard_height;
-                        message_field.forceActiveFocus();
-                    }
-                }
-
-                onActiveFocusChanged: {
-                    if(activeFocus==false){
-                        pane.anchors.bottomMargin = 0;
-                    }
-                }
+        Button{
+            id: flick_controller
+            anchors.fill: message_field_container
+            background: Rectangle{color:"transparent"}
+            onClicked:{
+                pane.anchors.bottomMargin = main.vkeyboard_height;
+                message_field.forceActiveFocus();
+                flick_controller.enabled = false;
             }
-
-            ScrollBar.vertical: ScrollBar {}
         }
 
         Rectangle {
@@ -762,33 +709,16 @@ Page {
             color: Constants.ConversationPage.SENDBUTTON_COLOR
             radius: width/2
             layer.enabled: true
-            layer.effect: DropShadow{
+            layer.effect: CustomElevation{
                 source: send_button_container
-                width: source.width
-                height: source.height
-                horizontalOffset: 0
-                verticalOffset: 5
-                radius: 2*verticalOffset
-                samples: (2*radius+1)
-                cached: true
-                color: Constants.DROPSHADOW_COLOR
             }
 
-            ToolButton{
+            CustomButton{
                 id: send_button
                 anchors.fill: parent
                 enabled: message_field.length>0
-
-                background: Rectangle{
-                    anchors.fill: send_button
-                    color: "transparent"
-                }
-
-                MouseArea{
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: backbutton | send_button
-                }
+                animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+                circular: true
 
                 Image {
                     id: sendicon
@@ -801,6 +731,7 @@ Page {
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitesendicon.png"
                     opacity: 0.9
+                    z: -1
                 }
 
                 onClicked:{
