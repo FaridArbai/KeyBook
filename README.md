@@ -36,7 +36,7 @@ The first open source cross-platform messaging app with a decentralized trust me
 ![](d_trust_images/11_new_contact_page.png)
 
 ### New contact profile
-![](d_trust_images/11_new_contact_profile.png)
+![](d_trust_images/12_new_contact_profile.png)
 
 ### Profile image cropping
 ![](d_trust_images/13_image_processing.png)
