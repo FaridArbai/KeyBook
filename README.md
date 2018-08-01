@@ -4,6 +4,5 @@ The first open source cross-platform messaging app with a decentralized trust me
 **Documentation for this project is being updated since the security mechanism has been enhanced**
 
 ## Snapshots
-
-![](http://www.faridarbai.com/d_trust_images/1_loading_screen.png =360x)
-![](http://www.faridarbai.com/d_trust_images/1_loading_screen.png)
+![](d_trust_images/1_loading_screen.png)
+![](d_trust_images/1_loading_screen.png)
