@@ -44,23 +44,3 @@ The first open source cross-platform messaging app with a decentralized trust me
 ### Personal profile
 ![](d_trust_images/14_personal_profile.png)
 
-### New contact profile
-![](d_trust_images/11_new_contact_profile.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
