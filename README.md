@@ -45,11 +45,11 @@ The first open source cross-platform messaging app with a decentralized trust me
 ![](d_trust_images/14_personal_profile.png)
 
 ## Download
-[1] Mobile version for Android
-[2] Desktop version for Windows
-[3] Desktop version for Linux
-[4] Desktop version for MAC
-[5] Mobile version for IOS
+[1] Mobile version for Android<br/>
+[2] Desktop version for Windows<br/>
+[3] Desktop version for Linux<br/>
+[4] Desktop version for MAC<br/>
+[5] Mobile version for IOS<br/>
 
 ###### Links have been removed until latest server version is fully tested. This includes updates to speed up the whole service.
 
