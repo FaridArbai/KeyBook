@@ -1,7 +1,7 @@
 # D-Trust Messaging
 The first open source cross-platform messaging app with a decentralized trust mechanism.
 
-**Documentation for this project is being updated since the security mechanism has been changed on 30-Jul. Final README version will be uploaded on 04 Aug**
+**Documentation for this project is being updated since the security mechanism has been changed on 30-Jul**
 
 ## Snapshots
 
