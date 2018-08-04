@@ -3,6 +3,17 @@ The first open source cross-platform messaging app with a decentralized trust me
 
 **Documentation for this project is being updated since the security mechanism has been changed on 30-Jul**
 
+## Demo
+
+### Adding a new contact
+![](d_trust_images/add_contact.gif)
+
+### Conversation
+![](d_trust_images/conversation.gif)
+
+### Changing profile image
+![](d_trust_images/change_image.gif)
+
 ## Snapshots
 
 ### Loading screen while connecting to server
