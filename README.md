@@ -1,9 +1,18 @@
 # D-Trust Messaging
+The first open source cross-platform messaging app with a decentralized trust mechanism.
+# Table of contents
+1. [Introduction](#Introduction)
+2. [Demo](#Demo)
+3. [Snapshots](#Snapshots)
+4. [Security mechanism](#Mechanism)
+5. [Downloads](#Downloads)
+
+## 1. Introduction
 D-Trust Messaging allows you to chat in the most reliable way. It does so by using a decentralized point-to-point security mechanism on which the users are in charge of manually exchanging their own point-to-point passwords instead of depending on a centralized key exchange protocol.
 
 The mechanism used by D-Trust solves the well known man-in-the-middle threat that nowadays leading messaging platforms have. As opposed to Whatsapp or Telegram, you can use D-Trust without even trusting on the server since it does not collaborate in the key-exchange process. In fact, users are responsible for manually creating the point-to-point keys that they will be sharing with their contacts. Henceforth, this is the most secure messaging service that can be provided to the community, aimed for entrepreneurs who need to exchange confidential information about their ideas but available for anyone to use under the common EU data privacy policy (GDPR, 20-Jul-18).
 
-## Demo
+## 2. Demo
 
 ### Adding a new contact
 ![](d_trust_images/add_contact.gif)
@@ -14,7 +23,7 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 ### Changing profile image
 ![](d_trust_images/change_image.gif)
 
-## Snapshots
+## 3. Snapshots
 
 ### Loading screen while connecting to server
 ![](d_trust_images/1_loading_screen.png)
@@ -55,12 +64,16 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 ### Personal profile
 ![](d_trust_images/14_personal_profile.png)
 
-## Download
+## 4. Mechanishm
+
+//test
+
+## 5. Download
 [1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)<br/>
 [2] [Desktop version for Windows (Unavailable, currently updating)]()<br/>
 [3] [Desktop version for Linux (Unavailable, currently updating)]()<br/>
 
-## Upcoming downloads
+# Upcoming downloads
 [4] Desktop version for MAC (Currently building)  
 [5] Mobile version for IOS (Currently building)
 
