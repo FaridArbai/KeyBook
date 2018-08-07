@@ -56,10 +56,7 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 ![](d_trust_images/14_personal_profile.png)
 
 ## Download
-[1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)
-[2] [Desktop version for Windows (Unavailable, currently updating)]()
-[3] [Desktop version for Linux (Unavailable, currently updating)]()
-
+[1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)  [2] [Desktop version for Windows (Unavailable, currently updating)]()  [3] [Desktop version for Linux (Unavailable, currently updating)]()  
 ## Upcoming downloads
 [4] Desktop version for MAC: Building...  
 [5] Mobile version for IOS: Building...
