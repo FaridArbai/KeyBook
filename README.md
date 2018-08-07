@@ -60,4 +60,6 @@ The first open source cross-platform messaging app with a decentralized trust me
 [2] Desktop version for Windows  
 [3] Desktop version for Linux  
 **[4] Desktop version for MAC:**  
-**[5] Mobile version for IOS:**  ###### Links have been removed until latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 3 once the changes are fully documentated.
+**[5] Mobile version for IOS:** 
+
+###### Links have been removed until latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 3 once the changes are fully documentated.
