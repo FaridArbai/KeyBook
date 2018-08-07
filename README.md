@@ -61,7 +61,7 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 [3] [Desktop version for Linux (Unavailable, currently updating)]()<br/>
 
 ## Upcoming downloads
-[4] Desktop version for MAC: Building...  
-[5] Mobile version for IOS: Building...
+[4] Desktop version for MAC (Currently building)  
+[5] Mobile version for IOS (Currently building)
 
 ###### Links for desktop version have been removed until the latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 7th once the changes are fully documentated.
