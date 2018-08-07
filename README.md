@@ -64,17 +64,27 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 ### Personal profile
 ![](d_trust_images/14_personal_profile.png)
 
-## 4. Mechanishm
+## 4. Security mechanishm
+This app works with a two-layer encryption mechanishm: a point-to-server and a point-to-point layer. The point-to-server layer is intended to establish a secure channel between the server and the client wereas the point-to-point allows the clients to exchange fully encrypted messages.
 
-//test
+### Point-to-server layer
+The point-to-server layer is based on AES-128-CBC technology. Hence, it uses two pair of 16 bytes keys to send and receive data and an IV system to update these keys in order to protect against bruteforce attacks. The keys are generated while connecting to the server in the following way:
+
+1. Once the connection is set, the client generates a purely random 16 byte nonce. This nonce is encrypted with server's public key and is sent through the network so that it can only be decrypted by the server since he's the owner of the private key.
+
+2. Upon receipt, the server generates another random 16 byte nonce, encrypts it with AES-128-EBC using the previous nonce and sends it back to the client. At this point, each one of them shares a secret 32 byte nonce composed by the client's 16-byte long nonce and the server's 16-byte long nonce.
+
+3. Finally, the previous nonce is turned into a client-to-server key and a server-to-client key. 
+
+
 
 ## 5. Download
 [1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)<br/>
 [2] [Desktop version for Windows (Unavailable, currently updating)]()<br/>
 [3] [Desktop version for Linux (Unavailable, currently updating)]()<br/>
 
-# Upcoming downloads
-[4] Desktop version for MAC (Currently building)  
-[5] Mobile version for IOS (Currently building)
+#### Upcoming downloads
+[4] [Desktop version for MAC (Currently building)]()<br/>
+[5] [Mobile version for IOS (Currently building)]()<br/>
 
 ###### Links for desktop version have been removed until the latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 7th once the changes are fully documentated.
