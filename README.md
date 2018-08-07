@@ -1,7 +1,7 @@
 # D-Trust Messaging
-The first open source cross-platform messaging app with a decentralized trust mechanism.
+D-Trust Messaging allows you to chat in the most reliable way. It does so by using a decentralized point-to-point security mechanism on which the users are in charge of manually exchanging their own point-to-point passwords instead of depending on a centralized key exchange protocol.
 
-**Documentation for this project is being updated since the security mechanism has been changed on 30-Jul**
+The mechanism used by D-Trust solves the well known man-in-the-middle threat that nowadays leading messaging platforms have. As opposed to Whatsapp or Telegram, you can use D-Trust without even trusting on the server since it does not collaborate in the key-exchange process. In fact, users are responsible for manually creating the point-to-point keys that they will be sharing with their contacts. Henceforth, this is the most secure messaging service that can be provided to the community, aimed for entrepreneurs who need to exchange confidential information about their ideas but available for anyone to use under the common EU data privacy policy (GDPR, 20-Jul-18).
 
 ## Demo
 
@@ -56,10 +56,12 @@ The first open source cross-platform messaging app with a decentralized trust me
 ![](d_trust_images/14_personal_profile.png)
 
 ## Download
-[1] Mobile version for Android  
-[2] Desktop version for Windows  
-[3] Desktop version for Linux  
-**[4] Desktop version for MAC:**  
-**[5] Mobile version for IOS:** 
+[1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)
+[2] [Desktop version for Windows (Unavailable, currently updating)]()
+[3] [Desktop version for Linux (Unavailable, currently updating)]()
 
-###### Links have been removed until latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 3 once the changes are fully documentated.
+## Upcoming downloads
+[4] Desktop version for MAC: Building...  
+[5] Mobile version for IOS: Building...
+
+###### Links for desktop version have been removed until the latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 7th once the changes are fully documentated.
