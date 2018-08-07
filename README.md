@@ -91,6 +91,8 @@ The point-to-point layer is what makes this app unique. Instead of relying on th
 
 The fact that the previous attack can be performed it doesn't mean that messaging entities such as Whatsapp or Telegram take actual advantage from it, but in instance the service that they offer is absolutely exposed. In fact, if their servers were infected by a potential virus then this malware could reproduce the previous behavior and therefore decrypt all the new conversations flowing through their network.
 
+To prevent this we built a distributed point-to-point key exchange mechanism that does not depend on the server in any way. The way in which we do that is basing on decentralized trust rather than centralized trust. This means that the trust relays now in the user's contacts rather than in the server. The way in which this is achieved is by letting the users to physically exchange their point-to-point keys by whatever means they want to. As a result, when adding a contact a user has to specify the pre-shared password, from which the point-to-point key is generated. From that point and on, all the messages are sent encrypted with that password and verified with a hash. If the hash fails, that means that one of them didn't type the password correctly, being later prompted to retype it. Therefore, with this mechanism the key exchange process is totally detached from the server so it is impossible for it to decrypt the user's conversations, providing as a consequence one of the most secure messaging platforms available for free use. 
+
 ## 5. Download
 [1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)<br/>
 [2] [Desktop version for Windows (Unavailable, currently updating)]()<br/>
