@@ -64,7 +64,7 @@ The mechanism used by D-Trust solves the well known man-in-the-middle threat tha
 ### Personal profile
 ![](d_trust_images/14_personal_profile.png)
 
-## 4. Security mechanishm
+## 4. Security mechanism
 This app works with a two-layer encryption mechanishm: a point-to-server and a point-to-point layer. The point-to-server layer is intended to establish a secure channel between the server and the client wereas the point-to-point allows the clients to exchange fully encrypted messages.
 
 ### Point-to-server layer
@@ -74,9 +74,12 @@ The point-to-server layer is based on AES-128-CBC technology. Hence, it uses two
 
 2. Upon receipt, the server generates another random 16 byte nonce, encrypts it with AES-128-EBC using the previous nonce and sends it back to the client. At this point, each one of them shares a secret 32 byte nonce composed by the client's 16-byte long nonce and the server's 16-byte long nonce.
 
-3. Finally, the previous nonce is turned into a client-to-server key and a server-to-client key. 
+3. Finally, the previous nonce is turned into a client-to-server and a server-to-client key. To do so, the client to server key is made out by concatenating the high part of the client's nonce with the low part of the server's nonce and viceversa. Therefore, the binary formula for this keys is the following:
 
-
+```C
+uint16_t client_to_server = (client_nonce & 0xFF00)|(server_nonce & 0x00FF);
+uint16_t server_to_client = (server_nonce & 0xFF00)|(client_nonce & 0x00FF);
+```
 
 ## 5. Download
 [1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)<br/>
