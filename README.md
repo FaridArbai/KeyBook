@@ -5,7 +5,7 @@ The first open source cross-platform messaging app with a decentralized trust me
 2. [Demo](#2-demo)
 3. [Snapshots](#3-snapshots)
 4. [Security mechanism](#4-security-mechanism)
-5. [Downloads](#Downloads)
+5. [Downloads](#5-download)
 
 ## 1. Introduction
 D-Trust Messaging allows you to chat in the most reliable way. It does so by using a decentralized point-to-point security mechanism on which the users are in charge of manually exchanging their own point-to-point passwords instead of depending on a centralized key exchange protocol.
