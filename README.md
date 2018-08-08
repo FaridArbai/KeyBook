@@ -2,7 +2,7 @@
 The first open source cross-platform messaging app with a decentralized trust mechanism.
 # Table of contents
 1. [Introduction](#1-introduction)
-2. [Demo](#Demo)
+2. [Demo](#2-demo)
 3. [Snapshots](#Snapshots)
 4. [Security mechanism](#Mechanism)
 5. [Downloads](#Downloads)
