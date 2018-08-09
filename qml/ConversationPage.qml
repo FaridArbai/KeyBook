@@ -20,7 +20,7 @@ Page {
     property int messages_field_margin  :   (1/16)*root.width;
 
     property int initial_message_field_height   : send_button_size;
-    property int max_message_field_height       :   5*textarea_pixelsize;
+    property int max_message_field_height       :   6*textarea_pixelsize;
 
     property int message_field_height   :   initial_message_field_height;
 
@@ -28,6 +28,7 @@ Page {
     property int messages_field_height  :   root.height - (toolbar.height + send_field_height);
 
     property int text_area_width        :   root.width - (3*send_field_margin + send_button_size);
+    property int scrollbar_width        :   initial_message_field_height/8;
 
     property int side_margin            :   (157/2880)*root.width;
     property int backimage_size         :   (34/wref)*root.width;
@@ -50,25 +51,6 @@ Page {
     property int options_pixelsize              :   0;
     property int options_pixelsize_closed       :   0;
     property int options_pixelsize_opened       :   (28/href)*root.height;
-
-    property int menu_width             :   backimage_size;
-    property int menu_width_closed      :   backimage_size;
-    property int menu_width_opened      :   root.width/2;
-
-    property string menu_color          :   addTransparency(menu_transparency,Constants.MENU_COLOR);
-    property string options_color       :   addTransparency(menu_transparency,Constants.MENUFONT_COLOR);
-
-    property int menu_transparency          :   Constants.ZERO_TRANSPARENCY;
-    property int menu_transparency_closed   :   Constants.ZERO_TRANSPARENCY;
-    property int menu_transparency_open     :   Constants.MENU_TRANSPARENCY;
-
-    property int menu_margins           :   (1/32)*root.width;
-
-    property real menu_factor           :   0;
-    property real menu_factor_closed    :   0;
-    property real menu_factor_opened    :   1;
-
-    property bool menu_opened   :   (menu_factor>0.05);
 
     property alias dialog   :   latchkey_dialog;
 
@@ -95,13 +77,6 @@ Page {
 
         return final_color;
     }
-
-    /**
-    Component.onCompleted: {
-        main_frame.changeVKeyboardMode(false);
-        console.log("LLAMADO");
-    }
-    **/
 
 
     Connections{
@@ -283,108 +258,6 @@ Page {
                 menu.open();
             }
         }
-
-        Rectangle{
-            id: menu
-            anchors.top: options_button.top
-            anchors.topMargin: -menu_factor*(options_button.anchors.topMargin-menu_margins);
-            anchors.right: options_button.right
-            anchors.rightMargin: -menu_factor*(options_button.anchors.rightMargin-menu_margins);
-            z: 2
-            radius: width/128
-            color: menu_color
-            height: 1*(3*options_pixelsize) + options_pixelsize
-            width: menu_width
-            enabled: false
-            layer.enabled: true
-            layer.effect: CustomElevation{
-                source: menu
-            }
-
-
-            Rectangle{
-                id: viewcontact_option
-                anchors.top: parent.top
-                anchors.topMargin: options_pixelsize/2
-                anchors.left: parent.left
-                width: menu_width
-                height: 3*options_pixelsize
-                color: "transparent"
-
-                Label{
-                    anchors.top: parent.top
-                    anchors.topMargin: options_pixelsize
-                    anchors.left: parent.left
-                    anchors.leftMargin: options_pixelsize
-                    topPadding: 0
-                    leftPadding: 0
-                    bottomPadding: 0
-                    rightPadding: 0
-                    font.pixelSize: options_pixelsize
-                    color: options_color
-                    text: "View contact"
-                    visible: menu_opened
-                }
-
-                Button{
-                    anchors.fill: parent
-                    background: Rectangle{color:"transparent"}
-                    onClicked: {
-                        avatar_button.action();
-                    }
-                }
-            }
-
-            function open(){
-                menu.enable();
-                close_menu.running = false;
-                close_factor.running = false;
-                close_options.running = false;
-                clarify_menu.running = false;
-                open_menu.running = true;
-                open_factor.running = true;
-                open_options.running = true;
-                colorize_menu.running = true;
-            }
-
-            function hide(){
-                open_menu.running = false;
-                open_factor.running = false;
-                open_options.running = false;
-                colorize_menu.running = false;
-                close_menu.running = true;
-                close_factor.running = true;
-                close_options.running = true;
-                clarify_menu.running = true;
-                menu.disable();
-            }
-
-            function disable(){
-                menu.enabled = false;
-                //menu.visible = false;
-            }
-
-            function enable(){
-                menu.enabled = true;
-                //menu.visible = true;
-            }
-
-            onActiveFocusChanged: {
-                menu.hide();
-            }
-        }
-    }
-
-    Button{
-        id: background_touch
-        anchors.fill: parent
-        z: menu_opened?(menu.z-1):(-1);
-        background:Rectangle{color:"transparent"}
-        onClicked: {
-            if(menu_opened){
-                menu.hide();
-            }
-        }
     }
 
     Rectangle{
@@ -398,7 +271,7 @@ Page {
         color: "transparent"
 
         ListView {
-            id: contacts_view
+            id: messages_view
             anchors.fill: parent
             bottomMargin: (8/href)*root.height
             displayMarginBeginning: 0
@@ -408,21 +281,24 @@ Page {
             model: MessageModel
             clip: true
 
+            property int messages_scrollbar_width   :  (Constants.ConversationPage.Message.PAD_OUTTER*root.width - Constants.ConversationPage.Message.BUBBLE_WIDTH*root.height)/2;
+
             delegate: Rectangle{
-                width: contacts_view.width
+                id: message_delegate
+                width: messages_view.width
                 height: new_day ? (new_day_box.height + message.height + new_day_box.anchors.topMargin + message.anchors.topMargin) : (message.height + message.anchors.topMargin)
                 color: "transparent"
 
                 readonly property bool reliable         :   model.modelData.reliability_gui;
-                readonly property bool new_day          : model.modelData.first_of_its_day_gui;
-                readonly property bool first_of_group   : model.modelData.first_of_group_gui;
-                readonly property bool mine             : (contact.username_gui !== model.modelData.sender_gui)
-                readonly property int border_pad    :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
-                readonly property int text_pad      :   Constants.ConversationPage.Message.PAD_INNER*root.width;
-                readonly property int min_sep       :   Constants.ConversationPage.Message.MIN_PAD*root.width;
-                readonly property int time_pad      :   Constants.ConversationPage.Message.TIME_PAD*root.width;
+                readonly property bool new_day          :   model.modelData.first_of_its_day_gui;
+                readonly property bool first_of_group   :   model.modelData.first_of_group_gui;
+                readonly property bool mine             :   (contact.username_gui !== model.modelData.sender_gui)
+                readonly property int border_pad        :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
+                readonly property int text_pad          :   Constants.ConversationPage.Message.PAD_INNER*root.width;
+                readonly property int min_sep           :   Constants.ConversationPage.Message.MIN_PAD*root.width;
+                readonly property int time_pad          :   Constants.ConversationPage.Message.TIME_PAD*root.width;
 
-                readonly property int max_width             :   contacts_view.width - border_pad - min_sep;
+                readonly property int max_width             :   messages_view.width - border_pad - min_sep;
 
                 readonly property int max_text_width        :   max_width;
 
@@ -431,10 +307,6 @@ Page {
 
 
                 readonly property int last_line_width       :   (message_text_unwrapped.paintedWidth > message_text.paintedWidth)?(message_text_unwrapped.paintedWidth%message_text.paintedWidth):(message_text.paintedWidth);
-
-
-
-
 
                 readonly property int box_radius            :   Constants.ConversationPage.Message.RADIUS*root.height;
 
@@ -448,7 +320,7 @@ Page {
                 Rectangle{
                     id: new_day_box
                     anchors.top: parent.top
-                    anchors.topMargin: new_day ? (new_day_pad - contacts_view.spacing):0
+                    anchors.topMargin: new_day ? (new_day_pad - messages_view.spacing):0
                     anchors.left: parent.left
                     anchors.leftMargin: (parent.width - width)/2
                     width: new_day ? new_day_text.width : 0
@@ -514,7 +386,7 @@ Page {
                         color: ((model.modelData.reliability_gui)?("black"):("white"))
                         anchors.left: parent.left
                         padding: text_pad
-                        wrapMode: Label.Wrap
+                        wrapMode: Label.WordWrap
                         width: max_text_width
                         height: reliable ? ((timestamp_fits) ? implicitHeight : implicitHeight + font.pixelSize) : implicitHeight + 1.5*font.pixelSize
                         opacity: reliable ? 1 : 0.9
@@ -547,12 +419,12 @@ Page {
                         visible: !reliable
                         enabled: !reliable
 
-                        Button{
+                        CustomButton{
                             id: changelatchkey_button
                             anchors.fill: parent
-                            background: Rectangle{color: "transparent"}
                             visible: !reliable
                             enabled: !reliable
+                            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
                             onClicked:{
                                 latchkey_dialog.open();
                             }
@@ -658,38 +530,43 @@ Page {
 
             Flickable{
                 id: flick
-                anchors.fill: parent
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
                 flickableDirection: Flickable.VerticalFlick
                 //boundsBehavior: Flickable.StopAtBounds
-                contentHeight: textarea_pixelsize
+                contentHeight: message_field.implicitHeight
                 contentY: -((initial_message_field_height-textarea_pixelsize)/2)
 
                 onContentYChanged: {
-                    var h = message_field_height + flick.contentY;
-                    message_field.height = h;
-                    flick.contentHeight = h;
+                    if(message_field.implicitHeight < message_field_height){
+                        if(contentY!=(-(message_field_height - message_field.implicitHeight)/2)){
+                            contentY = (-(message_field_height - message_field.implicitHeight)/2);
+                        }
+                    }
                 }
 
                 TextArea{
                     id: message_field
                     leftPadding: message_field_container.radius
-                    rightPadding: message_field_container.radius
+                    rightPadding: message_field_container.radius + 2*scrollbar_width
                     topPadding: 0
                     bottomPadding: 0
-                    width: message_field_container.width
-                    height: textarea_pixelsize
-                    wrapMode: TextEdit.WrapAnywhere
+                    width: flick.width
+                    height: message_field_height + flick.contentY
+                    wrapMode: TextArea.WordWrap
                     font.pixelSize: textarea_pixelsize
                     color: "black"
                     cursorDelegate: CustomCursor{
-                        pixelSize: font.pixelSize
-                        visible: message_field.activeFocus
+                        pixelSize: textarea_pixelsize
                     }
 
                     property int lastImplicitHeight :   textarea_pixelsize;
 
                     onImplicitHeightChanged:{
-                        var diff = implicitHeight - lastImplicitHeight;
+                        var diff = (message_field.text.length==0)?0:(implicitHeight - lastImplicitHeight);
+                        console.log("IMPLICIT HEIGHT: " + lastImplicitHeight + "/" + implicitHeight + "/" + diff + "/" + flick.contentY);
 
                         if(diff>0){
                             if(implicitHeight < max_message_field_height){
@@ -705,7 +582,7 @@ Page {
                                 flick.contentY += diff;
                             }
                         }
-                        else{
+                        else if (diff<0){
                             if(implicitHeight < max_message_field_height){
                                 if(implicitHeight > initial_message_field_height){
                                     message_field_height = implicitHeight;
@@ -724,29 +601,6 @@ Page {
                         lastImplicitHeight = implicitHeight;
                     }
 
-
-
-
-
-
-
-
-
-                    function refresh(){
-                        message_field.lastImplicitHeight = textarea_pixelsize;
-                        message_field.cursorPosition = 0;
-                        message_field.text = "";
-                        message_field.lastImplicitHeight = textarea_pixelsize;
-                    }
-
-                    onActiveFocusChanged: {
-                        if(activeFocus==false){
-                            pane.anchors.bottomMargin = 0;
-                            flick_controller.enabled = true;
-                            message_field.enabled = false;
-                        }
-                    }
-
                     Label{
                         id: placeholder
                         anchors.fill: parent
@@ -759,13 +613,37 @@ Page {
                         text: "Type a message"
                         visible: (message_field.text.length==0)
                     }
+
+                    function refresh(){
+                        message_field.lastImplicitHeight = textarea_pixelsize;
+                        message_field.cursorPosition = 0;
+                        message_field.text = "";
+                        message_field.lastImplicitHeight = textarea_pixelsize;
+                        message_field_height = initial_message_field_height;
+                    }
+
+                    onActiveFocusChanged: {
+                        if(activeFocus==false){
+                            pane.anchors.bottomMargin = 0;
+                            flick_controller.enabled = true;
+                            message_field.enabled = false;
+                        }
+                    }
                 }
 
-                ScrollBar.vertical: ScrollBar{}
+                ScrollBar.vertical: ScrollBar{
+                    //parent: flick.parent
+                    anchors.left: parent.right
+                    anchors.leftMargin: -(message_field_container.radius + (scrollbar_width/2))
+                    anchors.top: parent.top
+                    width: scrollbar_width
+                    visible: (message_field.implicitHeight >= max_message_field_height)
+                    policy: ScrollBar.AlwaysOn
+                }
             }
-
-
         }
+
+
 
         Button{
             id: flick_controller
@@ -825,204 +703,92 @@ Page {
         }
     }
 
-    PropertyAnimation{
-        id: open_menu
-        target: root
-        property: "menu_width"
-        to: menu_width_opened
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: open_factor
-        target: root
-        property: "menu_factor"
-        to: menu_factor_opened
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: close_menu
-        target: root
-        property: "menu_width"
-        to: menu_width_closed
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: close_factor
-        target: root
-        property: "menu_factor"
-        to: menu_factor_closed
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: open_options
-        target: root
-        property: "options_pixelsize"
-        to: options_pixelsize_opened
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: close_options
-        target: root
-        property: "options_pixelsize"
-        to: options_pixelsize_closed
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: colorize_menu
-        target: root
-        property: "menu_transparency"
-        to: menu_transparency_open
-        duration: 250
-    }
-
-    PropertyAnimation{
-        id: clarify_menu
-        target: root
-        property: "menu_transparency"
-        to: menu_transparency_closed
-        duration: 250
-    }
-
     function goBack(){
         backbutton.action();
     }
-    /**
-
-    TextArea{
-        id: message_field
-        leftPadding: 0
-        rightPadding: 0
-        bottomPadding: 0
-        topPadding: 0
-        //placeholderText : ""
-        x: message_field_container.radius
-        y: message_field.maxY
-        width: message_field_container.width - 2*message_field_container.radius
-        height: message_field_height - y
-        wrapMode: TextEdit.WrapAnywhere
-        font.pixelSize: textarea_pixelsize
-        activeFocusOnPress: true
-        color: "black"
-        cursorDelegate: CustomCursor{
-            pixelSize: textarea_pixelsize
-        }
-
-        onYChanged: {
-            console.log(y);
-        }
-
-        onMaxYChanged: {
-            console.log(maxY);
-        }
-
-        onMinYChanged: {
-            console.log(minY);
-        }
 
 
 
-        property int maxY   :   ((implicitHeight-message_field_height)>0)?0:((message_field_height-implicitHeight)/2)
-        property int minY   :   ((message_field_height-implicitHeight)>maxY)?(maxY):(message_field_height-implicitHeight)
-        property int lastImplicitHeight :   textarea_pixelsize;
+    CustomMenu{
+        id: menu
+        numItems: 2
+        anchors.fill: parent
+        z: 2000
 
-        onImplicitHeightChanged:{
-            console.log("IMPLICIT HEIGHT CHANGED!");
-            var diff = implicitHeight - lastImplicitHeight;
+        Column{
+            spacing: 0
+            x: menu.menuX;
+            y: menu.menuY;
 
-            if((diff<0)){
-                if(message_field_height>implicitHeight){
-                    message_field_height = implicitHeight;
-                    if(message_field_height < initial_message_field_height){
-                        message_field_height = initial_message_field_height;
-                    }
-                }
-                message_field_height = message_field_height + diff;
-                if(message_field_height<initial_message_field_height){
-                    message_field_height = initial_message_field_height;
+            CustomMenuItem{
+                name: "View profile"
+                a: menu.a
+
+                onClicked: {
+                    main_frame.refreshContactGUI(contact.username_gui)
+                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                             {previous_page : "ConversationPage"})
                 }
             }
-            else if(message_field_height<(max_message_field_height)){
-                if(message_field_height<implicitHeight){
-                    message_field_height = implicitHeight;
+
+            CustomMenuItem{
+                name: "Exit conversation"
+                a: menu.a
+
+                onClicked: {
+                    backbutton.action();
                 }
             }
-            else{
-                y = y - diff;
-            }
-
-            console.log(lastImplicitHeight + " " + implicitHeight + " " + diff);
-            lastImplicitHeight = implicitHeight;
-        }
-
-        function refresh(){
-            lastImplicitHeight = textarea_pixelsize;
-            message_field.cursorPosition = 0;
-            message_field.text = "";
-            message_field_height = initial_message_field_height;
-            message_field.maxY = (message_field_height-textarea_pixelsize)/2;
-            message_field.minY = message_field.maxY;
-            message_field.y = message_field.maxY;
-            lastImplicitHeight = textarea_pixelsize;
-        }
-
-        onActiveFocusChanged: {
-            if(activeFocus==false){
-                pane.anchors.bottomMargin = 0;
-                flick_controller.enabled = true;
-                message_field.enabled = false;
-            }
-        }
-
-        Label{
-            id: placeholder
-            anchors.fill: parent
-            leftPadding: message_field.leftPadding
-            rightPadding: message_field.rightPadding
-            topPadding: message_field.topPadding
-            bottomPadding: message_field.bottomPadding
-            font.pixelSize: message_field.font.pixelSize
-            color: "#9A9A9A"
-            text: "Type a message"
-            visible: (message_field.text.length==0)
         }
     }
 
-    MouseArea{
-        id: flick
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
 
-        drag{
-            target: message_field
-            axis: Drag.YAxis
-            maximumY: message_field.maxY
-            minimumY: message_field.minY
-        }
 
-        onClicked: {
-            var pos = message_field.positionAt(mouseX, mouseY - message_field.y);
 
-            if(pos!==message_field.cursorPosition){
-                if(pos<1){
-                    pos = 0;
-                }
-                else if(pos>message_field.length){
-                    pos = message_field.length;
-                }
 
-                message_field.cursorPosition = pos;
-            }
-        }
-    }
-**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
