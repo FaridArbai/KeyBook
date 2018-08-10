@@ -1,5 +1,5 @@
-# D-Trust Messaging
-The first open source cross-platform messaging app with a decentralized trust mechanism.
+# KeyBook Messaging [Formerly D-Trust before EU GDPR update on July 20]
+KeyBook messaging is the first open source cross-platform messaging app with a decentralized trust mechanism.
 # Table of contents
 1. [Introduction](#1-introduction)
 2. [Demo](#2-demo)
@@ -8,9 +8,9 @@ The first open source cross-platform messaging app with a decentralized trust me
 5. [Downloads](#5-download)
 
 ## 1. Introduction
-D-Trust Messaging allows you to chat in the most reliable way. It does so by using a decentralized point-to-point security mechanism on which the users are in charge of manually exchanging their own point-to-point passwords instead of depending on a centralized key exchange protocol.
+KeyBook Messaging allows you to chat in the most reliable way. It does so by using a decentralized point-to-point security mechanism on which the users are in charge of managing their own point-to-point encryption keys instead of depending on a centralized key exchange protocol.
 
-The mechanism used by D-Trust solves the well known man-in-the-middle threat that nowadays leading messaging platforms have. As opposed to Whatsapp or Telegram, you can use D-Trust without even trusting on the server since it does not collaborate in the key-exchange process. In fact, users are responsible for manually creating the point-to-point keys that they will be sharing with their contacts. Henceforth, this is the most secure messaging service that can be provided to the community, aimed for entrepreneurs who need to exchange confidential information about their ideas but available for anyone to use under the common EU data privacy policy (GDPR, 20-Jul-18).
+The mechanism used by KeyBook solves the well known man-in-the-middle threat that nowadays leading messaging platforms have. As opposed to Whatsapp or Telegram, you can use KeyBook without even trusting on the server since it does not collaborate in the key-exchange process. In fact, users are responsible for manually creating the point-to-point keys that they will be sharing with their contacts. Henceforth, this is the most secure messaging service that can be provided to the community at a zero cost, aimed for entrepreneurs who need to exchange confidential information about their ideas but available for anyone to use under the new EU data privacy policy (GDPR, 20-Jul-18).
 
 ## 2. Demo
 
