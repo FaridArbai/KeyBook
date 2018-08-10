@@ -38,6 +38,10 @@ Page{
 
     property int unread_container_pixelsize :   (5/4)*lastmessage_pixelsize;
 
+    property string entered_username    :   "";
+    property string entered_password    :   "";
+
+
     Connections{
         target: main_frame
         onLogOut:{
@@ -50,46 +54,79 @@ Page{
                 wait_box.visible = true;
             }
         }
-    }
 
-    header: ToolBar {
-        id: toolbar
-        height: main.toolbar_height
-
-        Rectangle{
-            anchors.fill: parent
-            color: Constants.TOOLBAR_COLOR
+        onReceivedRequestedContact:{
+            main_frame.addRequestedContact(entered_username, entered_password);
         }
 
-        ToolButton {
+        onFinishedAddingContact:{
+            buttons_blocked = false;
+            var str;
+
+            if(add_result==true){
+                str = entered_username + " has been added succesfully";
+            }
+            else{
+                str = err_msg;
+            }
+
+            console.log(str);
+
+            addcontact_fragment.notifyResult(add_result, str);
+        }
+
+        onVkeyboardClosed:{
+            if(searchbox.opened){
+                searchbox.close();
+            }
+        }
+    }
+
+    AddContactFragment{
+        id: addcontact_fragment
+        anchors.fill: parent
+        statusbar_color: main.decToColor(root.statusbar_color);
+
+        onDone:{
+            entered_username = addcontact_fragment.enteredUsername;
+            entered_password = addcontact_fragment.enteredPassword;
+            main_frame.addContact(entered_username);
+            buttons_blocked = true;
+        }
+    }
+
+    Rectangle {
+        id: toolbar
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: main.toolbar_height
+        color: Constants.TOOLBAR_COLOR
+        z: contacts_view.z + 1
+        layer.enabled: true
+        layer.effect: CustomElevation{
+            source: toolbar
+        }
+
+        CustomButton {
             id: backbutton
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: side_margin
             anchors.topMargin: (parent.height-height)/2
-            enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR;
+            circular: true
+            visible: false
+            enabled: false
 
-            Rectangle{
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                anchors.fill: parent
-
-                Image {
-                    id: backicon                    
-                    anchors.centerIn: parent
-                    height: icons_size
-                    width:  icons_size
-                    source: "icons/whitebackicon.png"
-                }
-            }
-
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
-
+            Image {
+                id: backicon
+                anchors.centerIn: parent
+                height: icons_size
+                width:  icons_size
+                source: "icons/whitebackicon.png"
             }
 
             onClicked:{
@@ -105,18 +142,17 @@ Page{
         Text{
             id: logo_text
             anchors.top: parent.top
-            anchors.topMargin: (parent.height-height)/2
-            anchors.left: backbutton.right
-            anchors.leftMargin: pad_buttons
+            anchors.topMargin: (parent.height-logo_pixelsize)/2
+            anchors.left: backbutton.left
+            anchors.leftMargin: 0
             font.bold: false
-            //font.family: ""
             font.pixelSize: logo_pixelsize
             color: "white"
-            text: "Latchword"
+            text: "KeyBook"
         }
 
-        ToolButton{
-            id: profileiconbutton
+        CustomButton{
+            id: options_button
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.rightMargin: side_margin
@@ -124,74 +160,136 @@ Page{
             height: buttons_size
             width: buttons_size
             enabled: !(buttons_blocked)
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR;
+            circular: true
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
-            }
-
-            Rectangle{
-                color: profileiconbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
-                anchors.fill: parent
-
-                Image {
-                    id: profileicon
-                    anchors.centerIn: parent
-                    source: "icons/whiteprofileicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            Image {
+                id: profileicon
+                anchors.centerIn: parent
+                source: "icons/whiteoptionsicon.png"
+                height: icons_size
+                width: icons_size
             }
 
             onClicked: {
-                root.StackView.view.push("qrc:/ProfilePage.qml")
+                menu.open();
             }
 
         }
 
-        ToolButton {
-            id: addcontactbutton
+        CustomButton {
+            id: search_button
             anchors.top: parent.top
-            anchors.right: profileiconbutton.left
+            anchors.right: options_button.left
             anchors.rightMargin: pad_buttons
             anchors.topMargin: (parent.height-height)/2
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
-            background: Rectangle{color: Constants.TOOLBAR_COLOR}
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR;
+            circular: true
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
-            }
-
-            Rectangle{
-                color: addcontactbutton.pressed ? Constants.PRESSED_COLOR:Constants.TOOLBAR_COLOR
+            Image {
+                id: plusicon
+                source: "icons/whitesearchicon.png"
+                anchors.centerIn: parent
                 height: icons_size
                 width: icons_size
-                anchors.fill: parent
-
-                Image {
-                    id: plusicon
-                    source: "icons/whiteplusicon.png"
-                    anchors.centerIn: parent
-                    height: icons_size
-                    width: icons_size
-                }
             }
 
             onClicked:{
-                root.StackView.view.push("qrc:/AddContactPage.qml")
+                searchbox.open();
+            }
+        }
+
+
+        Rectangle{
+            id: searchbox
+            x: search_button.x*(1-a) + a*(logo_text.x + logo_text.width + side_margin);
+            y: (parent.height - height)/2
+            width: buttons_size*(1-a) + a*(options_button.x - logo_text.x - logo_text.width - side_margin)
+            height: buttons_size
+            radius: height/2;
+            color: "white"
+            clip: true
+            opacity: a
+            enabled: (searchbox.opened)
+
+            Label{
+                id: search_hint
+                anchors.left: search_text.left
+                anchors.top: search_text.top
+                leftPadding: search_text.leftPadding
+                topPadding: search_text.topPadding
+                font.pixelSize: logo_pixelsize
+                text: "Type name"
+                color: Constants.TextInput.HINT_COLOR
+                visible: (search_text.text.length==0)
+            }
+
+            TextInput{
+                id: search_text
+                anchors.left: parent.left
+                leftPadding: searchbox.radius
+                anchors.top: parent.top
+                topPadding: (parent.height - logo_pixelsize)/2
+                width: parent.width - searchbox.radius
+                height: parent.height
+
+                font.pixelSize: logo_pixelsize
+                color: Constants.TextInput.TEXT_COLOR
+                cursorDelegate: CustomCursor{
+                    pixelSize: logo_pixelsize
+                }
+
+                onTextChanged:{
+                    main_frame.refreshContactsGUI(search_text.text);
+                }
+
+                onActiveFocusChanged: {
+                    if(!activeFocus){
+                        searchbox.close();
+                    }
+                }
+            }
+
+            property real a: 0;
+            property bool opened : (a>0.99);
+
+            function open(){
+                open_animation.start();
+                search_text.forceActiveFocus();
+            }
+
+            function close(){
+                main_frame.refreshContactsGUI();
+                close_animation.start();
+            }
+
+            PropertyAnimation{
+                target: searchbox
+                property: "a"
+                id: open_animation
+                from: 0
+                to: 1
+            }
+
+            PropertyAnimation{
+                target: searchbox
+                property: "a"
+                id: close_animation
+                from: 1
+                to: 0
             }
         }
     }
 
     ListView{
         id: contacts_view
-        anchors.fill: parent
+        anchors.top: toolbar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
         topMargin: 0
         leftMargin: 0
         bottomMargin: 0
@@ -203,24 +301,41 @@ Page{
         delegate: ItemDelegate {
             width: root.width
             height: contact_height
+            background: Rectangle{color: "transparent"}
 
-            MouseArea{
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: addcontactbutton | backbutton
+            CustomButton{
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                animationDuration: Constants.VISIBLE_DURATION;
+                easingType: Easing.OutQuad
+
+                onClicked: {
+                    main_frame.loadConversationWith(model.modelData.username_gui)
+                    main_frame.refreshContactGUI(model.modelData.username_gui)
+                    root.StackView.view.push("qrc:/ConversationPage.qml")
+                }
+
+                onPressAndHold: {
+                    main_frame.loadConversationWith(model.modelData.username_gui)
+                    main_frame.refreshContactGUI(model.modelData.username_gui)
+                    root.StackView.view.push("qrc:/ConversationPage.qml")
+                }
             }
 
-            Button{
+            Rectangle{
                 id: avatar_button
                 anchors.top: parent.top
                 anchors.left: parent.left
                 height: contact_height
                 width: avatar_container_width
+                color: "transparent"
                 enabled: !(buttons_blocked)
 
                 Rectangle{
                     anchors.fill: parent
-                    color: "white"
+                    color: "transparent"
 
                     Image {
                         id: avatar
@@ -236,6 +351,18 @@ Page{
                         layer.effect: OpacityMask {
                             maskSource: mask
                         }
+
+                        CustomButton{
+                            anchors.fill: parent
+                            circular: true
+                            animationColor: "#FFFFFF"
+
+                            onClicked: {
+                                main_frame.refreshContactGUI(model.modelData.username_gui)
+                                root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                                         {previous_page : "ContactPage"});
+                            }
+                        }
                     }
 
                     Rectangle {
@@ -245,19 +372,6 @@ Page{
                         radius: (avatar.height/2)
                         visible: false
                     }
-                }
-
-
-                MouseArea{
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: addcontactbutton | backbutton | avatar_button
-                }
-
-                onClicked: {
-                    main_frame.refreshContactGUI(model.modelData.username_gui)
-                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
-                                             {previous_page : "ContactPage"});
                 }
             }
 
@@ -288,8 +402,10 @@ Page{
                 anchors.left: avatar_button.right
                 anchors.top:  parent.top
                 anchors.topMargin: lastmessage_top_margin-height/2
-                text: reliable ? (model.modelData.last_message_gui.length>26)?(model.modelData.last_message_gui.substr(0,25)+"..."):(model.modelData.last_message_gui) : "Change latchkey"
+                text: reliable ? ( model.modelData.last_message_gui ): "Update contact's latchkey"
                 font.pixelSize: lastmessage_pixelsize
+                width: (unread_container.x - x - font.pixelSize)
+                elide: Text.ElideRight
                 font.bold: reliable ? unread_label.has_unread_message : true
                 color: reliable ? Constants.ContactPage.LASTMESSAGE_COLOR : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND;
 
@@ -325,18 +441,6 @@ Page{
                 }
             }
 
-            onClicked: {
-                main_frame.loadConversationWith(model.modelData.username_gui)
-                main_frame.refreshContactGUI(model.modelData.username_gui)
-                root.StackView.view.push("qrc:/ConversationPage.qml")
-            }
-
-            onPressAndHold: {
-                main_frame.refreshContactGUI(model.modelData.username_gui)
-                root.StackView.view.push("qrc:/ContactProfilePage.qml",
-                                         {previous_page : "ContactPage"});
-            }
-
             Rectangle{
                 id: separator
                 anchors.bottom: parent.bottom
@@ -347,6 +451,44 @@ Page{
                 color: "#DDDDDD"
             }
 
+        }
+    }
+
+    CustomButton{
+        id: add_button
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.bottomMargin: width/3
+        anchors.rightMargin: width/3
+        width: 0.1556*root.width
+        height: width
+        circular: true
+        clip: true
+        animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+        layer.enabled: true
+        layer.effect: CustomElevation{
+            verticalOffset: 10
+        }
+
+
+        Rectangle{
+            anchors.fill: parent
+            radius: width
+            color: Constants.VIBRANT_COLOR
+            z: -1
+        }
+
+        Image{
+            anchors.centerIn: parent
+            height: 0.5*parent.height/Math.sqrt(2);
+            width: 0.5*parent.width /Math.sqrt(2);
+            source: "icons/whiteaddcontacticon.png"
+            fillMode: Image.PreserveAspectFit
+            opacity: 0.9
+        }
+
+        onClicked:{
+            addcontact_fragment.open();
         }
     }
 
@@ -371,7 +513,101 @@ Page{
         }
     }
 
+    CustomMenu{
+        id: menu
+        numItems: 4
+        anchors.fill: parent
+        z: 2000
+
+        Column{
+            spacing: 0
+            x: menu.menuX;
+            y: menu.menuY;
+
+            CustomMenuItem{
+                name: "Profile"
+                a: menu.a
+
+                onClicked: {
+                    root.StackView.view.push("qrc:/ProfilePage.qml");
+                    menu.close();
+                }
+            }
+
+            CustomMenuItem{
+                name: "Add contact"
+                a: menu.a
+
+                onClicked: {
+                    addcontact_fragment.open();
+                    menu.close();
+                }
+            }
+
+            CustomMenuItem{
+                name: "About"
+                a: menu.a
+
+                onClicked: {
+                    menu.close();
+                }
+            }
+
+            CustomMenuItem{
+                name: "Log Out"
+                a: menu.a
+
+                onClicked: {
+                    backbutton.action();
+                    menu.close();
+                }
+            }
+        }
+    }
+
     function goBack(){
         backbutton.action();
     }
+
+    Keys.onBackPressed:{
+        if(searchbox.opened){
+            searchbox.close();
+        }
+        else if(menu.opened){
+            menu.close();
+        }
+        else if(addcontact_fragment.opened){
+            addcontact_fragment.close();
+        }
+        else{
+            root.goBack();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

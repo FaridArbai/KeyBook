@@ -60,7 +60,6 @@ Page{
 
 
     property int maz_z      :   10;
-    property int options_z  :   max_z;
     property int toolbar_z  :   max_z-1;
     property int image_z    :   max_z-2;
 
@@ -113,7 +112,7 @@ Page{
         color: "transparent"
         z: toolbar_z
 
-        ToolButton {
+        CustomButton {
             id: backbutton
             anchors.top: parent.top
             anchors.topMargin: (parent.height-height)/2
@@ -121,18 +120,15 @@ Page{
             anchors.leftMargin: side_margin;
             height: buttons_size
             width: buttons_size
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            background: Rectangle{
-                anchors.fill: parent
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
-
-                Image {
-                    id: backicon
-                    anchors.centerIn: parent
-                    source: "icons/whitebackicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            Image {
+                id: backicon
+                anchors.centerIn: parent
+                source: "icons/whitebackicon.png"
+                height: icons_size
+                width: icons_size
             }
 
             onClicked:{
@@ -144,7 +140,7 @@ Page{
             }
         }
 
-        ToolButton {
+        CustomButton {
             id: options_button
             anchors.top: parent.top
             anchors.topMargin: (parent.height-height)/2
@@ -152,194 +148,19 @@ Page{
             anchors.rightMargin: side_margin;
             height: buttons_size
             width: buttons_size
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            background: Rectangle{
-                anchors.fill: parent
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
-
-                Image {
-                    id: optionsicon
-                    anchors.centerIn: parent
-                    source: "icons/whiteoptionsicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            Image {
+                id: optionsicon
+                anchors.centerIn: parent
+                source: "icons/whiteoptionsicon.png"
+                height: icons_size
+                width: icons_size
             }
 
             onClicked:{
-                options.open();
-            }
-
-        }
-    }
-
-    Rectangle{
-        id: options
-        height: (1-a)*options_button.height + (a)*max_height;
-        width:  (1-a)*options_button.width + (a)*max_width;
-        y:  (1-a)*options_button.y + (a)*max_y;
-        x:  (1-a)*options_button.x + (a)*max_x;
-        radius: (Constants.MENU_RADIUS_FACTOR)*width
-        color: Constants.MENU_COLOR;
-        opacity: a*(Constants.MENU_TRANSPARENCY/0xFF);
-        visible: enabled;
-        enabled: a>(Constants.MENU_ENABLED_THRESHOLD);
-        z: root.options_z;
-
-        property real a             :   0;
-        property int n_items        :   3;
-        property int pixelsize      :   (Constants.MENUITEM_PIXEL_FACTOR/root.href)*root.height;
-        property int vertical_pad   :   (Constants.MENU_VERTICALPAD_FACTOR)*pixelsize;
-        property int max_height     :   n_items*(Constants.MENUITEM_HEIGHT_FACTOR)*pixelsize + 2*vertical_pad;
-        property int max_width      :   (Constants.MENU_WIDTH_FACTOR)*root.width;
-        property int item_height    :   (Constants.MENUITEM_HEIGHT_FACTOR)*pixelsize;
-        property int item_width     :   max_width;
-        property int border_margin  :   (Constants.MENU_BORDERMARGIN_FACTOR)*root.width;
-        property int max_y          :   (border_margin);
-        property int max_x          :   (root.width - (border_margin + max_width));
-
-
-
-        function open(){
-            open_menu.start();
-        }
-
-        function close(){
-            close_menu.start();
-        }
-
-        PropertyAnimation{
-            id: open_menu
-            target: options
-            property: "a"
-            to: 1
-            duration: Constants.MENU_TRANSITIONS_DURATION
-        }
-
-        PropertyAnimation{
-            id: close_menu
-            target: options
-            property: "a"
-            to: 0
-            duration: Constants.MENU_TRANSITIONS_DURATION
-        }
-
-        Button{
-            id: changelatchkey_option
-            anchors.top: parent.top
-            anchors.topMargin: a*options.vertical_pad
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: changelatchkey_option.height
-                width: changelatchkey_option.width
-                color: changelatchkey_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Change latchkey"
-                opacity: parent.a
-            }
-
-            onClicked: {
-                changelatchkey_option.action();
-            }
-
-            function action(){
-                latchkey_dialog.open();
-            }
-        }
-
-        Button{
-            id: conversation_option
-            anchors.top: changelatchkey_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: conversation_option.height
-                width: conversation_option.width
-                color: conversation_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Start conversation"
-                opacity: parent.a
-            }
-
-            onClicked: {
-                conversation_option.action();
-            }
-
-            function action(){
-                if(root.previous_page=="ConversationPage"){
-                    root.StackView.view.pop();
-                }
-                else{
-                    main_frame.loadConversationWith(contact.username_gui)
-                    main_frame.refreshContactGUI(contact.username_gui);
-                    root.StackView.view.replace("qrc:/ConversationPage.qml");
-                }
-            }
-        }
-
-        Button{
-            id: clear_option
-            anchors.top: conversation_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: clear_option.height
-                width: clear_option.width
-                color: clear_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Delete conversations"
-                opacity: parent.a
-            }
-
-            onClicked: {
-                clear_option.action();
-            }
-
-            function action(){
-                //clear_conversation
+                menu.open();
             }
         }
     }
@@ -550,15 +371,14 @@ Page{
                     color: root.theme_color
                 }
 
-                Button{
+                CustomButton{
                     id: latchkey_button
                     anchors.fill: parent
-                    background: Rectangle{
-                        color: latchkey_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
-                    }
+                    animationDuration: Constants.VISIBLE_DURATION
+                    easingType: Easing.OutQuad
 
                     onClicked:{
-                        changelatchkey_option.action();
+                        updatelatchkey_option.action();
                     }
                 }
 
@@ -626,15 +446,14 @@ Page{
                     color: root.theme_color
                 }
 
-                Button{
+                CustomButton{
                     id: conversation_button
                     anchors.fill: parent
-                    background: Rectangle{
-                        color: conversation_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
-                    }
+                    animationDuration: Constants.VISIBLE_DURATION
+                    easingType: Easing.OutQuad
 
                     onClicked:{
-                        conversation_option.action();
+                        startconversation_option.action();
                     }
                 }
             }
@@ -701,12 +520,11 @@ Page{
                     color: root.theme_color
                 }
 
-                Button{
+                CustomButton{
                     id: clear_button
                     anchors.fill: parent
-                    background: Rectangle{
-                        color: clear_button.pressed?(Constants.BOXBUTTON_PRESSED_COLOR):("transparent")
-                    }
+                    animationDuration: Constants.VISIBLE_DURATION
+                    easingType: Easing.OutQuad
 
                     onClicked:{
                     }
@@ -716,26 +534,78 @@ Page{
         }
     }
 
+    CustomMenu{
+        id: menu
+        numItems: 3
+        anchors.fill: parent
+        z: 2000
 
+        Column{
+            spacing: 0
+            x: menu.menuX;
+            y: menu.menuY;
 
+            CustomMenuItem{
+                id: updatelatchkey_option
+                name: "Update latchkey"
+                a: menu.a
+                onClicked: {
+                    updatelatchkey_option.action();
+                    menu.close();
+                }
 
-    Button{
-        id: options_antifocus
-        height: root.height
-        width: root.width
-        z: options.enabled?(options.z-1):(-1)
-        enabled: options.enabled
+                function action(){
+                    latchkey_dialog.open();
+                }
+            }
 
-        background:Rectangle{color:"transparent"}
+            CustomMenuItem{
+                id: startconversation_option
+                name: "Start conversation"
+                a: menu.a
+                onClicked: {
+                    startconversation_option.action();
+                    menu.close();
+                }
 
-        onClicked:{
-            options.close();
+                function action(){
+                    if(root.previous_page=="ConversationPage"){
+                        root.StackView.view.pop();
+                    }
+                    else{
+                        main_frame.loadConversationWith(contact.username_gui);
+                        main_frame.refreshContactGUI(contact.username_gui);
+                        root.StackView.view.push("qrc:/ConversationPage.qml");
+                    }
+                }
+            }
+
+            CustomMenuItem{
+                id: exitprofile_option
+                name: "Update latchkey"
+                a: menu.a
+                onClicked: {
+                    root.StackView.view.pop();
+                    menu.close();
+                }
+            }
         }
-
     }
 
     function goBack(){
         root.StackView.view.pop();
+    }
+
+    Keys.onBackPressed: {
+        if(dialog.opened){
+            dialog.close();
+        }
+        else if(menu.opened){
+            menu.close();
+        }
+        else{
+            root.goBack();
+        }
     }
 
 }

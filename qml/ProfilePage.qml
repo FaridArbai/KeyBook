@@ -158,204 +158,10 @@ Page {
             }
 
             onClicked:{
-                options.open();
+                menu.open();
             }
 
         }
-    }
-
-    Rectangle{
-        id: options
-        height: (1-a)*options_button.height + (a)*max_height;
-        width:  (1-a)*options_button.width + (a)*max_width;
-        y:  (1-a)*options_button.y + (a)*max_y;
-        x:  (1-a)*options_button.x + (a)*max_x;
-        radius: width/128;
-        color: Constants.MENU_COLOR;
-        opacity: a*(Constants.MENU_TRANSPARENCY/0xFF);
-        visible: enabled;
-        enabled: a>(Constants.MENU_ENABLED_THRESHOLD);
-        z: root.max_z;
-        layer.enabled: true
-        layer.effect: DropShadow{
-            source: options
-        }
-
-        property real a             :   0;
-        property int n_items        :   4;
-        property int pixelsize      :   (Constants.MENUITEM_PIXEL_FACTOR/root.href)*root.height;
-        property int vertical_pad   :   (Constants.MENU_VERTICALPAD_FACTOR)*pixelsize;
-        property int max_height     :   n_items*(Constants.MENUITEM_HEIGHT_FACTOR)*pixelsize + 2*vertical_pad;
-        property int max_width      :   (Constants.MENU_WIDTH_FACTOR)*root.width;
-        property int item_height    :   (Constants.MENUITEM_HEIGHT_FACTOR)*pixelsize;
-        property int item_width     :   max_width;
-        property int border_margin  :   (Constants.MENU_BORDERMARGIN_FACTOR)*root.width;
-        property int max_y          :   (border_margin);
-        property int max_x          :   (root.width - (border_margin + max_width));
-
-
-
-        function open(){
-            open_menu.start();
-        }
-
-        function close(){
-            close_menu.start();
-        }
-
-        PropertyAnimation{
-            id: open_menu
-            target: options
-            property: "a"
-            to: 1
-            duration: Constants.MENU_TRANSITIONS_DURATION
-        }
-
-        PropertyAnimation{
-            id: close_menu
-            target: options
-            property: "a"
-            to: 0
-            duration: Constants.MENU_TRANSITIONS_DURATION
-        }
-
-        Button{
-            id: changeavatar_option
-            anchors.top: parent.top
-            anchors.topMargin: a*options.vertical_pad
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: changeavatar_option.height
-                width: changeavatar_option.width
-                color: changeavatar_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Change avatar"
-                opacity: parent.a
-            }
-
-            onClicked: {
-                changeavatar_button.action();
-                options.close();
-            }
-        }
-
-        Button{
-            id: retouchavatar_option
-            anchors.top: changeavatar_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: retouchavatar_option.height
-                width: retouchavatar_option.width
-                color: retouchavatar_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Edit avatar"
-                opacity: parent.a
-            }
-
-            onClicked:{
-                root.openRetoucher(profileimage.source,StackView.PushTransition);
-                options.close();
-            }
-        }
-
-        Button{
-            id: changestatus_option
-            anchors.top: retouchavatar_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: changestatus_option.height
-                width: changestatus_option.width
-                color: changestatus_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Update status"
-                opacity: parent.a
-            }
-
-            onClicked:{
-                changestatus_button.action();
-                options.close();
-            }
-        }
-
-        Button{
-            id: managecontacts_option
-            anchors.top: changestatus_option.bottom
-            anchors.left: parent.left
-            height: a*options.item_height
-            width: a*options.item_width
-            opacity: a
-
-            property real a : options.a;
-
-            background:Rectangle{
-                height: managecontacts_option.height
-                width: managecontacts_option.width
-                color: managecontacts_option.pressed?(Constants.MENUITEM_PRESSED_COLOR):("transparent")
-            }
-
-            Label{
-                anchors.top: parent.top
-                anchors.topMargin: parent.a*options.pixelsize
-                anchors.left: parent.left
-                anchors.leftMargin: parent.a*options.pixelsize
-                padding: 0
-                font.pixelSize: parent.a*options.pixelsize
-                font.bold: false
-                text: "Manage contacts"
-                opacity: parent.a
-            }
-
-            onClicked:{
-                backbutton.action();
-                options.close();
-            }
-        }
-
     }
 
 
@@ -418,7 +224,7 @@ Page {
     Rectangle{
         id: status_container
         anchors.top: image_container.bottom
-        anchors.topMargin: (1-text_box.a)*((remaining_height-height)/2) + (2*text_box.a)*remaining_height;
+        anchors.topMargin: ((remaining_height-height)/2)
         anchors.left: parent.left
         anchors.right: parent.right
         height: statuscontainer_height
@@ -511,7 +317,7 @@ Page {
             }
 
             onClicked: {
-                changestatus_button.action();
+                newstatus_dialog.open();
             }
 
             function action(){
@@ -534,229 +340,23 @@ Page {
         }
     }
 
-    Rectangle{
-        id: text_box
-        y: (1-a)*(changestatus_button.y+status_container.y) + a*(text_box_y);
-        x: (1-a)*changestatus_button.x + a*(text_box_x);
-        width: (1-a)*changestatusbutton_size + a*text_box_width
-        height: (1-a)*changestatusbutton_size + a*text_box_height
-        radius: text_box_radius
-        visible: enabled
-        enabled: (a>ath)
-        color: Constants.ProfilePage.TEXTBOX_COLOR
-        z: 3
-        opacity: a
-
-        layer.enabled: visible
-        layer.effect: CustomElevation{
-            source: text_box;
-        }
-
-        property real a     :   0;
-        property real ath   :   0.05;
-
-
-
-        function open(){
-            show.start();
-        }
-
-        function close(){
-            hide.start();
-        }
-
-        PropertyAnimation{
-            id: show
-            target: text_box
-            property: "a"
-            to: 1
-            duration: 500
-
-            onRunningChanged:{
-                if(running==false){
-                    new_status.forceActiveFocus();
-                }
-            }
-        }
-
-        PropertyAnimation{
-            id: hide
-            target: text_box
-            property: "a"
-            to: 0
-            duration: 500
-        }
-
-        Button{
-            id: text_box_touch_protector
-            anchors.fill: parent
-            background:Rectangle{color:"transparent"}
-            onClicked:{}
-        }
-
-        Label{
-            id: text_box_indicator
-            anchors.top: parent.top
-            anchors.topMargin: (statusindicator_top_margin)*text_box.a
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin*(text_box.a)
-            font.bold:  true
-            font.pixelSize: statusindicator_pixelsize*text_box.a
-            color: root.theme_color;
-            text: "Update status"
-        }
-
-        Flickable{
-            id: new_status_container
-            anchors.top: parent.top
-            anchors.topMargin: (statustext_top_margin)*text_box.a
-            anchors.left: parent.left
-            anchors.leftMargin: left_margin*(text_box.a)
-            width: (status_max_width - text_box_maxchars_width)*text_box.a
-            height: new_status.height
-            flickableDirection: Flickable.HorizontalFlick
-
-            TextArea.flickable:  TextArea{
-                id: new_status
-                width: new_status_container.width
-                font.bold: false
-                font.pixelSize: statustext_pixelsize*text_box.a
-                text: status_text.text
-                background: Rectangle{color:"transparent"}
-
-                onActiveFocusChanged: {
-                    if(activeFocus){
-                        cursorPosition = length;
-                    }
-                }
-            }
-        }
-
-        Rectangle{
-            id: status_line
-            anchors.bottom: new_status_container.bottom
-            anchors.bottomMargin: -statusline_top_margin*(text_box.a)
-            anchors.left: new_status_container.left
-            width: statusline_width*(text_box.a)
-            height: (statusline_height)*(text_box.a)
-            color: root.theme_color;
-        }
-
-        Label{
-            id: remaining_chars
-            anchors.top: new_status_container.top
-            anchors.topMargin: new_status_container.height/2 - height/2
-            anchors.right: status_line.right
-            anchors.rightMargin: ((text_box_maxchars_width/2)*text_box.a)-width/2
-            font.pixelSize: text_box_maxchars_pixelsize*text_box.a
-            font.bold: false
-            text: Constants.ProfilePage.STATUS_MAXCHARS - new_status.length
-            opacity: 0.75
-        }
-
-        Rectangle{
-            id: horizontal_line
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: (text_box.a)*(text_box_buttons_height)
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: Constants.ContactPage.SEPARATORS_COLOR
-        }
-
-        Rectangle{
-            id: vertical_line
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.leftMargin: parent.width/2
-            height: (text_box_buttons_height)*(text_box.a)
-            width: 1
-            color: Constants.ContactPage.SEPARATORS_COLOR
-        }
-
-        Button{
-            id: cancel_button
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            height: text_box_buttons_height
-            width: parent.width/2
-            background: Rectangle{
-                height: cancel_button.height
-                width: cancel_button.width
-                color: cancel_button.down?(text_box_buttons_bg):("transparent");
-            }
-
-            Label{
-                id: cancel_text
-                anchors.centerIn: parent
-                font.bold: false
-                font.pixelSize: (text_box.a)*statusindicator_pixelsize
-                color: root.theme_color
-                text: "Cancel"
-            }
-
-            onClicked: {
-                text_box.close();
-            }
-        }
-
-        Button{
-            id: ok_button
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: text_box_buttons_height
-            width: parent.width/2
-            background: Rectangle{
-                height: ok_button.height
-                width: ok_button.width
-                color: ok_button.down?(text_box_buttons_bg):("transparent");
-            }
-
-            Label{
-                id: ok_text
-                anchors.centerIn: parent
-                font.bold: false
-                font.pixelSize: (text_box.a)*statusindicator_pixelsize
-                color: root.theme_color
-                text: "OK"
-            }
-
-            onClicked:{
-                if(new_status.text!=""){
-                    main_frame.updateUserStatus(new_status.text);
-                    text_box.close();
-                }
-            }
-        }
-    }
-
-
-    Button{
-        id: textbox_antifocus
+    CustomInputDialog{
+        id: newstatus_dialog
         anchors.fill: parent
-        background:Rectangle{color:"transparent"}
-        z: (text_box.enabled)?(text_box.z-1):(-1)
-        enabled: text_box.enabled
-
-        onClicked:{
-            text_box.close();
+        statusbar_color: main.decToColor(root.statusbar_color);
+        icon_source: "icons/whitepencilicon.png"
+        title_text: "Update status"
+        initial_text: main_frame.getCurrentStatus();
+        hint: "Enter new status"
+        max_chars: 50
+        min_chars: 1
+        minchars_errstr: "Status cannot be void"
+        counter_visible: true
+        echo_mode: TextInput.Normal
+        onDone:{
+            main_frame.updateUserStatus(text);
+            newstatus_dialog.close();
         }
-
-    }
-
-    Button{
-        id: options_antifocus
-        height: root.height
-        width: root.width
-        z: options.enabled?(options.z-1):(-1)
-        enabled: options.enabled
-
-        background:Rectangle{color:"transparent"}
-
-        onClicked:{
-            options.close();
-        }
-
     }
 
     Rectangle{
@@ -781,9 +381,91 @@ Page {
 
     }
 
+    CustomMenu{
+        id: menu
+        numItems: 3
+        anchors.fill: parent
+        z: 2000
+
+        Column{
+            spacing: 0
+            x: menu.menuX;
+            y: menu.menuY;
+
+            CustomMenuItem{
+                name: "Change image"
+                a: menu.a
+                onClicked: {
+                    changeavatar_button.action();
+                    menu.close();
+                }
+            }
+
+            CustomMenuItem{
+                name: "Update status"
+                a: menu.a
+                onClicked: {
+                    newstatus_dialog.open();
+                    menu.close();
+                }
+            }
+
+            CustomMenuItem{
+                name: "Exit profile"
+                a: menu.a
+                onClicked: {
+                    backbutton.action();
+                    menu.close();
+                }
+            }
+
+        }
+    }
+
+
     function goBack(){
         backbutton.action();
     }
+
+    Keys.onBackPressed: {
+        if(newstatus_dialog.opened){
+            newstatus_dialog.close();
+        }
+        else if(menu.opened){
+            menu.close();
+        }
+        else{
+            root.goBack();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

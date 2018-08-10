@@ -703,12 +703,6 @@ Page {
         }
     }
 
-    function goBack(){
-        backbutton.action();
-    }
-
-
-
     CustomMenu{
         id: menu
         numItems: 2
@@ -728,6 +722,7 @@ Page {
                     main_frame.refreshContactGUI(contact.username_gui)
                     root.StackView.view.push("qrc:/ContactProfilePage.qml",
                                              {previous_page : "ConversationPage"})
+                    menu.close();
                 }
             }
 
@@ -737,11 +732,27 @@ Page {
 
                 onClicked: {
                     backbutton.action();
+                    menu.close();
                 }
             }
         }
     }
 
+    function goBack(){
+        backbutton.action();
+    }
+
+    Keys.onBackPressed:{
+        if(dialog.opened){
+            dialog.close();
+        }
+        else if(menu.opened){
+            menu.close();
+        }
+        else{
+            root.goBack();
+        }
+    }
 
 
 
