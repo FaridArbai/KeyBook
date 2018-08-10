@@ -87,7 +87,7 @@ From the previous description, it can be seen that both the client and the serve
 ### Point-to-point layer
 The point-to-point layer is what makes this app unique. Instead of relying on the world-wide used centralized point-to-point key exchange algorithms we use a distributed approach. The reason for this is the fact that in all of this legacy approaches the clients need to exchange cryptographic material at some point. Since all the messages have to pass through the server before reaching the other party , this server can perform the well-known man-in-the-middle attack that can allow him to impersonate each one of the parties involved in the exchange and therefore lead into the generation of tricky point-to-point keys as showed in the image above for the diffie-hellman user case.
 
-<p allign="center">
+<p align="center">
   <img src="./d_trust_images/diffie_hellman_mitm.jpg"/>
 </p>
 
