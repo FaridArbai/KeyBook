@@ -5,10 +5,12 @@
 #include <QString>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QtConcurrent/QtConcurrent>
+
+#ifdef ANDROID
 #include <QtAndroid>
 #include <QAndroidJniObject>
-
-#include <QtConcurrent/QtConcurrent>
+#endif
 
 using namespace QtConcurrent;
 
@@ -62,6 +64,7 @@ public:
     Q_INVOKABLE int getCurrentColor();
 
     Q_INVOKABLE void refreshContactsGUI();
+    Q_INVOKABLE void refreshContactsGUI(QString filter_gui);
 
     PrivateUser* getPrivateUser() const;
     void setPrivateUser(PrivateUser* user);
@@ -112,6 +115,8 @@ public:
     Q_INVOKABLE int getAppWidth();
     Q_INVOKABLE float getDensity();
 
+    Q_INVOKABLE void changeVKeyboardMode(bool pan);
+
 signals:
     void finishedAddingContact(bool add_result, QString err_msg);
     void finishedUploadingImage();
@@ -130,6 +135,11 @@ signals:
 
     void vkeyboardMeasured(int vkeyboard_height);
     void vkeyboardClosed();
+
+    void connectionFinished();
+
+    void openProgressDialog(QString progress_text);
+    void closeProgressDialog();
 
 private:
     static const int WAIT_THRESHOLD_SEC;

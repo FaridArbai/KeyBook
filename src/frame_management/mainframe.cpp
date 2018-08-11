@@ -18,6 +18,14 @@ void MainFrame::refreshContactsGUI(){
     context->setContextProperty(Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI()));
 }
 
+void MainFrame::refreshContactsGUI(QString filter_gui){
+    string filter = filter_gui.toStdString();
+    PrivateUser* user = this->getPrivateUser();
+    QQmlContext* context = (*context_ptr);
+
+    context->setContextProperty(Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI(filter)));
+}
+
 void MainFrame::refreshContactGUI(QString username_gui){
     string username = username_gui.toStdString();
     QObject* contact = this->user->getContact(username);
@@ -148,12 +156,12 @@ void MainFrame::setContext(QQmlContext** context_ptr){
 
 void MainFrame::logOutUser(){
     QFuture<void> future = QtConcurrent::run(this,&MainFrame::logOutUserImpl);
+    this->showProgressDialog("Logging out");
 }
 
 void MainFrame::logOutUserImpl(){
     bool is_loaded = this->userIsLoaded();
     qDebug() << "SERVER STARTS LOG OUT" << endl;
-    this->showProgressDialog("Logging out");
 
     if(is_loaded){
         int n_async_threads = this->getNumberOfAsyncThreads();
@@ -465,8 +473,8 @@ void MainFrame::changeNumberOfDelegateThreads(int delta){
 #define ALL_ZERO_BINARY                         0x00000000
 
 void MainFrame::changeStatusbarColor(int color){
-
-    QtAndroid::runOnAndroidThreadSync([=](){
+#ifdef ANDROID
+    QtAndroid::runOnAndroidThread([=](){
         QAndroidJniObject window = QtAndroid::androidActivity().callObjectMethod("getWindow", "()Landroid/view/Window;");
         bool statusbar_transparent = this->statusbar_transparent;
         bool enable_transparency = (color==TRANSPARENT_COLOR);
@@ -494,6 +502,7 @@ void MainFrame::changeStatusbarColor(int color){
             this->statusbar_transparent = false;
         }
     });
+#endif
 }
 
 void MainFrame::changeStatusbarColor(int color, int delay){
@@ -626,6 +635,7 @@ void MainFrame::initScreenResources(){
 }
 
 void MainFrame::measureVKeyboardHeight(int app_height){
+#ifdef ANDROID
     QtAndroid::runOnAndroidThread([=](){
         int vkeyboard_height;
         QAndroidJniObject activity = QtAndroid::androidActivity();
@@ -640,10 +650,18 @@ void MainFrame::measureVKeyboardHeight(int app_height){
         this->setVKeyboardHeight(vkeyboard_height);
         emit vkeyboardMeasured(vkeyboard_height);
     });
+#else
+    int vkeyboard_height = 0;
+    this->setVKeyboardHeight(vkeyboard_height);
+    emit vkeyboardMeasured(vkeyboard_height);
+#endif
 }
 
 
 void MainFrame::showProgressDialog(std::string message){
+    emit MainFrame::instance->openProgressDialog(QString::fromStdString(message));
+
+    /***
     QAndroidJniObject activity = QtAndroid::androidActivity();
     QAndroidJniObject view = activity.callObjectMethod("findViewById", "(I)Landroid/view/View;", R_ID_CONTENT);
     QAndroidJniObject context = view.callObjectMethod("getContext", "()Landroid/content/Context;");
@@ -655,15 +673,21 @@ void MainFrame::showProgressDialog(std::string message){
                                                   QAndroidJniObject::fromString(message.c_str()).object<jstring>(),
                                                   context.object<jclass>());
     });
+    ***/
 
 }
 
 void MainFrame::dismissProgressDialog(){
+    emit MainFrame::instance->closeProgressDialog();
+
+
+    /***
     QtAndroid::runOnAndroidThreadSync([=](){
         QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
                                                   "dismissProgressDialog",
                                                   "()V");
     });
+    ***/
 
 }
 
@@ -748,8 +772,8 @@ void MainFrame::changePTPKeyOf(QString contact_name, QString ptpkey){
 
 }
 
+#ifdef ANDROID
 #include <jni.h>
-
 extern "C"{
 #include "src/frame_management/mainframe.h"
 JNIEXPORT void JNICALL
@@ -758,6 +782,21 @@ JNIEXPORT void JNICALL
         qDebug() << "Called from Java" << endl;
         emit MainFrame::instance->vkeyboardClosed();
     }
+}
+#endif
+
+void MainFrame::changeVKeyboardMode(bool pan){
+#ifdef ANDROID
+    QtAndroid::runOnAndroidThreadSync([=](){
+        QAndroidJniObject activity = QtAndroid::androidActivity();
+
+        QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/EncrypTalkBeta3/Utils",
+                                                  "changeVKeyboardMode",
+                                                  "(ZLandroid/app/Activity;)V",
+                                                  pan,
+                                                  activity.object<jclass>());
+    });
+#endif
 }
 
 
