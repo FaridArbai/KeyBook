@@ -1,4 +1,5 @@
 #include "registerframe.h"
+#include <src/frame_management/mainframe.h>
 
 const string RegisterFrame::DEFAULT_STATUS = "This app is hilarious! :D";
 const string RegisterFrame::DEFAULT_IMAGE_NAME = "default.png";
@@ -10,32 +11,39 @@ RegisterFrame::RegisterFrame(RequestHandler* request_handler):RequestingFrame(re
 }
 
 void RegisterFrame::signUp(QString entered_username, QString entered_password){
-    string username = entered_username.toStdString();
-    string password = entered_password.toStdString();
+    MainFrame::showProgressDialog("Registering new user");
+    QFuture<void> future = QtConcurrent::run(this, &RegisterFrame::signUpImpl,
+                                             entered_username.toStdString(), entered_password.toStdString());
+}
+
+void RegisterFrame::signUpImpl(string username, string password){
     PM_regReq request_pm(username,password);
     ProtocolMessage* response_pm;
     bool result;
     string feedback_message;
 
     response_pm = this->request_handler->recvResponseFor(&request_pm);
-
     result = ((PM_regRep*)response_pm)->getResult();
 
     if(result==true){
+        MainFrame::showProgressDialog("Saving data");
         feedback_message = "User " + username + " registered";
-
-        delete response_pm;
-
-        PrivateUser* user = this->createDefaultUser(username,password);
-        IOManager::saveUser(user);
-        delete user;
+        QFuture<void> future = QtConcurrent::run(this, &RegisterFrame::saveDataImpl, username, password);
     }
     else{
+        MainFrame::dismissProgressDialog();
         feedback_message = ((PM_regRep*)response_pm)->getErrMsg();
-        delete response_pm;
     }
 
+    delete response_pm;
     emit receivedRegisterResponse(QString::fromStdString(feedback_message),result);
+}
+
+void RegisterFrame::saveDataImpl(string username, string password){
+    PrivateUser* user = this->createDefaultUser(username,password);
+    IOManager::saveUser(user);
+    delete user;
+    MainFrame::dismissProgressDialog();
 }
 
 PrivateUser* RegisterFrame::createDefaultUser(string username, string password){

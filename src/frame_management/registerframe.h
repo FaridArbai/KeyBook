@@ -36,6 +36,9 @@ public:
 
     Q_INVOKABLE void signUp(QString entered_username, QString entered_password);
 
+    void signUpImpl(string username, string password);
+    void saveDataImpl(string username, string password);
+
 signals:
     void receivedRegisterResponse(QString feedback_message, bool success);
     void userRegisteredIn();
@@ -50,3 +53,45 @@ private:
 };
 
 #endif // REGWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
