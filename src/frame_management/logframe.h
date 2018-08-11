@@ -15,6 +15,7 @@
 #include "src/frame_management/mainframe.h"
 #include "src/user_management/privateuser.h"
 #include "src/user_management/iomanager.h"
+#include <QGuiApplication>
 
 using namespace std;
 
@@ -23,9 +24,16 @@ class LogFrame : public QObject, public RequestingFrame{
 public:
     explicit LogFrame(QObject *parent = nullptr);
 
-    LogFrame(MainFrame* contacts_frame, RequestHandler* request_handler);
+    LogFrame(MainFrame* contacts_frame, RequestHandler* request_handler, QGuiApplication* app);
 
     Q_INVOKABLE void logIn(const QString entered_username, const QString entered_password);
+
+    void logInImpl(string username, string password);
+    Q_INVOKABLE void loadData(QString username);
+    void loadDataImpl(string username);
+
+
+    Q_INVOKABLE void closeApp();
 
     void spreadPrivateUser();
 
@@ -38,10 +46,12 @@ public:
 signals:
     void updateErrorLabel(QString err_msg);
     void userLoggedIn();
+    void validCredentials(QString username);
 
 private:
     PrivateUser* user;
     MainFrame* contacts_frame;
+    QGuiApplication* app;
 };
 
 #endif // LOGWINDOW_H
