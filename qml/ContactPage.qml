@@ -41,6 +41,14 @@ Page{
     property string entered_username    :   "";
     property string entered_password    :   "";
 
+    property alias progressDialog : progress_dialog;
+
+    CustomProgressDialog{
+        id: progress_dialog
+        anchors.fill: parent
+        statusbarColor: main.decToColor(root.statusbar_color)
+    }
+
 
     Connections{
         target: main_frame

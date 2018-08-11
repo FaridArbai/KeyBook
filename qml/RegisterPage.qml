@@ -7,7 +7,7 @@ Page{
     id: root
     visible:true
 
-    property var statusbar_color   :   null;
+    property var statusbar_color    :   Constants.LOGIN_STATUSBAR_COLOR;
 
     property bool adding_contact : false;
     property bool buttons_blocked : false;
@@ -182,23 +182,34 @@ Page{
 
     }
 
+    property alias progressDialog : progress_dialog;
+
+    CustomProgressDialog{
+        id: progress_dialog
+        anchors.fill: parent
+        statusbarColor: main.decToColor(root.statusbar_color)
+    }
+
     Rectangle{
         id: page_bg
         anchors.fill: parent
-
+        color: "#008696"
+        /**
         RadialGradient{
+            id: page_grad
             anchors.fill: parent
             //horizontalOffset: -root.width/2
             horizontalOffset: 0
-            verticalOffset: -reg_height/2
-            horizontalRadius: reg_height
-            verticalRadius: reg_height
+            verticalOffset: -log_height/2
+            horizontalRadius: log_height
+            verticalRadius: log_height
             cached: false
             gradient: Gradient{
                 GradientStop{position: 0;   color: Constants.TOP_LOGIN_COLOR}
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
             }
         }
+        **/
     }
 
     Rectangle{
@@ -240,10 +251,15 @@ Page{
                 }
             }
 
-            onClicked:
+            onClicked:{
+                action();
+            }
+
+            function action(){
                 if(!buttons_blocked){
                     root.StackView.view.pop()
                 }
+            }
         }
 
         Label{
@@ -1062,6 +1078,10 @@ Page{
         width: root.width
         height: root.height-(main.statusbar_height+main.app_height);
         color: "#000000";
+    }
+
+    function goBack(){
+        backbutton.action();
     }
 }
 

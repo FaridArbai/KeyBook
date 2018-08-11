@@ -1,13 +1,16 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.1
+import QtQuick 2.9
+import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
+import QtQuick.Window 2.3
+import QtQuick.Controls.Styles 1.4
 import "Constants.js" as Constants
 
 Page{
     id: root
     visible:true
 
-    property var statusbar_color    :   0x00000000;
+    property var statusbar_color    :   Constants.LOGIN_STATUSBAR_COLOR;
 
     property int href                   :   1135;
     property int log_height             :   main.app_height + main.statusbar_height;
@@ -54,7 +57,7 @@ Page{
 
     function handleTextChange(text_area){
         if(main.vkeyboard_height<0){
-            main_frame.measureVKeyboardHeight();
+            main_frame.measureVKeyboardHeight(main.app_height);
         }
 
         if(errorlabellog.visible==true){
@@ -122,6 +125,10 @@ Page{
             errorlabellog.error = true;
         }
 
+        onValidCredentials:{
+            log_frame.loadData(username);
+        }
+
         onUserLoggedIn:{
             username_input.text = "";
             password_input.text = "";
@@ -129,10 +136,21 @@ Page{
         }
     }
 
+    property alias progressDialog : progress_dialog;
+
+    CustomProgressDialog{
+        id: progress_dialog
+        anchors.fill: parent
+        statusbarColor: main.decToColor(root.statusbar_color)
+    }
+
+
+
     Rectangle{
         id: page_bg
         anchors.fill: parent
-        smooth: true
+        color: "#008696"
+        /**
         RadialGradient{
             id: page_grad
             anchors.fill: parent
@@ -147,6 +165,7 @@ Page{
                 GradientStop{position: 1; color: Constants.BOTTOM_LOGIN_COLOR}
             }
         }
+        **/
     }
 
     OpacityMask{
@@ -175,7 +194,7 @@ Page{
         }
     }
 
-    TextArea{
+    TextInput{
         id: username_input
         anchors.bottom: logo.bottom
         anchors.bottomMargin: -usernameinput_top_pad
@@ -188,7 +207,6 @@ Page{
         font.bold: false
         font.pixelSize: input_pixelsize
         selectByMouse: true
-        //textFormat: TextEdit.PlainText
         mouseSelectionMode: TextInput.SelectCharacters
         color: Constants.RELEVANT_TEXT_WHITE
 
@@ -228,6 +246,7 @@ Page{
         onTextChanged:{
             handleTextChange(username_input);
         }
+
     }
 
     Label{
