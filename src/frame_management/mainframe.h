@@ -10,12 +10,15 @@
 #ifdef ANDROID
 #include <QtAndroid>
 #include <QAndroidJniObject>
+#include "src/frame_management/image_picker/imagepickerandroid.h"
+#else
+#include <QScreen>
+#include <QApplication>
 #endif
 
 using namespace QtConcurrent;
 
 #include "src/frame_management/requestingframe.h"
-#include "src/frame_management/image_picker/imagepickerandroid.h"
 
 #include "src/connection_management/requesthandler.h"
 
@@ -96,6 +99,8 @@ public:
     Q_INVOKABLE void refreshContactGUI(QString username_gui);
 
     Q_INVOKABLE void openImagePicker();
+    Q_INVOKABLE void savePickedImage(QString new_image_path);
+
     Q_INVOKABLE void saveRetouchedImage(QString source, int x, int y, int width, int height, int angle);
     Q_INVOKABLE void sendAvatar();
 
@@ -160,6 +165,7 @@ private:
     int app_width;
     int vkeyboard_height;
     float density;
+
     bool statusbar_transparent = false;
     bool android_thread_busy = false;
     QMutex android_sync_mtx;

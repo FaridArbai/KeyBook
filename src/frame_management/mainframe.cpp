@@ -374,6 +374,7 @@ int MainFrame::getNumberOfAsyncThreads(){
 
 
 void MainFrame::openImagePicker(){
+#ifdef ANDROID
     QMutex wait_mutex;
     wait_mutex.lock();
     imagePickerAndroid* image_picker = new imagePickerAndroid();
@@ -390,22 +391,40 @@ void MainFrame::openImagePicker(){
     qDebug() << ("***CAMINO FINAL*** :" + new_image_path) << endl;
 
     if(new_image_path!=""){
-        string orig_image_path = new_image_path.toStdString();
-        string format = Avatar::getImageFormat(orig_image_path);
-        string image_path = IOManager::getImagePath("tmp",format);
-
-        QImage image(QString::fromStdString(orig_image_path));
-        QPixmap pixmap;
-        pixmap = pixmap.fromImage(image);
-        QFile file(QString::fromStdString(image_path));
-        file.open(QIODevice::WriteOnly);
-
-        pixmap.save(&file,format.c_str(),100);
-
-        file.close();
-
-        emit this->avatarChanging(QString::fromStdString(IOManager::FILE_HEADER + image_path));
+        this->savePickedImage(new_image_path);
     }
+#endif
+}
+
+void MainFrame::savePickedImage(QString new_image_path){
+    string orig_image_path = new_image_path.toStdString();
+#ifdef __WIN32
+    if(orig_image_path.substr(0,1)=="/"){
+        orig_image_path = orig_image_path.substr(1);
+    }
+#endif
+
+    string format = Avatar::getImageFormat(orig_image_path);
+    string image_path = IOManager::getImagePath("tmp",format);
+
+    for(int i=0; i<image_path.length(); i++){
+        if(image_path.substr(i,1)=="\\"){
+            image_path.replace(i,1,"/");
+        }
+    }
+
+
+    QImage image(QString::fromStdString(orig_image_path));
+    QPixmap pixmap;
+    pixmap = pixmap.fromImage(image);
+    QFile file(QString::fromStdString(image_path));
+
+    bool retval = file.open(QIODevice::WriteOnly);
+    bool retval2 = pixmap.save(&file,format.c_str(),100);
+
+    file.close();
+
+    emit this->avatarChanging(QString::fromStdString(IOManager::FILE_HEADER + image_path));
 }
 
 void MainFrame::saveRetouchedImage(QString source, int x, int y, int width, int height, int angle){
@@ -513,6 +532,7 @@ void MainFrame::changeStatusbarColor(int color, int delay){
 }
 
 void MainFrame::initScreenResources(){
+#ifdef ANDROID
     QtAndroid::runOnAndroidThreadSync([=](){
         int app_height;
         int app_width;
@@ -631,7 +651,22 @@ void MainFrame::initScreenResources(){
         qDebug() << "******************* HEIGHT : " << app_height << endl;
         qDebug() << "******************* STATBAR : " << statusbar_height << endl;
         qDebug() << "******************* NAVBAR : " << navigationbar_height << endl;
+        qDebug() << "******************* DENSITY : " << density << endl;
     });
+#else
+
+    QScreen* screen = QApplication::screens().at(0);
+    float density = ((screen->logicalDotsPerInch())/160);
+
+    qDebug() << "DENSITY : " << density << endl;
+
+    this->setAppHeight(720);
+    this->setAppWidth(401);
+    this->setDensity(density);
+    this->setStatusbarHeight(0);
+    this->setNavigationbarHeight(0);
+    this->setVKeyboardHeight(-1);
+#endif
 }
 
 void MainFrame::measureVKeyboardHeight(int app_height){
