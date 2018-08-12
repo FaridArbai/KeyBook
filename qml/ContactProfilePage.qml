@@ -129,6 +129,7 @@ Page{
                 source: "icons/whitebackicon.png"
                 height: icons_size
                 width: icons_size
+                mipmap: true
             }
 
             onClicked:{
@@ -157,6 +158,7 @@ Page{
                 source: "icons/whiteoptionsicon.png"
                 height: icons_size
                 width: icons_size
+                mipmap: true
             }
 
             onClicked:{
@@ -185,7 +187,7 @@ Page{
             height: parent.width
             source: contact.avatar_path_gui
             fillMode: Image.PreserveAspectCrop
-            smooth: true
+            mipmap: true
         }
 
 
@@ -346,6 +348,7 @@ Page{
                         width: parent.width
                         source: "icons/whitehandkeyicon.png"
                         visible: false
+                        mipmap: true
                     }
 
                 }
@@ -421,6 +424,7 @@ Page{
                         width: parent.width
                         source: "icons/whiteconversationicon.png"
                         visible: false
+                        mipmap: true
                     }
 
                 }
@@ -495,6 +499,7 @@ Page{
                         width: parent.width
                         source: "icons/whitetrashicon.png"
                         visible: false
+                        mipmap: true
                     }
 
                 }
@@ -578,7 +583,7 @@ Page{
                         root.StackView.view.push("qrc:/ConversationPage.qml");
                     }
                 }
-            }
+            }+
 
             CustomMenuItem{
                 id: exitprofile_option

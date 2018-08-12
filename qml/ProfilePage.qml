@@ -1,6 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.2
 import "Constants.js" as Constants
 
 Page {
@@ -101,7 +102,7 @@ Page {
         color: "transparent"
         z: 1
 
-        ToolButton {
+        CustomButton {
             id: backbutton
             anchors.top: parent.top
             anchors.topMargin: (parent.height-height)/2
@@ -109,18 +110,16 @@ Page {
             anchors.leftMargin: side_margin;
             height: buttons_size
             width: buttons_size
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            background: Rectangle{
-                anchors.fill: parent
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
-
-                Image {
-                    id: backicon
-                    anchors.centerIn: parent
-                    source: "icons/whitebackicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            Image {
+                id: backicon
+                anchors.centerIn: parent
+                source: "icons/whitebackicon.png"
+                height: icons_size
+                width: icons_size
+                mipmap: true
             }
 
             onClicked:{
@@ -135,7 +134,7 @@ Page {
             }
         }
 
-        ToolButton {
+        CustomButton {
             id: options_button
             anchors.top: parent.top
             anchors.topMargin: (parent.height-height)/2
@@ -143,18 +142,16 @@ Page {
             anchors.rightMargin: side_margin;
             height: buttons_size
             width: buttons_size
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            background: Rectangle{
-                anchors.fill: parent
-                color: backbutton.pressed ? Constants.PRESSED_COLOR:Constants.TRANSPARENT
-
-                Image {
-                    id: optionsicon
-                    anchors.centerIn: parent
-                    source: "icons/whiteoptionsicon.png"
-                    height: icons_size
-                    width: icons_size
-                }
+            Image {
+                id: optionsicon
+                anchors.centerIn: parent
+                source: "icons/whiteoptionsicon.png"
+                height: icons_size
+                width: icons_size
+                mipmap: true
             }
 
             onClicked:{
@@ -185,7 +182,7 @@ Page {
             source: main_frame.getCurrentImagePath()
             fillMode: Image.PreserveAspectCrop
             visible: true
-            smooth: true
+            mipmap: true
         }
 
 
@@ -201,9 +198,25 @@ Page {
             function action(){
                 //profileimagefiledialog.open()
                 if(block_buttons==false){
-                    main_frame.openImagePicker();
+                    if(PLATFORM==="ANDROID"){
+                        main_frame.openImagePicker();
+                    }
+                    else{
+                        desktop_dialog.open();
+                    }
                 }
             }
+        }
+    }
+
+    FileDialog{
+        id: desktop_dialog
+        title: "Pick an image"
+        nameFilters: ["Image files (*.jpg *.jpeg *.png)"]
+        folder: shortcuts.desktop
+        onAccepted: {
+            console.log("Desde qml: " + fileUrl);
+            main_frame.savePickedImage(fileUrl.toString().replace("file://",""));
         }
     }
 
@@ -278,7 +291,7 @@ Page {
             text: "Last updated " + main_frame.getCurrentStatusDate();
         }
 
-        Button{
+        CustomButton{
             id: changestatus_button
             anchors.top: status_text.top
             anchors.topMargin: status_text.height/2-height/2
@@ -286,8 +299,9 @@ Page {
             anchors.rightMargin: left_margin
             height: changestatusbutton_size
             width: changestatusbutton_size
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            background: Rectangle{color:"transparent"}
 
             OpacityMask{
                 id: changestatus_icon
@@ -313,6 +327,7 @@ Page {
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitepencilicon.png"
                     visible: false
+                    mipmap: true
                 }
             }
 
@@ -336,7 +351,7 @@ Page {
             anchors.rightMargin: 3*left_margin/4
             width: 1
             height: 2*changestatus_button.height
-            color: Constants.ProfilePage.TEXT_COLOR
+            color: root.theme_color
         }
     }
 
@@ -377,6 +392,7 @@ Page {
             anchors.top: parent.top
             anchors.topMargin: parent.height/2-height/2
             fillMode: Image.PreserveAspectFit
+            mipmap: true
         }
 
     }

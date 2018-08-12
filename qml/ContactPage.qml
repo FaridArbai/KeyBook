@@ -47,6 +47,7 @@ Page{
         id: progress_dialog
         anchors.fill: parent
         statusbarColor: main.decToColor(root.statusbar_color)
+        maxZ: 10001
     }
 
 
@@ -135,6 +136,7 @@ Page{
                 height: icons_size
                 width:  icons_size
                 source: "icons/whitebackicon.png"
+                mipmap: true
             }
 
             onClicked:{
@@ -177,6 +179,7 @@ Page{
                 source: "icons/whiteoptionsicon.png"
                 height: icons_size
                 width: icons_size
+                mipmap: true
             }
 
             onClicked: {
@@ -203,6 +206,7 @@ Page{
                 anchors.centerIn: parent
                 height: icons_size
                 width: icons_size
+                mipmap: true
             }
 
             onClicked:{
@@ -355,6 +359,7 @@ Page{
                         width: avatar_image_size
                         source: model.modelData.avatar_path_gui
                         fillMode: Image.PreserveAspectCrop
+                        mipmap: true
                         layer.enabled: true
                         layer.effect: OpacityMask {
                             maskSource: mask

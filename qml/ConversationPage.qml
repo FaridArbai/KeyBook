@@ -66,6 +66,7 @@ Page {
             fillMode: Image.PreserveAspectCrop
             source: "backgrounds/chatbackground.png"
             opacity: 0.2
+            mipmap: true
         }
     }
 
@@ -140,6 +141,7 @@ Page {
                 fillMode: Image.PreserveAspectFit
                 source: "icons/whitebackicon.png"
                 z: -1
+                mipmap: true
             }
 
             onClicked:{
@@ -168,6 +170,7 @@ Page {
                 anchors.fill: parent
                 source: contact.avatar_path_gui
                 fillMode: Image.PreserveAspectCrop
+                mipmap: true
                 layer.enabled: true
                 layer.effect: OpacityMask {
                     maskSource: mask
@@ -251,6 +254,7 @@ Page {
                 width: backimage_size
                 fillMode: Image.PreserveAspectFit
                 source: "icons/whiteoptionsicon.png"
+                mipmap: true
                 z:-1
             }
 
@@ -383,7 +387,7 @@ Page {
 
                     Label{
                         id: message_text
-                        color: ((model.modelData.reliability_gui)?("black"):("white"))
+                        color: ((model.modelData.reliability_gui)?(Constants.TextInput.TEXT_COLOR):("white"))
                         anchors.left: parent.left
                         padding: text_pad
                         wrapMode: Label.WordWrap
@@ -557,7 +561,7 @@ Page {
                     height: message_field_height + flick.contentY
                     wrapMode: TextArea.WordWrap
                     font.pixelSize: textarea_pixelsize
-                    color: "black"
+                    color: Constants.TextInput.TEXT_COLOR
                     cursorDelegate: CustomCursor{
                         pixelSize: textarea_pixelsize
                     }
@@ -691,8 +695,9 @@ Page {
                     height: 0.66*(parent.width/Math.sqrt(2))
                     fillMode: Image.PreserveAspectFit
                     source: "icons/whitesendicon.png"
-                    opacity: 0.9
+                    opacity: 0.95
                     z: -1
+                    mipmap: true
                 }
 
                 onClicked:{

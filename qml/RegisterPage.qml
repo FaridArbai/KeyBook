@@ -221,34 +221,26 @@ Page{
         height: main.toolbar_height
         color: "transparent"
 
-        ToolButton {
+        CustomButton {
             id: backbutton
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: side_margin
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.topMargin: (parent.height-height)/2
             enabled: !(buttons_blocked)
             height: buttons_size
             width: buttons_size
             background: backbutton_bg
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
 
-            Rectangle{
-                id: backbutton_bg;
-                anchors.fill: parent;
-                color: "transparent";
-            }
-
-            Rectangle{
-                color: backbutton.pressed ? Constants.BUTTON_WHITE:"transparent"
-                anchors.fill: parent
-
-                Image {
-                    id: backicon
-                    anchors.centerIn: parent
-                    height: icons_size
-                    width:  icons_size
-                    source: "icons/whitebackicon.png"
-                }
+            Image {
+                id: backicon
+                anchors.centerIn: parent
+                height: icons_size
+                width:  icons_size
+                source: "icons/whitebackicon.png"
+                mipmap: true
             }
 
             onClicked:{
@@ -807,7 +799,7 @@ Page{
             }
         }
 
-        Button{
+        CustomButton{
             id: addcontactbutton
             anchors.top: errorlabelreg.top
             anchors.topMargin: button_top_margin
@@ -815,11 +807,15 @@ Page{
             anchors.leftMargin: (parent.width-width)/2
             height: button_height
             width: textarea_width
+            circular: true
+            animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+            animationDuration: Constants.VISIBLE_DURATION
+            easingType: Easing.OutQuad
 
             background: Rectangle {
                 height: addcontactbutton.height
                 width: addcontactbutton.width
-                color: addcontactbutton.down ? Constants.BUTTON_WHITE : "transparent"
+                color: "transparent"
                 border.color: Constants.LINES_WHITE
                 border.width: 1
                 //radius: 8

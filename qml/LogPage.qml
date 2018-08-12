@@ -184,6 +184,7 @@ Page{
             anchors.fill: parent
             source: "icons/whitelogoicon.png"
             visible: false
+            mipmap: true
         }
 
         Rectangle{
@@ -225,6 +226,7 @@ Page{
                 anchors.fill: parent
                 source: "icons/whiteusernameicon.png"
                 visible: false
+                mipmap: true
             }
 
             Rectangle{
@@ -356,6 +358,7 @@ Page{
             anchors.fill: parent
             source: "icons/whitepadlockicon.png"
             visible: false
+            mipmap: true
         }
 
         Rectangle{
@@ -417,6 +420,7 @@ Page{
                 anchors.fill: parent
                 source: errorlabellog.error?"icons/whitenokicon.png":"icons/whiteokicon.png"
                 visible: false
+                mipmap: true
             }
 
             Rectangle{
@@ -429,7 +433,7 @@ Page{
     }
 
 
-    Button{
+    CustomButton{
         id: login_button
         anchors.top: password_input.bottom
         anchors.topMargin: loginbutton_top_pad
@@ -437,14 +441,17 @@ Page{
         anchors.leftMargin: (parent.width-width)/2
         height: loginbutton_height
         width: loginbutton_width
+        circular: true
+        animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+        animationDuration: Constants.VISIBLE_DURATION
+        easingType: Easing.OutQuad
 
         background: Rectangle {
             height: login_button.height
             width: login_button.width
-            color: login_button.down ? Constants.BUTTON_WHITE : "transparent"
+            color: "transparent"
             border.color: Constants.LINES_WHITE
             border.width: 1
-            //radius: 8
             radius: height/2
         }
 
@@ -462,7 +469,7 @@ Page{
         }
     }
 
-    Button{
+    CustomButton{
         id: register_button
         anchors.top: login_button.bottom
         anchors.topMargin: registerbutton_top_pad
@@ -470,11 +477,15 @@ Page{
         anchors.leftMargin: (parent.width-width)/2
         height: loginbutton_height
         width: loginbutton_width
+        circular: true
+        animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+        animationDuration: Constants.VISIBLE_DURATION
+        easingType: Easing.OutQuad
 
         background: Rectangle {
             height: register_button.height
             width: register_button.width
-            color: register_button.down ? Constants.BUTTON_WHITE : "transparent"
+            color: "transparent"
             border.color: Constants.LINES_WHITE
             border.width: 1
             //radius: 8
@@ -524,7 +535,7 @@ Page{
             color: "transparent"
         }
         onClicked: {
-            Qt.openUrlExternally("http://192.168.0.158/projects/encryptalk");
+            Qt.openUrlExternally("http://www.faridarbai.com/projects/keybook");
         }
     }
 
