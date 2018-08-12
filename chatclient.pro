@@ -3,9 +3,23 @@ TEMPLATE = app
 
 TARGET = chatclient
 
-LIBS += -lws2_32
-
 DEFINES += QT_DEPRECATED_WARNINGS
+
+android{
+	QT += androidextras
+}else{
+	windows{
+		LIBS += -lws2_32
+		LIBS += -LC:/OpenSSL-Win32/lib -llibcrypto
+		INCLUDEPATH += C:\OpenSSL-Win32\include
+	}
+	unix{
+		LIBS += -L/usr/bin/openssl/lib -libcrypto
+		INCLUDEPATH += /usr/include
+	}
+}
+
+CONFIG += c++11
 
 HEADERS += \
 	 src/protocol_messages/PM_addContactCom.h \
@@ -41,14 +55,18 @@ HEADERS += \
 	 src/connection_management/servermessage.h \
 	 src/connection_management/connection.h \
 	 src/user_management/iomanager.h \
-	 src/frame_management/personalprofileframe.h \
-	 src/frame_management/contactprofileframe.h \
-	 src/frame_management/conversationframe.h \
-	 src/protocol_messages/encryption/rsa.h \
-	 src/frame_management/mainframe.h
+	 src/frame_management/mainframe.h \
+    src/protocol_messages/encoding/base64.h \
+    src/user_management/stda.h \
+    src/encryption_engines/publicengine.h \
+    src/encryption_engines/symmetricengine.h \
+    src/encryption_engines/encryption/aes.h \
+    src/encryption_engines/encryption/aes.hpp \
+    src/user_management/latchword.h \
+    src/user_management/signedtext.h
 
 SOURCES += \
-			  src/main.cpp \
+	 src/main.cpp \
 	 src/protocol_messages/PM_addContactCom.cpp \
 	 src/protocol_messages/PM_addContactRep.cpp \
 	 src/protocol_messages/PM_addContactReq.cpp \
@@ -81,31 +99,72 @@ SOURCES += \
 	 src/connection_management/requesthandler.cpp \
 	 src/connection_management/servermessage.cpp \
 	 src/user_management/iomanager.cpp \
-	 src/frame_management/personalprofileframe.cpp \
-	 src/frame_management/contactprofileframe.cpp \
-	 src/frame_management/conversationframe.cpp \
-	 src/protocol_messages/encryption/rsa.cpp \
-	 src/frame_management/mainframe.cpp
+	 src/frame_management/mainframe.cpp \
+    src/protocol_messages/encoding/base64.cpp \
+    src/user_management/stda.cpp \
+    src/encryption_engines/publicengine.cpp \
+    src/encryption_engines/symmetricengine.cpp \
+    src/encryption_engines/encryption/aes.cpp \
+    src/user_management/latchword.cpp \
+    src/user_management/signedtext.cpp
 
-RESOURCES += qml.qrc \
-	 icons/default.png \
-	 icons/whitesendicon.png \
-	 icons/whiteprofileicon.png \
-	 icons/whitebackicon.png \
-	 icons/whitechangestatusicon.png \
-	 icons/whiteplusicon.png \
-	 icons/whitechaticon.png \
-	 icons/whitegroupicon.png \
-	 icons/whiteforbiddenicon.png \
-	 icons/whitetrashicon.png \
+RESOURCES += qml/qml.qrc \
+    qml/image_resources.qrc
 
 
 QT += widgets \
         quick
+android{
+	HEADERS += \
+		src/frame_management/image_picker/caminhoimagens.h \
+		src/frame_management/image_picker/imagepickerandroid.h
 
-CONFIG += c++11
+	SOURCES += \
+		src/frame_management/image_picker/caminhoimagens.cpp \
+		src/frame_management/image_picker/imagepickerandroid.cpp
 
+	DISTFILES += \
+		 android/AndroidManifest.xml \
+		 android/gradle/wrapper/gradle-wrapper.jar \
+		 android/gradlew \
+		 android/res/values/libs.xml \
+		 android/build.gradle \
+		 android/gradle/wrapper/gradle-wrapper.properties \
+		 android/gradlew.bat \
+		 android/AndroidManifest.xml \
+		 android/gradle/wrapper/gradle-wrapper.jar \
+		 android/gradlew \
+		 android/res/values/libs.xml \
+		 android/build.gradle \
+		 android/gradle/wrapper/gradle-wrapper.properties \
+		 android/gradlew.bat \
+		 src/frame_management/ImageChooser.java \
+		 android/AndroidManifest.xml \
+		 android/res/values/libs.xml \
+		 android/build.gradle \
+		 android/AndroidManifest.xml \
+		 android/AndroidManifest.xml \
+		 android/gradle/wrapper/gradle-wrapper.jar \
+		 android/gradlew \
+		 android/res/values/libs.xml \
+		 android/build.gradle \
+		 android/gradle/wrapper/gradle-wrapper.properties \
+		 android/gradlew.bat \
+		 android/AndroidManifest.xml \
+		 android/gradle/wrapper/gradle-wrapper.jar \
+		 android/gradlew \
+		 android/res/values/libs.xml \
+		 android/build.gradle \
+		 android/gradle/wrapper/gradle-wrapper.properties \
+		 android/gradlew.bat \
+		 android/src/org/qtproject/example/EncrypTalkBeta3/Utils.java \
+		 android/src/org/qtproject/example/EncrypTalkBeta3/AndroidEncryptionUtils.java
 
+	ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+	contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+		 ANDROID_EXTRA_LIBS =
+	}
+}
 
 
