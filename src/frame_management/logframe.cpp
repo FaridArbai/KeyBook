@@ -52,7 +52,6 @@ void LogFrame::loadData(QString username){
 
     MainFrame::dismissProgressDialog();
     emit userLoggedIn();
-
 }
 
 void LogFrame::loadDataImpl(string username){
