@@ -11,11 +11,16 @@ RequestingFrame::RequestingFrame(request_handler){
     MainFrame::instance = this;
 }
 
+
+
+
+
+
 void MainFrame::refreshContactsGUI(){
     PrivateUser* user = this->getPrivateUser();
     QQmlContext* context = (*context_ptr);
 
-    context->setContextProperty(Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI()));
+    context->setContextProperty("Contacts" + Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI()));
 }
 
 void MainFrame::refreshContactsGUI(QString filter_gui){
@@ -23,8 +28,33 @@ void MainFrame::refreshContactsGUI(QString filter_gui){
     PrivateUser* user = this->getPrivateUser();
     QQmlContext* context = (*context_ptr);
 
-    context->setContextProperty(Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI(filter)));
+    context->setContextProperty("Contacts" + Contact::MODEL_NAME, QVariant::fromValue(user->getContactsGUI(filter)));
 }
+
+
+
+void MainFrame::refreshConversationsGUI(){
+    PrivateUser* user = this->getPrivateUser();
+    QQmlContext* context = (*context_ptr);
+
+    context->setContextProperty("Conversations" + Contact::MODEL_NAME, QVariant::fromValue(user->getConversationsGUI()));
+}
+
+void MainFrame::refreshConversationsGUI(QString filter_gui){
+    string filter = filter_gui.toStdString();
+    PrivateUser* user = this->getPrivateUser();
+    QQmlContext* context = (*context_ptr);
+
+    context->setContextProperty("Conversations" + Contact::MODEL_NAME, QVariant::fromValue(user->getConversationsGUI(filter)));
+}
+
+
+
+
+
+
+
+
 
 void MainFrame::refreshContactGUI(QString username_gui){
     string username = username_gui.toStdString();
@@ -137,10 +167,11 @@ void MainFrame::setPrivateUser(PrivateUser* user){
     string user_str = user->toString();
 
     this->refreshContactsGUI();
+    this->refreshConversationsGUI();
 
     // Add a 1 second delay to user's instantiation to make sure
     // that the networking thread reaches the waiting code on
-    // the loading condition
+    // the loading condition (experimental yet unnecesary)
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -273,7 +304,7 @@ void MainFrame::sendMessage(QString conversation_recipient, QString entered_text
     this->user->addMessage(sender,recipient,date_str,encrypted_text);
 
     this->refreshMessagesGUI();
-    this->refreshContactsGUI();
+    this->refreshConversationsGUI();
 }
 
 void MainFrame::setInConversation(bool in_conversation){

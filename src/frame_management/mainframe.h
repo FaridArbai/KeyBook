@@ -69,6 +69,9 @@ public:
     Q_INVOKABLE void refreshContactsGUI();
     Q_INVOKABLE void refreshContactsGUI(QString filter_gui);
 
+    Q_INVOKABLE void refreshConversationsGUI();
+    Q_INVOKABLE void refreshConversationsGUI(QString filter_gui);
+
     PrivateUser* getPrivateUser() const;
     void setPrivateUser(PrivateUser* user);
 
