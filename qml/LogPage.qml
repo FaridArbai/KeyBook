@@ -15,13 +15,13 @@ Page{
     property int href                   :   1135;
     property int log_height             :   main.app_height + main.statusbar_height;
 
-    property int logo_top_pad           :   (90/href)*log_height + main.statusbar_height;
-    property int logo_size              :   (194/href)*log_height;
+    property int logo_top_pad           :   (25/href)*log_height + main.statusbar_height;
+    property int logo_size              :   (170/href)*log_height;
 
-    property int usernameinput_top_pad  :   (190/href)*log_height;
+    property int usernameinput_top_pad  :   (150/href)*log_height;
     property int usernameinput_width    :   (3/4)*root.width;
 
-    property int passwordinput_top_pad  :   (100/href)*log_height;
+    property int passwordinput_top_pad  :   3*input_pixelsize;
     property int passwordinput_width    :   (3/4)*root.width;
 
     property int errorlabel_center_pad  :   loginbutton_top_pad/2;
@@ -54,41 +54,6 @@ Page{
 
     property int infolabel_top_pad      :   (98/href)*log_height;
     property int infolabel_bottom_pad   :   (72/href)*log_height;
-
-    function handleTextChange(text_area){
-        if(main.vkeyboard_height<0){
-            main_frame.measureVKeyboardHeight(main.app_height);
-        }
-
-        if(errorlabellog.visible==true){
-            errorlabellog.text = "";
-            errorlabellog.visible = false;
-        }
-
-        var text = text_area.text;
-        var len = text.length;
-        var accepted = (text.indexOf("\n")!==(-1));
-        var contains_badchar = ((text.indexOf(" ")!==(-1))||(text.indexOf("\\")!==(-1)));
-        var exceeds_length =
-                (text_area==username_input)?(len>Constants.MAX_USERNAME_LENGTH):(len>Constants.MAX_PASSWORD_LENGTH);
-
-        if(contains_badchar){
-            text = text.substr(0,text.length-1);
-            text_area.text = text;
-            text_area.cursorPosition = text_area.length;
-        }
-        else if(accepted){
-            text_area.text = text_area.text.replace('\n','');
-            text_area.cursorPosition = text_area.length;
-            text_area.focus = false;
-            pw_hidden_input.focus = false;
-            logUser();
-        }
-        else if(exceeds_length){
-            text_area.text = text.substring(0,len-1);
-            text_area.cursorPosition = text_area.length;
-        }
-    }
 
     function logUser(){
         var username = username_input.text;
@@ -130,9 +95,9 @@ Page{
         }
 
         onUserLoggedIn:{
-            username_input.text = "";
-            password_input.text = "";
             root.StackView.view.push("qrc:/ContactPage.qml");
+            username_input.inputAlias.text = "";
+            password_input.inputAlias.text = "";
         }
     }
 
@@ -195,206 +160,74 @@ Page{
         }
     }
 
-    TextInput{
+    CustomMask{
+        id: username_icon
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width - usernameinput_width)/2
+        anchors.bottom: username_input.bottom
+        height: input_pixelsize + username_input.bottomPadding
+        width: height
+        source: "icons/whiteusernameicon.png"
+        color: username_input.inputAlias.activeFocus ? Constants.LogPage.FOCUS_COLOR : Constants.LogPage.HINT_COLOR;
+    }
+
+    CustomTextInput{
         id: username_input
         anchors.bottom: logo.bottom
         anchors.bottomMargin: -usernameinput_top_pad
+        anchors.left: username_icon.right
+        anchors.leftMargin: username_icon.width/2
+        width: usernameinput_width - anchors.leftMargin - username_icon.width
+        pixelsize: input_pixelsize
+        textColor: Constants.LogPage.TEXT_COLOR;
+        hintColor: Constants.LogPage.HINT_COLOR;
+        focusColor: Constants.LogPage.FOCUS_COLOR;
+        separatorColor: Constants.LogPage.SEPARATOR_COLOR;
+        hint: "Username"
+        counter_visible: false
+        echo_mode: TextInput.Normal
+        tabTarget: password_input.inputAlias
+
+        onTextChanged: {
+            if(main.vkeyboard_height<0){
+                main_frame.measureVKeyboardHeight(main.app_height);
+            }
+        }
+    }
+
+    CustomMask{
+        id: password_icon
         anchors.left: parent.left
-        anchors.leftMargin: (parent.width-width)/2
-        leftPadding: textarea_left_padding
-        rightPadding: 0
-        bottomPadding: input_bottom_pad
-        width: usernameinput_width
-        font.bold: false
-        font.pixelSize: input_pixelsize
-        selectByMouse: true
-        mouseSelectionMode: TextInput.SelectCharacters
-        color: Constants.RELEVANT_TEXT_WHITE
-
-        OpacityMask{
-            id: user_logo
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: icons_bottom_pad
-            anchors.left: parent.left
-            height: placeicons_size
-            width: placeicons_size
-            source: usericon_bg
-            maskSource: usericon_mask
-
-            Image{
-                id: usericon_mask
-                anchors.fill: parent
-                source: "icons/whiteusernameicon.png"
-                visible: false
-                mipmap: true
-            }
-
-            Rectangle{
-                id: usericon_bg
-                anchors.fill: parent
-                color: Constants.GENERAL_TEXT_WHITE
-                visible: false
-            }
-        }
-
-        Rectangle{
-            anchors.top: parent.bottom
-            anchors.left: parent.left
-            height: username_input.activeFocus? 2:1
-            width: parent.width
-            color: Constants.LINES_WHITE
-        }
-
-        onTextChanged:{
-            handleTextChange(username_input);
-        }
-
+        anchors.leftMargin: (parent.width - passwordinput_width)/2
+        anchors.bottom: password_input.bottom
+        height: input_pixelsize + password_input.bottomPadding
+        width: height
+        source: "icons/whitepadlockicon.png"
+        color: password_input.inputAlias.activeFocus ? Constants.LogPage.FOCUS_COLOR : Constants.LogPage.HINT_COLOR;
     }
 
-    Label{
-        id: username_placeholder
-        anchors.fill: username_input
-        topPadding: username_input.topPadding
-        bottomPadding: username_input.bottomPadding
-        rightPadding: username_input.rightPadding
-        leftPadding: username_input.leftPadding
-        font.pixelSize: username_input.font.pixelSize
-        text: "Username"
-        visible: (username_input.text.length==0)&&(!username_input.activeFocus)
-        color: Constants.GENERAL_TEXT_WHITE
-    }
-
-    TextArea{
-        id: pw_hidden_input
-        anchors.bottom: username_input.bottom
-        anchors.bottomMargin: -passwordinput_top_pad
-        anchors.left: parent.left
-        anchors.leftMargin: (parent.width-width)/2
-        leftPadding: textarea_left_padding
-        rightPadding: 0
-        bottomPadding: input_bottom_pad
-        width: usernameinput_width
-        font.bold: true
-        font.pixelSize: input_pixelsize
-        font.letterSpacing: input_pixelsize/8
-        selectByMouse: true
-        //textFormat: TextEdit.PlainText
-        mouseSelectionMode: TextInput.SelectCharacters
-        visible: true
-        enabled: true
-        color: Constants.RELEVANT_TEXT_WHITE
-
-        property bool changing : false
-
-        onTextChanged:{
-            if(!changing){
-                changing = true;
-                if(text.length < password_input.text.length){
-                    var len = text.length;
-                    if(password_input.text.length!=0){
-                        password_input.text = password_input.text.substring(0,len);
-                        password_input.cursorPosition = password_input.length;
-                    }
-                }
-                else{
-                    var last_char = text.substring(text.length-1);
-                    password_input.text = password_input.text + last_char;
-                    password_input.cursorPosition = password_input.length;
-                    handleTextChange(password_input);
-                }
-                resetDots();
-                changing = false;
-            }
-        }
-
-        function resetDots(){
-            var outter_call = (changing==false);
-            if(outter_call){
-                changing = true;
-            }
-
-            var len = password_input.text.length;
-            text = root.pw_char.repeat(len);
-            cursorPosition = length;
-
-            if(outter_call){
-                changing = false;
-            }
-        }
-    }
-
-    TextArea{
+    CustomTextInput{
         id: password_input
         anchors.bottom: username_input.bottom
         anchors.bottomMargin: -passwordinput_top_pad
-        anchors.left: parent.left
-        anchors.leftMargin: (parent.width-width)/2
-        leftPadding: textarea_left_padding
-        rightPadding: 0
-        bottomPadding: input_bottom_pad
-        width: passwordinput_width
-        font.bold: false
-        font.pixelSize: input_pixelsize
-        selectByMouse: true
-        //textFormat: TextEdit.PlainText
-        mouseSelectionMode: TextInput.SelectCharacters
-        visible: false
-        enabled: false
-        color: Constants.RELEVANT_TEXT_WHITE
-    }
-
-    OpacityMask{
-        id: password_logo
-        anchors.bottom: password_input.bottom
-        anchors.bottomMargin: icons_bottom_pad
-        anchors.left: password_input.left
-        height: placeicons_size
-        width: placeicons_size
-        source: latchicon_bg
-        maskSource: latchicon_mask
-
-        Image{
-            id: latchicon_mask
-            anchors.fill: parent
-            source: "icons/whitepadlockicon.png"
-            visible: false
-            mipmap: true
-        }
-
-        Rectangle{
-            id: latchicon_bg
-            anchors.fill: parent
-            color: Constants.GENERAL_TEXT_WHITE
-            visible: false
-        }
-    }
-
-    Rectangle{
-        anchors.top: password_input.bottom
-        anchors.left: password_input.left
-        height: (password_input.activeFocus||pw_hidden_input.activeFocus)? 2:1
-        width: password_input.width
-        color: Constants.LINES_WHITE
-    }
-
-    Label{
-        id: password_placeholder
-        anchors.fill: pw_hidden_input
-        topPadding: pw_hidden_input.topPadding
-        bottomPadding: pw_hidden_input.bottomPadding
-        rightPadding: pw_hidden_input.rightPadding
-        leftPadding: pw_hidden_input.leftPadding
-        font.pixelSize: password_input.font.pixelSize
-        text: "Password"
-        visible: (password_input.text.length==0)&&(!pw_hidden_input.activeFocus)
-        color: Constants.GENERAL_TEXT_WHITE
+        anchors.left: password_icon.right
+        anchors.leftMargin: password_icon.width/2
+        width: passwordinput_width - anchors.leftMargin - password_icon.width
+        pixelsize: input_pixelsize
+        textColor: Constants.LogPage.TEXT_COLOR;
+        hintColor: Constants.LogPage.HINT_COLOR;
+        focusColor: Constants.LogPage.FOCUS_COLOR;
+        separatorColor: Constants.LogPage.SEPARATOR_COLOR;
+        hint: "Password"
+        counter_visible: false
+        echo_mode: TextInput.Password
     }
 
     Label{
         id:errorlabellog
         visible: false
         anchors.top: password_input.bottom
-        anchors.topMargin: errorlabel_center_pad-(height/2)
+        anchors.topMargin: 2*errorlabel_pixelsize
         anchors.left: parent.left
         anchors.leftMargin: (parent.width-(paintedWidth+leftPadding))/2
         width: errorlabel_width
@@ -406,37 +239,22 @@ Page{
 
         property bool error : true;
 
-        OpacityMask{
+        CustomMask{
             anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: (parent.bottomPadding+((parent.height-height)/2))
-            height: erroricon_size
-            width: erroricon_size
-            source: erroricon_bg
-            maskSource: erroricon_mask
-
-            Image{
-                id: erroricon_mask
-                anchors.fill: parent
-                source: errorlabellog.error?"icons/whitenokicon.png":"icons/whiteokicon.png"
-                visible: false
-                mipmap: true
-            }
-
-            Rectangle{
-                id: erroricon_bg
-                anchors.fill: parent
-                color: Constants.RELEVANT_TEXT_WHITE
-                visible: false
-            }
+            anchors.top: parent.top
+            anchors.topMargin: (parent.height-height)/2;
+            height: errorlabel_pixelsize
+            width: errorlabel_pixelsize
+            source: errorlabellog.error?"icons/whitenokicon.png":"icons/whiteokicon.png"
+            color: Constants.RELEVANT_TEXT_WHITE
         }
     }
 
 
     CustomButton{
         id: login_button
-        anchors.top: password_input.bottom
-        anchors.topMargin: loginbutton_top_pad
+        anchors.top: errorlabellog.bottom
+        anchors.topMargin: errorlabellog.anchors.topMargin
         anchors.left : parent.left
         anchors.leftMargin: (parent.width-width)/2
         height: loginbutton_height
