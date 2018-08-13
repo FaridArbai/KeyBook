@@ -14,6 +14,10 @@ Page{
     property int href   :   1135;
     property int wref   :   720;
 
+    property int swipebar_height        :   (96/href)*root.height;
+    property int swipebar_pixelsize     :   (22/href)*root.height;
+    property int swipeline_height       :   (7/href)*root.height;
+
     property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
     property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
     property int buttons_size           :   2*icons_size
@@ -112,10 +116,6 @@ Page{
         height: main.toolbar_height
         color: Constants.TOOLBAR_COLOR
         z: contacts_view.z + 1
-        layer.enabled: true
-        layer.effect: CustomElevation{
-            source: toolbar
-        }
 
         CustomButton {
             id: backbutton
@@ -144,8 +144,21 @@ Page{
             }
 
             function action(){
-                buttons_blocked = true;
-                main_frame.logOutUser();
+                if(searchbox.opened){
+                    searchbox.close();
+                }
+                else if(menu.opened){
+                    menu.close();
+                }
+                else if(addcontact_fragment.opened){
+                    addcontact_fragment.close();
+                }
+                else if(searchbox.opened){
+                    searchbox.close();
+                }
+                else{
+                    main_frame.logOutUser();
+                }
             }
         }
 
@@ -256,6 +269,7 @@ Page{
 
                 onTextChanged:{
                     main_frame.refreshContactsGUI(search_text.text);
+                    main_frame.refreshConversationsGUI(search_text.text);
                 }
 
                 onActiveFocusChanged: {
@@ -275,6 +289,7 @@ Page{
 
             function close(){
                 main_frame.refreshContactsGUI();
+                main_frame.refreshConversationsGUI();
                 close_animation.start();
             }
 
@@ -296,176 +311,427 @@ Page{
         }
     }
 
-    ListView{
-        id: contacts_view
+
+    Rectangle{
+        id: swipebar
         anchors.top: toolbar.bottom
+        anchors.topMargin: -(logo_text.y/2)
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: swipebar_height
+        z: contacts_view.z + 1
+        color: Constants.TOOLBAR_COLOR
+        layer.enabled: true
+        layer.effect: CustomElevation{
+            source: swipebar
+        }
+
+        CustomButton{
+            id: conversations_button
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: parent.width/2
+            height: parent.height
+            asynchronous: true
+            animationDuration: 250
+
+            Label{
+                id: conversations_label
+                anchors.left: parent.left
+                anchors.leftMargin: (parent.width-width)/2
+                anchors.top: parent.top
+                anchors.topMargin: (parent.height - swipebar_pixelsize)/2
+                text: "CONVERSATIONS"
+                font.pixelSize: swipebar_pixelsize
+                font.bold: true
+                color: swipe_view.currentIndex===0 ? "white" : Constants.GENERAL_TEXT_WHITE
+            }
+
+            onClicked:{
+                swipe_view.currentIndex = 0;
+            }
+        }
+
+        CustomButton{
+            id: contacts_button
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: parent.width/2
+            height: parent.height
+            asynchronous: true
+            animationDuration: 250
+
+            Label{
+                id: contacts_label
+                anchors.left: parent.left
+                anchors.leftMargin: (parent.width-width)/2
+                anchors.top: parent.top
+                anchors.topMargin: (parent.height - swipebar_pixelsize)/2
+                text: "CONTACTS"
+                font.pixelSize: swipebar_pixelsize
+                font.bold: true
+                color: swipe_view.currentIndex === 1 ? "white" : Constants.GENERAL_TEXT_WHITE
+            }
+
+            onClicked:{
+                swipe_view.currentIndex = 1;
+            }
+        }
+
+        Rectangle{
+            id: swipeline
+            anchors.bottom: parent.bottom
+            height: swipeline_height
+            width: parent.width/2
+            x: 0
+
+            function slide(){
+                if(swipe_view.currentIndex===0){
+                    swipe_left.start();
+                }
+                else{
+                    swipe_right.start();
+                }
+            }
+
+            PropertyAnimation{
+                id: swipe_right
+                target: swipeline
+                property: "x"
+                from: 0
+                to: swipeline.width
+                duration: 200
+            }
+
+            PropertyAnimation{
+                id: swipe_left
+                target: swipeline
+                property: "x"
+                from: swipeline.width
+                to: 0
+                duration: 200
+            }
+        }
+
+    }
+
+    SwipeView{
+        id: swipe_view
+        anchors.top: swipebar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        topMargin: 0
-        leftMargin: 0
-        bottomMargin: 0
-        rightMargin: 0
-        spacing: 0
-        model: ContactModel
-        enabled: !(buttons_blocked)
+        currentIndex: 0
 
-        delegate: ItemDelegate {
-            width: root.width
-            height: contact_height
-            background: Rectangle{color: "transparent"}
+        onCurrentIndexChanged: {
+            swipeline.slide();
+        }
 
-            CustomButton{
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                animationDuration: Constants.VISIBLE_DURATION;
-                easingType: Easing.OutQuad
+        ListView{
+            id: contacts_view
+            topMargin: 0
+            leftMargin: 0
+            bottomMargin: 0
+            rightMargin: 0
+            spacing: 0
+            model: ConversationsContactModel
+            enabled: !(buttons_blocked)
 
-                onClicked: {
-                    main_frame.loadConversationWith(model.modelData.username_gui)
-                    main_frame.refreshContactGUI(model.modelData.username_gui)
-                    root.StackView.view.push("qrc:/ConversationPage.qml")
-                }
-
-                onPressAndHold: {
-                    main_frame.loadConversationWith(model.modelData.username_gui)
-                    main_frame.refreshContactGUI(model.modelData.username_gui)
-                    root.StackView.view.push("qrc:/ConversationPage.qml")
-                }
-            }
-
-            Rectangle{
-                id: avatar_button
-                anchors.top: parent.top
-                anchors.left: parent.left
+            delegate: ItemDelegate {
+                width: root.width
                 height: contact_height
-                width: avatar_container_width
-                color: "transparent"
-                enabled: !(buttons_blocked)
+                background: Rectangle{color: "transparent"}
+
+                CustomButton{
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    animationDuration: Constants.VISIBLE_DURATION;
+                    easingType: Easing.OutQuad
+
+                    onClicked: {
+                        main_frame.loadConversationWith(model.modelData.username_gui)
+                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                    }
+
+                    onPressAndHold: {
+                        main_frame.loadConversationWith(model.modelData.username_gui)
+                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                    }
+                }
 
                 Rectangle{
-                    anchors.fill: parent
+                    id: avatar_button
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    height: contact_height
+                    width: avatar_container_width
                     color: "transparent"
+                    enabled: !(buttons_blocked)
 
-                    Image {
-                        id: avatar
-                        anchors.top: parent.top
-                        anchors.topMargin: avatar_top_pad
-                        anchors.left: parent.left
-                        anchors.leftMargin: avatar_right_pad
-                        height: avatar_image_size
-                        width: avatar_image_size
-                        source: model.modelData.avatar_path_gui
-                        fillMode: Image.PreserveAspectCrop
-                        mipmap: true
-                        layer.enabled: true
-                        layer.effect: OpacityMask {
-                            maskSource: mask
-                        }
+                    Rectangle{
+                        anchors.fill: parent
+                        color: "transparent"
 
-                        CustomButton{
-                            anchors.fill: parent
-                            circular: true
-                            animationColor: "#FFFFFF"
+                        Image {
+                            id: avatar
+                            anchors.top: parent.top
+                            anchors.topMargin: avatar_top_pad
+                            anchors.left: parent.left
+                            anchors.leftMargin: avatar_right_pad
+                            height: avatar_image_size
+                            width: avatar_image_size
+                            source: model.modelData.avatar_path_gui
+                            fillMode: Image.PreserveAspectCrop
+                            mipmap: true
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: mask
+                            }
 
-                            onClicked: {
-                                main_frame.refreshContactGUI(model.modelData.username_gui)
-                                root.StackView.view.push("qrc:/ContactProfilePage.qml",
-                                                         {previous_page : "ContactPage"});
+                            CustomButton{
+                                anchors.fill: parent
+                                circular: true
+                                animationColor: "#FFFFFF"
+
+                                onClicked: {
+                                    main_frame.refreshContactGUI(model.modelData.username_gui)
+                                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                                             {previous_page : "ContactPage"});
+                                }
                             }
                         }
-                    }
 
-                    Rectangle {
-                        id: mask
-                        height: avatar.height
-                        width: avatar.width
-                        radius: (avatar.height/2)
-                        visible: false
+                        Rectangle {
+                            id: mask
+                            height: avatar.height
+                            width: avatar.width
+                            radius: (avatar.height/2)
+                            visible: false
+                        }
                     }
                 }
-            }
-
-            Label{
-                id: contactname_label
-                anchors.left: avatar_button.right
-                anchors.top: parent.top
-                anchors.topMargin: contactname_top_margin-height/2
-                text: model.modelData.username_gui
-                font.bold: true
-                font.pixelSize: contactname_pixelsize
-                color: Constants.ContactPage.CONTACTNAME_COLOR
-            }
-
-            Label{
-                id: presencetext
-                anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
-                anchors.top: parent.top
-                anchors.topMargin: contactname_label.anchors.topMargin+(contactname_label.font.pixelSize-font.pixelSize)
-                text: model.modelData.shortpresence_gui
-                font.pixelSize: presence_pixelsize
-                color: Constants.ContactPage.PRESENCE_COLOR
-            }
-
-            Label{
-                id: lastmessagetext
-                anchors.left: avatar_button.right
-                anchors.top:  parent.top
-                anchors.topMargin: lastmessage_top_margin-height/2
-                text: reliable ? ( model.modelData.last_message_gui ): "Update contact's latchkey"
-                font.pixelSize: lastmessage_pixelsize
-                width: (unread_container.x - x - font.pixelSize)
-                elide: Text.ElideRight
-                font.bold: reliable ? unread_label.has_unread_message : true
-                color: reliable ? Constants.ContactPage.LASTMESSAGE_COLOR : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND;
-
-                property bool reliable : model.modelData.last_message_reliability;
-            }
-
-            Rectangle{
-                id: unread_container
-                anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
-                anchors.top: lastmessagetext.top
-                anchors.topMargin: (lastmessagetext.height-height)/2
-                height: unread_container_pixelsize
-                width: unread_container_pixelsize
-                radius: width/2
-                color: Constants.ContactPage.UNREAD_CONTAINER_COLOR
-                visible: unread_label.has_unread_message
 
                 Label{
-                    id: unread_label
-                    anchors.centerIn: parent
-                    rightPadding: 0
-                    leftPadding: 0
-                    topPadding: 0
-                    bottomPadding: 0
-                    font.bold: false
-                    font.pixelSize: unread_pixelsize
-                    text: model.modelData.unread_messages_gui
-                    color: Constants.ContactPage.UNREAD_TEXT_COLOR
-
-                    property int surrounding_size       :   Math.max(height,width);
-                    property bool has_unread_message    :   (text!="0");
+                    id: contactname_label
+                    anchors.left: avatar_button.right
+                    anchors.top: parent.top
+                    anchors.topMargin: contactname_top_margin-height/2
+                    text: model.modelData.username_gui
+                    font.bold: true
+                    font.pixelSize: contactname_pixelsize
+                    color: Constants.ContactPage.CONTACTNAME_COLOR
                 }
-            }
 
-            Rectangle{
-                id: separator
-                anchors.bottom: parent.bottom
-                anchors.left: avatar_button.right
-                anchors.right: parent.right
-                anchors.rightMargin: avatar_right_pad
-                height: 1
-                color: "#DDDDDD"
-            }
+                Label{
+                    id: presencetext
+                    anchors.right: parent.right
+                    anchors.rightMargin: avatar_right_pad
+                    anchors.top: parent.top
+                    anchors.topMargin: contactname_label.anchors.topMargin+(contactname_label.font.pixelSize-font.pixelSize)
+                    text: model.modelData.shortpresence_gui
+                    font.pixelSize: presence_pixelsize
+                    color: Constants.ContactPage.PRESENCE_COLOR
+                }
 
+                Label{
+                    id: lastmessagetext
+                    anchors.left: avatar_button.right
+                    anchors.top:  parent.top
+                    anchors.topMargin: lastmessage_top_margin-height/2
+                    text: reliable ? ( model.modelData.last_message_gui ): "Update contact's latchkey"
+                    font.pixelSize: lastmessage_pixelsize
+                    width: (unread_container.x - x - font.pixelSize)
+                    elide: Text.ElideRight
+                    font.bold: reliable ? unread_label.has_unread_message : true
+                    color: reliable ? Constants.ContactPage.LASTMESSAGE_COLOR : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND;
+
+                    property bool reliable : model.modelData.last_message_reliability;
+                }
+
+                Rectangle{
+                    id: unread_container
+                    anchors.right: parent.right
+                    anchors.rightMargin: avatar_right_pad
+                    anchors.top: lastmessagetext.top
+                    anchors.topMargin: (lastmessagetext.height-height)/2
+                    height: unread_container_pixelsize
+                    width: unread_container_pixelsize
+                    radius: width/2
+                    color: Constants.ContactPage.UNREAD_CONTAINER_COLOR
+                    visible: unread_label.has_unread_message
+
+                    Label{
+                        id: unread_label
+                        anchors.centerIn: parent
+                        rightPadding: 0
+                        leftPadding: 0
+                        topPadding: 0
+                        bottomPadding: 0
+                        font.bold: false
+                        font.pixelSize: unread_pixelsize
+                        text: model.modelData.unread_messages_gui
+                        color: Constants.ContactPage.UNREAD_TEXT_COLOR
+
+                        property int surrounding_size       :   Math.max(height,width);
+                        property bool has_unread_message    :   (text!="0");
+                    }
+                }
+
+                Rectangle{
+                    id: separator
+                    anchors.bottom: parent.bottom
+                    anchors.left: avatar_button.right
+                    anchors.right: parent.right
+                    anchors.rightMargin: avatar_right_pad
+                    height: 1
+                    color: "#DDDDDD"
+                }
+
+            }
+        }
+
+        ListView{
+            id: conversation_view
+            topMargin: 0
+            leftMargin: 0
+            bottomMargin: 0
+            rightMargin: 0
+            spacing: 0
+            model: ContactsContactModel
+            enabled: !(buttons_blocked)
+
+            delegate: ItemDelegate {
+                width: root.width
+                height: contact_height
+                background: Rectangle{color: "transparent"}
+
+                CustomButton{
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    animationDuration: Constants.VISIBLE_DURATION;
+                    easingType: Easing.OutQuad
+
+                    onClicked: {
+                        main_frame.loadConversationWith(model.modelData.username_gui)
+                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                    }
+
+                    onPressAndHold: {
+                        main_frame.loadConversationWith(model.modelData.username_gui)
+                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                    }
+                }
+
+                Rectangle{
+                    id: avatar_button2
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    height: contact_height
+                    width: avatar_container_width
+                    color: "transparent"
+                    enabled: !(buttons_blocked)
+
+                    Rectangle{
+                        anchors.fill: parent
+                        color: "transparent"
+
+                        Image {
+                            id: avatar2
+                            anchors.top: parent.top
+                            anchors.topMargin: avatar_top_pad
+                            anchors.left: parent.left
+                            anchors.leftMargin: avatar_right_pad
+                            height: avatar_image_size
+                            width: avatar_image_size
+                            source: model.modelData.avatar_path_gui
+                            fillMode: Image.PreserveAspectCrop
+                            mipmap: true
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: mask2
+                            }
+
+                            CustomButton{
+                                anchors.fill: parent
+                                circular: true
+                                animationColor: "#FFFFFF"
+
+                                onClicked: {
+                                    main_frame.refreshContactGUI(model.modelData.username_gui)
+                                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                                             {previous_page : "ContactPage"});
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: mask2
+                            height: avatar2.height
+                            width: avatar2.width
+                            radius: (avatar2.height/2)
+                            visible: false
+                        }
+                    }
+                }
+
+                Label{
+                    id: contactname_label2
+                    anchors.left: avatar_button2.right
+                    anchors.top: parent.top
+                    anchors.topMargin: contactname_top_margin-height/2
+                    text: model.modelData.username_gui
+                    font.bold: true
+                    font.pixelSize: contactname_pixelsize
+                    color: Constants.ContactPage.CONTACTNAME_COLOR
+                }
+
+                Label{
+                    id: presencetext2
+                    anchors.right: parent.right
+                    anchors.rightMargin: avatar_right_pad
+                    anchors.top: parent.top
+                    anchors.topMargin: contactname_label2.anchors.topMargin+(contactname_label2.font.pixelSize-font.pixelSize)
+                    text: model.modelData.shortpresence_gui
+                    font.pixelSize: presence_pixelsize
+                    color: Constants.ContactPage.PRESENCE_COLOR
+                }
+
+                Label{
+                    id: lastmessagetext2
+                    anchors.left: avatar_button2.right
+                    anchors.top:  parent.top
+                    anchors.topMargin: lastmessage_top_margin-height/2
+                    text: model.modelData.status_gui
+                    font.pixelSize: lastmessage_pixelsize
+                    width: (parent.width - x - avatar_right_pad)
+                    elide: Text.ElideRight
+                    color: Constants.ContactPage.LASTMESSAGE_COLOR
+
+                    property bool reliable : model.modelData.last_message_reliability;
+                }
+
+                Rectangle{
+                    id: separator2
+                    anchors.bottom: parent.bottom
+                    anchors.left: avatar_button2.right
+                    anchors.right: parent.right
+                    anchors.rightMargin: avatar_right_pad
+                    height: 1
+                    color: "#DDDDDD"
+                }
+
+            }
         }
     }
+
 
     CustomButton{
         id: add_button
@@ -571,8 +837,11 @@ Page{
                 a: menu.a
 
                 onClicked: {
-                    backbutton.action();
+                    if(searchbox.opened){
+                        searchbox.close();
+                    }
                     menu.close();
+                    backbutton.action();
                 }
             }
         }
@@ -583,18 +852,7 @@ Page{
     }
 
     Keys.onBackPressed:{
-        if(searchbox.opened){
-            searchbox.close();
-        }
-        else if(menu.opened){
-            menu.close();
-        }
-        else if(addcontact_fragment.opened){
-            addcontact_fragment.close();
-        }
-        else{
-            root.goBack();
-        }
+        root.goBack();
     }
 
 
