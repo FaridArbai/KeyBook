@@ -20,6 +20,18 @@ Item{
     property string text            :   input.text;
     property string initial_text    :   "";
 
+
+    property string hintColor       :   Constants.TextInput.HINT_COLOR;
+    property string textColor       :   Constants.TextInput.TEXT_COLOR;
+    property string separatorColor  :   Constants.TextInput.SEPARATOR_COLOR;
+    property string focusColor      :   Constants.VIBRANT_COLOR;
+
+    property int bottomPadding      :   0.26*pixelsize;
+
+    property var tabTarget  :   input;
+    property alias inputAlias   :   input;
+
+
     Component.onCompleted: {
         if(input.text.length==0){
             hint_label.visible = true;
@@ -39,7 +51,7 @@ Item{
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         width: parent.width
-        bottomPadding: 0.26*font.pixelSize
+        bottomPadding: root.bottomPadding
         rightPadding: counter_visible?(2*font.pixelSize):(0)
         font.letterSpacing: (echo_mode==TextInput.Password)?(pixelsize/8):(0)
         echoMode: echo_mode
@@ -47,34 +59,14 @@ Item{
         passwordMaskDelay: Constants.TextInput.MASK_DELAY
         font.pixelSize: pixelsize
         text: root.initial_text
-        color: Constants.TextInput.TEXT_COLOR
+        color: root.textColor
         clip: true
         maximumLength: max_chars
-        cursorDelegate: Rectangle{
-            width: 7
-            height: input.font.pixelSize
-            color: Constants.VIBRANT_COLOR
-
-            SequentialAnimation on opacity{
-                running: true
-                loops: Animation.Infinite
-
-                PropertyAction{
-                    value: 0
-                }
-
-                PauseAnimation {
-                    duration: 500
-                }
-
-                PropertyAction{
-                    value: 1
-                }
-
-                PauseAnimation {
-                    duration: 500
-                }
-            }
+        KeyNavigation.tab: root.tabTarget
+        cursorDelegate: CustomCursor{
+            pixelSize: root.pixelsize
+            visible: input.activeFocus
+            color: root.focusColor
         }
 
         onActiveFocusChanged: {
@@ -108,7 +100,7 @@ Item{
         anchors.left: input.left
         font.pixelSize: input.font.pixelSize
         text: hint
-        color: Constants.TextInput.HINT_COLOR
+        color: root.hintColor
     }
 
     Rectangle{
@@ -118,10 +110,10 @@ Item{
         anchors.left: input.left
         height: input.activeFocus ? opened_height : closed_height
         width: input.width
-        color: input.activeFocus ? Constants.VIBRANT_COLOR : Constants.TextInput.SEPARATOR_COLOR
+        color: input.activeFocus ? root.focusColor : root.separatorColor
 
-        property int closed_height  :   5;
-        property int opened_height  :   7;
+        property int closed_height  :   (PLATFORM==="ANDROID")?(5*(main.density/3.5)):(1);
+        property int opened_height  :   (PLATFORM==="ANDROID")?(7*(main.density/3.5)):(2);
     }
 
     Label{
@@ -129,7 +121,7 @@ Item{
         x: hint_label.x
         y: hint_label.y*a + (hint_label.y - opened_spacing)*b
         font.pixelSize: closed_pixelsize
-        color: Qt.tint(Constants.VIBRANT_COLOR, addTransparency(Math.round(a*255), Constants.TextInput.HINT_COLOR))
+        color: input.activeFocus ? Qt.tint(root.focusColor, addTransparency(Math.round(a*255), root.hintColor)) : root.hintColor
         text: hint_label.text
         visible: false
 
