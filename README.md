@@ -1,10 +1,39 @@
 # KeyBook Messaging
-> Farid Arbai Chentouf
+> Farid Arbai
 
 ![KeyBook icon](./d_trust_images/keybook_128.png)
 
-# Description
+## Description
 Formerly called D-Trust before EU GDPR update on July 20, KeyBook Messaging is the first open source cross-platform messaging app with a decentralized trust mechanism.
+
+### License
+This pproject is licensed under the [GNU General Public License Version 3](LICENSE)
+
+![GNU GPL v3](./d_trust_images/gpl_v3.png)
+
+### Software
+* CMake 3.11.3 (2018, May) [Compilation for Windows and Linux]
+* Qt 5.11.1 (2018, Jul) [Graphical user interface]
+* OpenSSL 1.1.1.8 (2018, Jun) [Encryption and digital signatures]
+* Java SE 10 18.3 (2018, Mar) [Android bridging]
+* Android SDK-27 (2017, Dec) [Android support]
+* Android NDK-r16b (2017, Dec) [Compilation for Android] 
+
+![C++](./d_trust_images/cpp.png)
+![Qt](./d_trust_images/qt.png)
+![OpenSSL](./d_trust_images/openssl.png)
+![Java](./d_trust_images/java.png)
+![Android Oreo](./d_trust_images/android_oreo.png)
+
+### Platforms
+* Android +5.0
+* Windows
+* Linux
+
+![Android](./d_trust_images/android.png)
+![Windows](./d_trust_images/windows.png)
+![Linux](./d_trust_images/linux.png)
+
 # Table of contents
 1. [Introduction](#1-introduction)
 2. [Demo](#2-demo)
@@ -109,4 +138,4 @@ To prevent this we built a distributed point-to-point key exchange mechanism tha
 [4] [Desktop version for MAC (Currently building)]()<br/>
 [5] [Mobile version for IOS (Currently building)]()<br/>
 
-###### Links for desktop version have been removed until the latest server version is fully tested. The reason for this is that proper troubleshooting will be much easier if no connections are received in the domain, therefore removing clutter from the log files. Links will be re-uploaded on August 7th once the changes are fully documentated.
+###### Links for Windows and Linux versions have been removed until August 15th while the new security architecture for them is being tested out.
