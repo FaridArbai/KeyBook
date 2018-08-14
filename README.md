@@ -1,4 +1,9 @@
 # KeyBook Messaging
+> Farid Arbai Chentouf
+
+![KeyBook icon](./d_trust_images/keybook_128.png)
+
+# Description
 Formerly called D-Trust before EU GDPR update on July 20, KeyBook Messaging is the first open source cross-platform messaging app with a decentralized trust mechanism.
 # Table of contents
 1. [Introduction](#1-introduction)
