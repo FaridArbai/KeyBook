@@ -59,6 +59,9 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 
 ## 3. Snapshots
 
+### Desktop version
+![](d_trust_images/desktop.jpg)
+
 ### Loading screen while connecting to server
 ![](d_trust_images/1_loading_screen.png)
 
