@@ -7,50 +7,49 @@ Page{
     id: root
     visible:true
 
-    property var statusbar_color    :   Constants.LOGIN_STATUSBAR_COLOR;
+    property var statusbar_color    :   (PLATFORM==="ANDROID")?Constants.LOGIN_STATUSBAR_COLOR:Constants.CONTACTS_STATUSBAR_COLOR;
 
     property bool adding_contact : false;
     property bool buttons_blocked : false;
     property string entered_username : "";
 
     property int href                   :   1135;
-    property int reg_height             :   main.app_height;
 
-    property int side_margin            :   (1/32)*root.width;
-    property int pad_buttons            :   (1/16)*root.width;
-    property int buttons_size           :   (3/32)*root.width;
-    property int icons_size             :   (34/720)*root.width;
+    property int side_margin            :   (1/32)*main.app_width;
+    property int pad_buttons            :   (1/16)*main.app_width;
+    property int buttons_size           :   (3/32)*main.app_width;
+    property int icons_size             :   (34/720)*main.app_width;
 
-    property int init_spacing           :   (15/100)*reg_height-toolbar.height;
+    property int init_spacing           :   (15/100)*main.app_height-toolbar.height;
 
-    property int init_spacing_down      :   (15/100)*reg_height-toolbar.height;
+    property int init_spacing_down      :   (15/100)*main.app_height-toolbar.height;
     property int init_spacing_up        :   20;
 
-    property int textarea_width         :   (3/4)*root.width;
+    property int textarea_width         :   (3/4)*main.app_width;
     property int textarea_height        :   (3/2)*input_pixelsize;
 
-    property int textarea_spacing       :   (130/100)*(85/1000)*reg_height;
+    property int textarea_spacing       :   (130/100)*(85/1000)*main.app_height;
 
-    property int textarea_spacing_down  :   (130/100)*(85/1000)*reg_height;
+    property int textarea_spacing_down  :   (130/100)*(85/1000)*main.app_height;
     property int textarea_spacing_up    :   (3/2)*input_pixelsize;
 
-    property int label_spacing          :   (40/1000)*reg_height;
+    property int label_spacing          :   (40/1000)*main.app_height;
 
-    property int label_spacing_down     :   (40/1000)*reg_height;
+    property int label_spacing_down     :   (40/1000)*main.app_height;
     property int label_spacing_up       :   20;
 
-    property int button_top_margin      :   (1/10)*reg_height;
+    property int button_top_margin      :   (1/10)*main.app_height;
 
-    property int button_width           :   (3/8)*root.width;
+    property int button_width           :   (3/8)*main.app_width;
 
-    property int input_pixelsize        :   (36/href)*reg_height;
+    property int input_pixelsize        :   (36/href)*main.app_height;
 
     property int indicator_pixelsize    :   (18/22)*input_pixelsize;
 
     property int indicator_pixelsize_down   :   (18/22)*input_pixelsize;
     property int indicator_pixelsize_up     :   0;
 
-    property int input_bottom_pad       :   (12/href)*reg_height;
+    property int input_bottom_pad       :   (12/href)*main.app_height;
 
     property int placeicons_size        :   input_pixelsize;
     property int placeicons_bottom_pad  :   (3/2)*input_bottom_pad;
@@ -65,10 +64,10 @@ Page{
     property int errorlabel_pixelsize   :   (13/22)*input_pixelsize;
     property int erroricon_size         :   errorlabel_pixelsize;
     property int errorlabel_right_pad   :   (3/2)*erroricon_size;
-    property int errorlabel_width       :   (7/8)*root.width;
+    property int errorlabel_width       :   (7/8)*main.app_width;
 
-    property int button_pixelsize       :   (15/22)*(44/href)*reg_height;
-    property int button_height          :   3*button_pixelsize;
+    property int button_pixelsize       :   (14/22)*(44/href)*main.app_height;
+    property int button_height          :   2.5*button_pixelsize;
 
     property int button_top_magin       :   error_spacing;
 
@@ -90,9 +89,9 @@ Page{
     property int placeholder_transparency_down  :   0x00;
     property int placeholder_transparency_up    :   0xA0;
 
-    property int infolabel_pixelsize    :   (12/22)*((44/href)*reg_height);
-    property int infolabel_top_pad      :   (98/href)*reg_height;
-    property int infolabel_bottom_pad   :   (72/href)*reg_height;
+    property int infolabel_pixelsize    :   (12/22)*((44/href)*main.app_height);
+    property int infolabel_top_pad      :   (98/href)*main.app_height;
+    property int infolabel_bottom_pad   :   (72/href)*main.app_height;
 
 
     function transparentWhite(transparency){
@@ -161,12 +160,12 @@ Page{
     Rectangle{
         id: page_bg
         anchors.fill: parent
-        color: "#008696"
+        color: Constants.TOOLBAR_COLOR
         /**
         RadialGradient{
             id: page_grad
             anchors.fill: parent
-            //horizontalOffset: -root.width/2
+            //horizontalOffset: -main.app_width/2
             horizontalOffset: 0
             verticalOffset: -log_height/2
             horizontalRadius: log_height
@@ -374,18 +373,16 @@ Page{
         height: button_height
         width: textarea_width
         circular: true
-        animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+        animationColor: Constants.TOOLBAR_COLOR
         animationDuration: Constants.VISIBLE_DURATION
         easingType: Easing.OutQuad
 
         background: Rectangle {
             height: addcontactbutton.height
             width: addcontactbutton.width
-            color: "transparent"
-            border.color: Constants.LINES_WHITE
-            border.width: 1
-            //radius: 8
+            color: "white"
             radius: height/2
+            opacity: 0.95
         }
 
         Text{
@@ -393,8 +390,8 @@ Page{
             anchors.centerIn: parent
             font.pixelSize: button_pixelsize;
             font.bold: false
-            text: "SIGN UP"
-            color: Constants.LINES_WHITE
+            text: "Sign Up"
+            color: Constants.TOOLBAR_COLOR
         }
 
         MouseArea{
@@ -492,8 +489,8 @@ Page{
 
     footer: Rectangle{
         id: footer;
-        width: root.width
-        height: root.height-(main.statusbar_height+main.app_height);
+        width: main.app_width
+        height: main.app_height-(main.statusbar_height+main.app_height);
         color: "#000000";
     }
 

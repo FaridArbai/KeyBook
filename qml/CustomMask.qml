@@ -23,6 +23,7 @@ Item{
             source: mask.source
             fillMode: Image.PreserveAspectFit
             visible: false
+            mipmap: true
         }
 
         Rectangle{

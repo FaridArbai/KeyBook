@@ -14,6 +14,7 @@ Button {
     property int animationDuration  :   Constants.Button.ANIMATION_DURATION;
     property bool circular          :   false;
     property int easingType         :   Easing.OutQuad;
+    property bool asynchronous      :   false;
 
     MouseArea{
         anchors.fill: parent
@@ -43,7 +44,7 @@ Button {
 
     Timer{
         id: click_delay
-        interval: button.animationDuration
+        interval: button.asynchronous ? 0 : button.animationDuration
         onTriggered: {
             button.clicked();
         }

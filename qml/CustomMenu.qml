@@ -15,11 +15,11 @@ Item {
     property real a :   0;
 
     property bool opened        :   false;
-    property int menuWidth      :   root.width/2;
+    property int menuWidth      :   main.app_width/2;
     property int menuHeight     :   root.numItems*(Constants.MENUITEM_HEIGHT_FACTOR)*root.pixelSize + 2*root.verticalPad;
-    property int outterPad      :   root.width/64;
+    property int outterPad      :   main.app_width/64;
 
-    property int pixelSize      :   (Constants.MENUITEM_PIXEL_FACTOR/Constants.MENU_HREF)*root.height;
+    property int pixelSize      :   (Constants.MENUITEM_PIXEL_FACTOR/Constants.MENU_HREF)*main.app_height;
     property int verticalPad    :   (Constants.MENU_VERTICALPAD_FACTOR)*root.pixelSize;
 
     property int itemHeight     :   (Constants.MENUITEM_HEIGHT_FACTOR)*root.pixelSize;

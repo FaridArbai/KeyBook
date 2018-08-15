@@ -8,18 +8,40 @@ import "Constants.js" as Constants
 
 ApplicationWindow {
     id: window
-    width: app_width;
-    height: app_height;
+    width: (PLATFORM==="ANDROID")?(app_width):((2.5)*main_frame.getAppWidth());
+    height: (PLATFORM==="ANDROID")?(app_height):main_frame.getAppHeight() + titlebar_height;
     visible: true
+    flags:Qt.FramelessWindowHint | Qt.Window;
+    color: "transparent"
 
-    property alias main                 :   window;
+    property alias main                     : window;
+    property alias conversationStackView    : conversationView;
+    property alias mainStackView            :   stackView;
+
     property int toolbar_height         :   (app_height/10);
     property real density               :   main_frame.getDensity();
-    property int app_height             :   main_frame.getAppHeight();
-    property int app_width              :   main_frame.getAppWidth();
+    property int app_height             :   main_frame.getAppHeight() - 2*elevation_margins;
+    property int app_width              :   main_frame.getAppWidth() - 2*elevation_margins;
+    property int screen_height          :   (PLATFORM==="DESKTOP") ? main_frame.getScreenHeight() : app_height;
+    property int screen_width           :   (PLATFORM==="DESKTOP") ? main_frame.getScreenWidth() : app_width;
     property int statusbar_height       :   main_frame.getStatusbarHeight();
     property int navigationbar_height   :   main_frame.getNavigationbarHeight();
     property int vkeyboard_height       :   -1;
+    property int titlebar_height        :   (PLATFORM==="DESKTOP")?((150/3.5)*density):0;
+
+    property int toolicons_size     :   (0.43)*titlebar_height;
+    property int toolicons_spacing  :   (4/3)*toolicons_size;
+    property int toolbuttons_width  :   (toolicons_size + 2*toolicons_spacing);
+
+    property int shadow_margins     :   (PLATFORM==="DESKTOP")?(2*normal_elevation):(0);
+    property int normal_elevation   :   (5/3.5)*density;
+    property int picked_elevation   :   (3/2)*normal_elevation;
+
+    property int vertical_offset    :   (PLATFORM==="DESKTOP")?1:0;
+    property int horizontal_offset  :   (PLATFORM==="DESKTOP")?1:0;
+    property int normal_radius      :   (PLATFORM==="DESKTOP")?5:0;
+    property int pressed_radius     :   (PLATFORM==="DESKTOP")?8:0;
+    property int elevation_margins  :   (PLATFORM==="DESKTOP")?10:0;
 
     Component.onCompleted: {
         console.log("MAIN COMPLEMETTED");
@@ -79,79 +101,384 @@ ApplicationWindow {
         onTriggered: {
             var statusbar_color = stackView.currentItem.statusbar_color;
             if(statusbar_color!==null){
-                main_frame.changeStatusbarColor(statusbar_color)
+                if(PLATFORM==="ANDROID"){
+                    main_frame.changeStatusbarColor(statusbar_color);
+                }
+                else{
+                    titlebar.color = main.decToColor(statusbar_color);
+                }
             }
         }
     }
 
-    StackView {
-        id: stackView
-        anchors.fill: parent
-        initialItem: ConnectionPage {}
 
-        onCurrentItemChanged: {
-            statusbar_controller.start();
+    Rectangle{
+        id: frame
+        anchors.fill: parent
+        anchors.margins: 10
+        radius: width/128
+        color: "transparent"
+        layer.enabled: (PLATFORM==="DESKTOP")?true:false
+        layer.effect: DropShadow {
+            horizontalOffset: horizontal_offset
+            verticalOffset: vertical_offset
+            radius: normal_radius
+            samples: elevation_margins
+            source: frame
+            color: Constants.DROPSHADOW_COLOR
+            visible: (PLATFORM==="DESKTOP")
+            enabled: (PLATFORM==="DESKTOP")
+            cached: true
         }
 
-        pushEnter: Transition{
-            SequentialAnimation{
-                PropertyAnimation{
-                    property: "opacity"
-                    from: 0
-                    to: 0
-                    duration: 1
+
+        Rectangle{
+            id: titlebar
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: titlebar_height
+            color: Constants.STATUSBAR_COLOR
+
+            MouseArea{
+                id: controller
+                anchors.fill: parent
+                property real pressedX;
+                property real pressedY;
+
+                onPressed:{
+                    pressedX = mouse.x;
+                    pressedY = mouse.y;
                 }
 
-                ParallelAnimation{
+                onPositionChanged:{
+                    if(window.visibility!=Window.FullScreen){
+                        var next_x = window.x + (mouse.x - pressedX);
+                        var next_y = window.y + (mouse.y - pressedY);
+
+                        if((next_x>0)&&(next_x<(screen_width-window.width))){
+                            window.x = next_x;
+                        }
+
+                        if((next_y>0)&&(next_y<(screen_height-window.height))){
+                            window.y = next_y;
+                        }
+                    }
+                }
+            }
+
+
+            CustomMask{
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.leftMargin: width/2;
+                anchors.topMargin: (parent.height-height)/2;
+                width: parent.height*(3/4);
+                height: width
+                source: "icons/keys.png"
+                color: Constants.GENERAL_TEXT_WHITE
+            }
+
+            CustomButton{
+                id: close_button
+                anchors.right:  parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: toolbuttons_width
+                animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+                enabled: PLATFORM === "DESKTOP";
+
+                CustomMask{
+                    id: close_icon
+                    anchors.centerIn: parent
+                    width: toolicons_size
+                    height: toolicons_size
+                    source: "icons/close.png"
+                    color: Constants.GENERAL_TEXT_WHITE
+                }
+
+                onClicked: {
+                    main.close()
+                }
+            }
+
+            CustomButton{
+                id: maximize_button
+                anchors.right: close_button.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: toolbuttons_width
+                animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+                enabled: PLATFORM === "DESKTOP";
+
+                CustomMask{
+                    id: maximize_icon
+                    anchors.centerIn: parent
+                    width: toolicons_size
+                    height: toolicons_size
+                    source: "icons/maximize.png"
+                    color: Constants.GENERAL_TEXT_WHITE
+                }
+
+                onClicked: {
+                    if(window.visibility===Window.FullScreen){
+                        window.showNormal();
+                    }
+                    else{
+                        window.showFullScreen();
+                    }
+                }
+            }
+
+            CustomButton{
+                id: minimize_button
+                anchors.right:  maximize_button.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: toolbuttons_width
+                animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+                enabled: PLATFORM === "DESKTOP";
+
+                CustomMask{
+                    id: minimize_icon
+                    anchors.centerIn: parent
+                    width: toolicons_size
+                    height: toolicons_size
+                    source: "icons/minimize.png"
+                    color: Constants.GENERAL_TEXT_WHITE
+                }
+
+
+                onClicked: {
+                    window.showMinimized();
+                }
+            }
+
+
+        }
+
+        StackView {
+            id: stackView
+            anchors.top: titlebar.bottom
+            anchors.left: parent.left
+            width: app_width
+            anchors.bottom: parent.bottom
+            initialItem: ConnectionPage {}
+
+            onCurrentItemChanged: {
+                statusbar_controller.start();
+            }
+
+            pushEnter: Transition{
+                SequentialAnimation{
                     PropertyAnimation{
                         property: "opacity"
                         from: 0
-                        to: 1
-                        duration: Constants.SHORT_DURATION
+                        to: 0
+                        duration: 1
                     }
 
-                    YAnimator{
-                        from: main.toolbar_height
-                        to: 0
-                        duration: Constants.SHORT_DURATION
+                    ParallelAnimation{
+                        PropertyAnimation{
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: Constants.SHORT_DURATION
+                        }
+
+                        YAnimator{
+                            from: main.toolbar_height
+                            to: 0
+                            duration: Constants.SHORT_DURATION
+                        }
                     }
                 }
             }
-        }
 
-        pushExit: Transition{
-            PropertyAnimation{
-                property: "opacity"
-                from: 1
-                to: 1
-                duration: 2*Constants.SHORT_DURATION
-            }
-        }
-
-        popEnter: Transition{
-            PropertyAnimation{
-                property: "opacity"
-                from: 1
-                to: 1
-                duration: 2*Constants.SHORT_DURATION
-            }
-        }
-
-        popExit: Transition{
-            ParallelAnimation{
+            pushExit: Transition{
                 PropertyAnimation{
                     property: "opacity"
                     from: 1
-                    to: 0
-                    duration: Constants.SHORT_DURATION
-                }
-                YAnimator{
-                    from: 0
-                    to: main.toolbar_height
-                    duration: Constants.SHORT_DURATION
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
                 }
             }
+
+            popEnter: Transition{
+                PropertyAnimation{
+                    property: "opacity"
+                    from: 1
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
+                }
+            }
+
+            popExit: Transition{
+                ParallelAnimation{
+                    PropertyAnimation{
+                        property: "opacity"
+                        from: 1
+                        to: 0
+                        duration: Constants.SHORT_DURATION
+                    }
+                    YAnimator{
+                        from: 0
+                        to: main.toolbar_height
+                        duration: Constants.SHORT_DURATION
+                    }
+                }
+            }
+
+            replaceEnter: Transition{
+                SequentialAnimation{
+                    PropertyAnimation{
+                        property: "opacity"
+                        from: 0
+                        to: 0
+                        duration: 1
+                    }
+
+                    ParallelAnimation{
+                        PropertyAnimation{
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: Constants.SHORT_DURATION
+                        }
+
+                        YAnimator{
+                            from: main.toolbar_height
+                            to: 0
+                            duration: Constants.SHORT_DURATION
+                        }
+                    }
+                }
+            }
+
+            replaceExit: Transition{
+                PropertyAnimation{
+                    property: "opacity"
+                    from: 1
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
+                }
+            }
+
         }
+
+        StackView {
+            id: conversationView
+            anchors.top: titlebar.bottom
+            anchors.left: stackView.right
+            width: (window.width - stackView.width - 2*elevation_margins)
+            anchors.bottom: parent.bottom
+            initialItem: PlaceholderPage {}
+
+            pushEnter: Transition{
+                SequentialAnimation{
+                    PropertyAnimation{
+                        property: "opacity"
+                        from: 0
+                        to: 0
+                        duration: 1
+                    }
+
+                    ParallelAnimation{
+                        PropertyAnimation{
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: Constants.SHORT_DURATION
+                        }
+
+                        YAnimator{
+                            from: main.toolbar_height
+                            to: 0
+                            duration: Constants.SHORT_DURATION
+                        }
+                    }
+                }
+            }
+
+            pushExit: Transition{
+                PropertyAnimation{
+                    property: "opacity"
+                    from: 1
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
+                }
+            }
+
+            popEnter: Transition{
+                PropertyAnimation{
+                    property: "opacity"
+                    from: 1
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
+                }
+            }
+
+            popExit: Transition{
+                ParallelAnimation{
+                    PropertyAnimation{
+                        property: "opacity"
+                        from: 1
+                        to: 0
+                        duration: Constants.SHORT_DURATION
+                    }
+                    YAnimator{
+                        from: 0
+                        to: main.toolbar_height
+                        duration: Constants.SHORT_DURATION
+                    }
+                }
+            }
+
+            replaceEnter: Transition{
+                SequentialAnimation{
+                    PropertyAnimation{
+                        property: "opacity"
+                        from: 0
+                        to: 0
+                        duration: 1
+                    }
+
+                    ParallelAnimation{
+                        PropertyAnimation{
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: Constants.SHORT_DURATION
+                        }
+
+                        YAnimator{
+                            from: main.toolbar_height
+                            to: 0
+                            duration: Constants.SHORT_DURATION
+                        }
+                    }
+                }
+            }
+
+            replaceExit: Transition{
+                PropertyAnimation{
+                    property: "opacity"
+                    from: 1
+                    to: 1
+                    duration: 2*Constants.SHORT_DURATION
+                }
+            }
+
+            function reset(){
+                replace("qrc:/PlaceholderPage.qml");
+            }
+
+            function startConversation(){
+                replace("qrc:/ConversationPage.qml");
+            }
+        }
+
+
 
     }
 

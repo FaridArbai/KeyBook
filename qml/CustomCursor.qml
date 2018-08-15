@@ -7,7 +7,7 @@ import QtQuick.Controls.Styles 1.4
 import "Constants.js" as Constants
 
 Rectangle{
-    width: 7
+    width: (PLATFORM==="ANDROID")?(7*(main.density/3.5)):(2)
     height: pixelSize
     color: Constants.VIBRANT_COLOR
 

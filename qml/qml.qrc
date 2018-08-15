@@ -18,5 +18,11 @@
         <file>CustomMask.qml</file>
         <file>CustomButton.qml</file>
         <file>CustomCursor.qml</file>
+        <file>AddContactFragment.qml</file>
+        <file>ConnectionPage.qml</file>
+        <file>CustomMenu.qml</file>
+        <file>CustomMenuItem.qml</file>
+        <file>CustomProgressDialog.qml</file>
+        <file>PlaceholderPage.qml</file>
     </qresource>
 </RCC>

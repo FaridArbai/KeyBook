@@ -18,11 +18,11 @@ Item {
     property bool opened    :   visible;
 
     property int wref           :   1440;
-    property int dialog_width   :   (1255/wref)*root.width;
-    property int dialog_height  :   (281/wref)*root.width;
-    property int side_margin    :   (73/wref)*root.width;
-    property int spinner_size   :   (132/wref)*root.width;
-    property int text_pixelsize :   (49/wref)*root.width;
+    property int dialog_width   :   (1255/wref)*main.app_width;
+    property int dialog_height  :   (281/wref)*main.app_width;
+    property int side_margin    :   (73/wref)*main.app_width;
+    property int spinner_size   :   (132/wref)*main.app_width;
+    property int text_pixelsize :   (49/wref)*main.app_width;
 
     function open(){
         main_frame.changeStatusbarColor(parseInt(Qt.darker(root.statusbarColor,5).toString().replace("#","0xFF")));
@@ -96,7 +96,8 @@ Item {
         id: dialog
         width: root.dialog_width
         height: root.dialog_height
-        color: "#F0F0F0"
+        color: "white"
+        radius: width/128
         anchors.centerIn: parent
         opacity: 0
         layer.enabled: true

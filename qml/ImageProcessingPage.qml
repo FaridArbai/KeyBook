@@ -9,8 +9,8 @@ Page{
     id: root
 
     background:Rectangle{
-        height:root.height;
-        width:root.width;
+        height:main.app_height;
+        width:main.app_width;
         color:"black";
     }
 
@@ -21,12 +21,12 @@ Page{
     property int href   :   1135;
     property int wref   :   720;
 
-    property int buttons_pixelsize      :   (34/href)*root.height;
-    property int buttons_side_margin    :   (1/8)*root.width;
-    property int buttons_bottom_margin  :   (1/10)*root.height;
-    property int rotatebutton_size      :   2*buttons_pixelsize;
+    property int buttons_pixelsize      :   (34/href)*main.app_height;
+    property int buttons_side_margin    :   (1/8)*main.app_width;
+    property int buttons_bottom_margin  :   (1/10)*main.app_height;
+    property int rotatebutton_size      :   (3/2)*buttons_pixelsize;
 
-    property int imagecontainer_side_margin    :   (1/16)*root.width;
+    property int imagecontainer_side_margin    :   (1/16)*main.app_width;
 
     property int lines_width        :   (2);
     property real spacing_factor    :   ((3-(2*Math.sqrt(2)))/6);
@@ -37,7 +37,7 @@ Page{
     Button{
         id: cancel_button;
         anchors.right: rotate_button.left
-        anchors.rightMargin: ((root.width-rotatebutton_size)/2-width)/2
+        anchors.rightMargin: ((main.app_width-rotatebutton_size)/2-width)/2
         anchors.bottom: parent.bottom
         anchors.bottomMargin: buttons_bottom_margin
         height: cancel_label.height
@@ -65,7 +65,7 @@ Page{
     Button{
         id: done_button;
         anchors.left: rotate_button.right
-        anchors.leftMargin: ((root.width-rotatebutton_size)/2-width)/2
+        anchors.leftMargin: ((main.app_width-rotatebutton_size)/2-width)/2
         anchors.bottom: parent.bottom
         anchors.bottomMargin: buttons_bottom_margin
         height: done_label.height
@@ -100,31 +100,18 @@ Page{
     Button{
         id: rotate_button;
         anchors.left: parent.left;
-        anchors.leftMargin: (root.width-width)/2;
-        anchors.bottom: cancel_button.bottom
-        anchors.bottomMargin: -((7/8)*height-buttons_pixelsize)/2
+        anchors.leftMargin: (main.app_width-width)/2;
+        anchors.top: done_button.top
+        anchors.topMargin: (height-done_button.height)/2
         height: rotatebutton_size
         width: rotatebutton_size
         background: Rectangle{color:Constants.TRANSPARENT}
 
-        OpacityMask{
+        Image{
+            id: logo_mask
             anchors.fill: parent
-            source: logo_bg
-            maskSource: logo_mask
-
-            Image{
-                id: logo_mask
-                anchors.fill: parent
-                source: "icons/whiterotateicon.png"
-                visible: false
-            }
-
-            Rectangle{
-                id: logo_bg
-                anchors.fill: parent
-                color: Constants.RELEVANT_TEXT_WHITE
-                visible: false
-            }
+            source: "icons/whiterotateicon.png"
+            visible: true
         }
 
         onClicked: {
@@ -139,7 +126,7 @@ Page{
         anchors.bottomMargin: buttons_bottom_margin
         anchors.left: parent.left
         anchors.leftMargin: buttons_side_margin
-        width: (3/4)*root.width
+        width: (3/4)*main.app_width
         height: (3/4)*root.buttons_pixelsize
         value: (image_container.initial_canvas_size)/Math.min(image_container.height,image_container.width);
 
@@ -372,220 +359,14 @@ Page{
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-        /**
-        Rectangle{
-            x: image.x + canvas.x
-            y: image.y + canvas.y
-            height: canvas.height
-            width: canvas.width
-            clip: true
-            radius: width/2
-
-            Image{
-                x: -canvas.x
-                y: -canvas.y
-                width: Math.min(container_width, implicitWidth);
-                height: Math.min(container_height, implicitHeight);
-                fillMode: Image.PreserveAspectFit
-                source: main_frame.getCurrentImagePath();
-                layer.enabled: true
-                layer.effect: OpacityMask{
-                    maskSource: parent
-                }
-            }
-
-
-
-            Rectangle{
-                id: vertical_line1
-                anchors.top: parent.top
-                anchors.topMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: lines_spacing
-                anchors.left: parent.left
-                anchors.leftMargin: parent.width/3-width/2
-                width: lines_width
-                color: "lightgrey"
-            }
-
-            Rectangle{
-                id: vertical_line2
-                anchors.top: parent.top
-                anchors.topMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: parent.width/3-width/2
-                width: lines_width
-                color: "lightgrey"
-            }
-
-            Rectangle{
-                id: horizontal_line1
-                anchors.left: parent.left
-                anchors.leftMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: lines_spacing
-                anchors.top: parent.top
-                anchors.topMargin: parent.height/3-height/2
-                height: lines_width
-                color: "lightgrey"
-
-            }
-
-            Rectangle{
-                id: horizontal_line2
-                anchors.left: parent.left
-                anchors.leftMargin: lines_spacing
-                anchors.right: parent.right
-                anchors.rightMargin: lines_spacing
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: parent.height/3-height/2
-                height: lines_width
-                color: "lightgrey"
-            }
-        }
-        **/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /**
-        Rectangle{
-            id: bg
-            anchors.fill: image
-            color: "#00FFFFFF"
-            visible: false
-
-            Rectangle{
-                id: fg
-                x: canvas.x
-                y: canvas.y
-                width: canvas.width
-                height: canvas.height
-                color: "#FFFFFFFF"
-                visible: false
-            }
-        }
-        **/
-
-        /**
-        OpacityMask{
-            id: mask
-            x: canvas.x + image.x
-            y: canvas.y + image.y
-            height: canvas.height
-            width: canvas.width
-            source: image
-            maskSource: canvas
-        }
-        **/
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     function goBack(){
         root.StackView.view.pop();
+    }
+
+    Keys.onBackPressed: {
+        root.goBack();
     }
 }
 

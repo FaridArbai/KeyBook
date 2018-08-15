@@ -19,32 +19,32 @@ Page{
     property int max_z  :   5;
 
     property int buttons_size           :   2*icons_size
-    property int icons_size             :   (34/wref)*root.width;
-    property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
-    property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
+    property int icons_size             :   (34/wref)*main.app_width;
+    property int side_margin            :   (Constants.SIDE_FACTOR)*main.app_width;
+    property int pad_buttons            :   (Constants.SPACING_FACTOR)*main.app_width;
 
-    property int remaining_height       :   root.height-root.width;
+    property int remaining_height       :   main.app_height-main.app_width;
 
-    property int name_pixelsize         :  (50/href)*root.height;
+    property int name_pixelsize         :  (50/href)*main.app_height;
 
     property int statuscontainer_height :   (5/8)*remaining_height;
-    property int statuscontainer_y      :   root.height-(root.width+(remaining_height-statuscontainer_height)/2);
+    property int statuscontainer_y      :   main.app_height-(main.app_width+(remaining_height-statuscontainer_height)/2);
 
     property int statusindicator_pixelsize  :   (79/cref)*statuscontainer_height; //18,16,14
     property int statustext_pixelsize       :   (70/cref)*statuscontainer_height;
     property int statusdate_pixelsize       :   (53/cref)*statuscontainer_height;
     property int statusindicator_top_margin :   (statuscontainer_height/6)-statusindicator_pixelsize/2;
     property int statustext_top_margin      :   statusindicator_top_margin + (7/4)*statusindicator_pixelsize;
-    property int left_margin                :   (1/15)*root.width;
+    property int left_margin                :   (1/15)*main.app_width;
 
-    property int status_max_width           :   root.width-2*left_margin;
+    property int status_max_width           :   main.app_width-2*left_margin;
 
     property int changestatusbutton_size    :   statustext_pixelsize;
 
-    property int shadow_offset      :   root.height/200;
+    property int shadow_offset      :   main.app_height/200;
 
-    property int general_shadow_offset      :   root.height/400;
-    property int relevant_shadow_offset     :   root.height/200;
+    property int general_shadow_offset      :   main.app_height/400;
+    property int relevant_shadow_offset     :   main.app_height/200;
 
     property int separator_top_margin   :   statusdate_pixelsize;
     property int presence_pixelsize     :   statusdate_pixelsize;
@@ -63,11 +63,11 @@ Page{
     property int toolbar_z  :   max_z-1;
     property int image_z    :   max_z-2;
 
-    property int text_box_width      :   status_max_width + (root.width-status_max_width)/2;
+    property int text_box_width      :   status_max_width + (main.app_width-status_max_width)/2;
     property int text_box_height     :   statuscontainer_height;
     property int text_box_radius     :   text_box_height/32;
-    property int text_box_y          :   (root.width-text_box_height)/2;
-    property int text_box_x          :   (root.width-text_box_width)/2;
+    property int text_box_y          :   (main.app_width-text_box_height)/2;
+    property int text_box_x          :   (main.app_width-text_box_width)/2;
     property int text_box_buttons_height :   text_box_height/4;
     property string text_box_buttons_bg    :   theme_color.replace("#FF",("#"+Constants.ProfilePage.BUTTONS_BG_TRANSPARENCY));
 
@@ -210,7 +210,7 @@ Page{
         anchors.top: image_container.bottom
         anchors.left: parent.left
         height: remaining_height
-        width: root.width
+        width: main.app_width
         background: Rectangle{color:"transparent"}
 
         Column{
@@ -219,7 +219,7 @@ Page{
 
             Rectangle{
                 id: status_container
-                width: root.width
+                width: main.app_width
                 height: status_container.computeHeight();
                 color: "white"
 
@@ -314,7 +314,7 @@ Page{
             Rectangle{
                 id: latchkeybutton_container
                 height: box_height
-                width: root.width
+                width: main.app_width
                 color: "white"
 
                 layer.enabled: true
@@ -390,7 +390,7 @@ Page{
             Rectangle{
                 id: messagebutton_container
                 height: box_height
-                width: root.width
+                width: main.app_width
                 color: "white"
 
                 layer.enabled: true
@@ -465,7 +465,7 @@ Page{
             Rectangle{
                 id: clearbutton_container
                 height: box_height
-                width: root.width
+                width: main.app_width
                 color: "white"
 
                 layer.enabled: true
@@ -583,7 +583,7 @@ Page{
                         root.StackView.view.push("qrc:/ConversationPage.qml");
                     }
                 }
-            }+
+            }
 
             CustomMenuItem{
                 id: exitprofile_option

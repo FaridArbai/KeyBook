@@ -14,18 +14,18 @@ Page{
     property int href   :   1135;
     property int wref   :   720;
 
-    property int swipebar_height        :   (96/href)*root.height;
-    property int swipebar_pixelsize     :   (22/href)*root.height;
-    property int swipeline_height       :   (7/href)*root.height;
+    property int swipebar_height        :   (96/href)*main.app_height;
+    property int swipebar_pixelsize     :   (22/href)*main.app_height;
+    property int swipeline_height       :   (7/href)*main.app_height;
 
-    property int side_margin            :   (Constants.SIDE_FACTOR)*root.width;
-    property int pad_buttons            :   (Constants.SPACING_FACTOR)*root.width;
+    property int side_margin            :   (Constants.SIDE_FACTOR)*main.app_width;
+    property int pad_buttons            :   (Constants.SPACING_FACTOR)*main.app_width;
     property int buttons_size           :   2*icons_size
-    property int icons_size             :   (34/wref)*root.width;
+    property int icons_size             :   (34/wref)*main.app_width;
     property int backicon_size          :   (3/4)*buttons_size;
-    property int left_pad_headertext    :   (1/16)*root.width;
+    property int left_pad_headertext    :   (1/16)*main.app_width;
 
-    property int avatar_container_width :   (165/724)*root.width;
+    property int avatar_container_width :   (165/724)*main.app_width;
     property int contact_height         :   (156/165)*avatar_container_width;
     property int avatar_right_pad       :   (1/6)*avatar_container_width;
     property int avatar_top_pad         :   (contact_height-avatar_image_size)/2;
@@ -35,10 +35,10 @@ Page{
     property int lastconnection_right_margin    :   avatar_right_pad;
 
     property int logo_pixelsize         :   icons_size;
-    property int contactname_pixelsize  :   (30/wref)*root.width;
-    property int lastmessage_pixelsize  :   (28/wref)*root.width;
-    property int presence_pixelsize     :   (24/wref)*root.width;
-    property int unread_pixelsize       :   (20/wref)*root.width;
+    property int contactname_pixelsize  :   (30/wref)*main.app_width;
+    property int lastmessage_pixelsize  :   (28/wref)*main.app_width;
+    property int presence_pixelsize     :   (24/wref)*main.app_width;
+    property int unread_pixelsize       :   (20/wref)*main.app_width;
 
     property int unread_container_pixelsize :   (5/4)*lastmessage_pixelsize;
 
@@ -59,7 +59,13 @@ Page{
         target: main_frame
         onLogOut:{
             wait_box.visible = false;
-            root.StackView.view.pop();
+            if(PLATFORM==="DESKTOP"){
+                main.conversationStackView.reset();
+                main.mainStackView.pop();
+            }
+            else{
+                main.mainStackView.pop();
+            }
         }
 
         onWaitingForTooLong:{
@@ -428,7 +434,7 @@ Page{
         }
 
         ListView{
-            id: contacts_view
+            id: conversation_view
             topMargin: 0
             leftMargin: 0
             bottomMargin: 0
@@ -438,7 +444,7 @@ Page{
             enabled: !(buttons_blocked)
 
             delegate: ItemDelegate {
-                width: root.width
+                width: main.app_width
                 height: contact_height
                 background: Rectangle{color: "transparent"}
 
@@ -453,13 +459,23 @@ Page{
                     onClicked: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
                         main_frame.refreshContactGUI(model.modelData.username_gui)
-                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                        if(PLATFORM==="DESKTOP"){
+                            main.conversationStackView.startConversation();
+                        }
+                        else{
+                            main.mainStackView.push("qrc:/ConversationPage.qml")
+                        }
                     }
 
                     onPressAndHold: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
                         main_frame.refreshContactGUI(model.modelData.username_gui)
-                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                        if(PLATFORM==="DESKTOP"){
+                            main.conversationStackView.startConversation();
+                        }
+                        else{
+                            main.mainStackView.push("qrc:/ConversationPage.qml")
+                        }
                     }
                 }
 
@@ -499,7 +515,7 @@ Page{
 
                                 onClicked: {
                                     main_frame.refreshContactGUI(model.modelData.username_gui)
-                                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                    main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                                              {previous_page : "ContactPage"});
                                 }
                             }
@@ -523,7 +539,7 @@ Page{
                     text: model.modelData.username_gui
                     font.bold: true
                     font.pixelSize: contactname_pixelsize
-                    color: Constants.ContactPage.CONTACTNAME_COLOR
+                    color: Constants.TOOLBAR_COLOR
                 }
 
                 Label{
@@ -595,7 +611,7 @@ Page{
         }
 
         ListView{
-            id: conversation_view
+            id: contacts_view
             topMargin: 0
             leftMargin: 0
             bottomMargin: 0
@@ -605,7 +621,7 @@ Page{
             enabled: !(buttons_blocked)
 
             delegate: ItemDelegate {
-                width: root.width
+                width: main.app_width
                 height: contact_height
                 background: Rectangle{color: "transparent"}
 
@@ -620,13 +636,23 @@ Page{
                     onClicked: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
                         main_frame.refreshContactGUI(model.modelData.username_gui)
-                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                        if(PLATFORM==="DESKTOP"){
+                            main.conversationStackView.startConversation();
+                        }
+                        else{
+                            main.mainStackView.push("qrc:/ConversationPage.qml")
+                        }
                     }
 
                     onPressAndHold: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
                         main_frame.refreshContactGUI(model.modelData.username_gui)
-                        root.StackView.view.push("qrc:/ConversationPage.qml")
+                        if(PLATFORM==="DESKTOP"){
+                            main.conversationStackView.startConversation();
+                        }
+                        else{
+                            main.mainStackView.push("qrc:/ConversationPage.qml")
+                        }
                     }
                 }
 
@@ -666,7 +692,7 @@ Page{
 
                                 onClicked: {
                                     main_frame.refreshContactGUI(model.modelData.username_gui)
-                                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                                    main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                                              {previous_page : "ContactPage"});
                                 }
                             }
@@ -739,7 +765,7 @@ Page{
         anchors.right: parent.right
         anchors.bottomMargin: width/3
         anchors.rightMargin: width/3
-        width: 0.1556*root.width
+        width: 0.1556*main.app_width
         height: width
         circular: true
         clip: true
@@ -808,7 +834,7 @@ Page{
                 a: menu.a
 
                 onClicked: {
-                    root.StackView.view.push("qrc:/ProfilePage.qml");
+                    main.mainStackView.push("qrc:/ProfilePage.qml");
                     menu.close();
                 }
             }

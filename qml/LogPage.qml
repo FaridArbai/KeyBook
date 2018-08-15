@@ -10,7 +10,7 @@ Page{
     id: root
     visible:true
 
-    property var statusbar_color    :   Constants.LOGIN_STATUSBAR_COLOR;
+    property var statusbar_color    :   (PLATFORM==="ANDROID")?Constants.LOGIN_STATUSBAR_COLOR:Constants.CONTACTS_STATUSBAR_COLOR;
 
     property int href                   :   1135;
     property int log_height             :   main.app_height + main.statusbar_height;
@@ -19,15 +19,15 @@ Page{
     property int logo_size              :   (170/href)*log_height;
 
     property int usernameinput_top_pad  :   (150/href)*log_height;
-    property int usernameinput_width    :   (3/4)*root.width;
+    property int usernameinput_width    :   (3/4)*main.app_width;
 
     property int passwordinput_top_pad  :   3*input_pixelsize;
-    property int passwordinput_width    :   (3/4)*root.width;
+    property int passwordinput_width    :   (3/4)*main.app_width;
 
     property int errorlabel_center_pad  :   loginbutton_top_pad/2;
 
     property int loginbutton_top_pad    :   (91/href)*log_height;
-    property int loginbutton_height     :   (90/href)*log_height;
+    property int loginbutton_height     :   2.5*buttons_pixelsize;
     property int loginbutton_width      :   usernameinput_width;
 
     property int registerbutton_top_pad :   (29/href)*log_height;
@@ -41,14 +41,14 @@ Page{
     property int input_pixelsize        :   (36/href)*log_height;
     property int input_bottom_pad       :   (12/href)*log_height;
     property int errorlabel_pixelsize   :   (12/18)*input_pixelsize;
-    property int buttons_pixelsize      :   (15/18)*input_pixelsize;
+    property int buttons_pixelsize      :   (14/18)*input_pixelsize;
     property int infolabel_pixelsize    :   (13/18)*input_pixelsize;
     property int placeicons_size        :   input_pixelsize;
     property int icons_bottom_pad       :   (3/2)*input_bottom_pad;
 
     property int erroricon_size         :   errorlabel_pixelsize;
     property int errorlabel_left_pad    :   1.5*erroricon_size;
-    property int errorlabel_width       :   (7/8)*root.width;
+    property int errorlabel_width       :   (7/8)*main.app_width;
 
     property string pw_char             :   "•";
 
@@ -114,12 +114,12 @@ Page{
     Rectangle{
         id: page_bg
         anchors.fill: parent
-        color: "#008696"
+        color: Constants.TOOLBAR_COLOR
         /**
         RadialGradient{
             id: page_grad
             anchors.fill: parent
-            //horizontalOffset: -root.width/2
+            //horizontalOffset: -main.app_width/2
             horizontalOffset: 0
             verticalOffset: -log_height/2
             horizontalRadius: log_height
@@ -160,24 +160,13 @@ Page{
         }
     }
 
-    CustomMask{
-        id: username_icon
-        anchors.left: parent.left
-        anchors.leftMargin: (parent.width - usernameinput_width)/2
-        anchors.bottom: username_input.bottom
-        height: input_pixelsize + username_input.bottomPadding
-        width: height
-        source: "icons/whiteusernameicon.png"
-        color: username_input.inputAlias.activeFocus ? Constants.LogPage.FOCUS_COLOR : Constants.LogPage.HINT_COLOR;
-    }
-
     CustomTextInput{
         id: username_input
         anchors.bottom: logo.bottom
         anchors.bottomMargin: -usernameinput_top_pad
-        anchors.left: username_icon.right
-        anchors.leftMargin: username_icon.width/2
-        width: usernameinput_width - anchors.leftMargin - username_icon.width
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width - width)/2
+        width: usernameinput_width
         pixelsize: input_pixelsize
         textColor: Constants.LogPage.TEXT_COLOR;
         hintColor: Constants.LogPage.HINT_COLOR;
@@ -195,24 +184,13 @@ Page{
         }
     }
 
-    CustomMask{
-        id: password_icon
-        anchors.left: parent.left
-        anchors.leftMargin: (parent.width - passwordinput_width)/2
-        anchors.bottom: password_input.bottom
-        height: input_pixelsize + password_input.bottomPadding
-        width: height
-        source: "icons/whitepadlockicon.png"
-        color: password_input.inputAlias.activeFocus ? Constants.LogPage.FOCUS_COLOR : Constants.LogPage.HINT_COLOR;
-    }
-
     CustomTextInput{
         id: password_input
         anchors.bottom: username_input.bottom
         anchors.bottomMargin: -passwordinput_top_pad
-        anchors.left: password_icon.right
-        anchors.leftMargin: password_icon.width/2
-        width: passwordinput_width - anchors.leftMargin - password_icon.width
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width - width)/2
+        width: passwordinput_width
         pixelsize: input_pixelsize
         textColor: Constants.LogPage.TEXT_COLOR;
         hintColor: Constants.LogPage.HINT_COLOR;
@@ -260,17 +238,16 @@ Page{
         height: loginbutton_height
         width: loginbutton_width
         circular: true
-        animationColor: Constants.Button.LIGHT_ANIMATION_COLOR
+        animationColor: Constants.TOOLBAR_COLOR
         animationDuration: Constants.VISIBLE_DURATION
         easingType: Easing.OutQuad
 
         background: Rectangle {
             height: login_button.height
             width: login_button.width
-            color: "transparent"
-            border.color: Constants.LINES_WHITE
-            border.width: 1
+            color: "white"
             radius: height/2
+            opacity: 0.95
         }
 
         Text{
@@ -278,8 +255,8 @@ Page{
             anchors.centerIn: parent
             font.pixelSize: buttons_pixelsize;
             font.bold: false
-            text: "LOG IN"
-            color: Constants.LINES_WHITE
+            text: "Sign in"
+            color: Constants.TOOLBAR_COLOR
         }
 
         onClicked:{
@@ -315,7 +292,7 @@ Page{
             anchors.centerIn: parent
             font.pixelSize: buttons_pixelsize;
             font.bold: false
-            text: "SIGN UP"
+            text: "Sign up"
             color: Constants.LINES_WHITE
         }
 
@@ -360,8 +337,8 @@ Page{
 
     footer: Rectangle{
         id: footer;
-        width: root.width
-        height: root.height-(root.log_height);
+        width: main.app_width
+        height: main.app_height-(root.log_height);
         color: "#000000";
     }
 

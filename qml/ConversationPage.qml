@@ -14,10 +14,10 @@ Page {
     property int href   :   1135;
     property int wref   :   720;
 
-    property int send_button_size       :   (1/8)*root.width;
+    property int send_button_size       :   (1/8)*main.app_width;
 
-    property int send_field_margin      :   (Constants.ConversationPage.SEND_FIELD_MARGIN)*root.height;
-    property int messages_field_margin  :   (1/16)*root.width;
+    property int send_field_margin      :   (Constants.ConversationPage.SEND_FIELD_MARGIN)*main.app_height;
+    property int messages_field_margin  :   (1/16)*main.app_width;
 
     property int initial_message_field_height   : send_button_size;
     property int max_message_field_height       :   6*textarea_pixelsize;
@@ -25,32 +25,32 @@ Page {
     property int message_field_height   :   initial_message_field_height;
 
     property int send_field_height      :   message_field_height + 2*send_field_margin;
-    property int messages_field_height  :   root.height - (toolbar.height + send_field_height);
+    property int messages_field_height  :   main.app_height - (toolbar.height + send_field_height);
 
     property int text_area_width        :   root.width - (3*send_field_margin + send_button_size);
     property int scrollbar_width        :   initial_message_field_height/8;
 
-    property int side_margin            :   (157/2880)*root.width;
-    property int backimage_size         :   (34/wref)*root.width;
+    property int side_margin            :   (157/2880)*main.app_width;
+    property int backimage_size         :   (34/wref)*main.app_width;
     property int backbutton_size        :   2*backimage_size;
-    property int image_left_paddding    :   (1/32)*root.width;
+    property int image_left_paddding    :   (1/32)*main.app_width;
     property int image_size             :   (3/4)*main.toolbar_height;
     property int image_top_padding      :   (1/8)*main.toolbar_height;
 
-    property int presence_left_padding  :   (16/wref)*root.width;
+    property int presence_left_padding  :   (16/wref)*main.app_width;
     property int username_top_padding   :   (1/3)*main.toolbar_height;
     property int presence_top_padding   :   (2/3)*main.toolbar_height;
 
 
-    property int username_pixelsize     :   (32/href)*root.height;
-    property int presence_pixelsize     :   (24/href)*root.height;
-    property int message_pixelsize      :   (24/href)*root.height;
-    property int timestamp_pixelsize    :   (20/href)*root.height;
-    property int textarea_pixelsize     :   (30/href)*root.height;
+    property int username_pixelsize     :   (32/href)*main.app_height;
+    property int presence_pixelsize     :   (24/href)*main.app_height;
+    property int message_pixelsize      :   (24/href)*main.app_height;
+    property int timestamp_pixelsize    :   (20/href)*main.app_height;
+    property int textarea_pixelsize     :   (30/href)*main.app_height;
 
     property int options_pixelsize              :   0;
     property int options_pixelsize_closed       :   0;
-    property int options_pixelsize_opened       :   (28/href)*root.height;
+    property int options_pixelsize_opened       :   (28/href)*main.app_height;
 
     property alias dialog   :   latchkey_dialog;
 
@@ -58,7 +58,7 @@ Page {
         id: bg_image
         color:"#F2F2F2"
         width: root.width
-        height: root.height
+        height: main.app_height
         z: -1000
 
         Image{
@@ -110,8 +110,8 @@ Page {
         id:toolbar
         anchors.top: parent.top
         anchors.left: parent.left
+        anchors.right: parent.right
         height: main.toolbar_height
-        width: root.width
         layer.enabled: true
         layer.effect: CustomElevation{
             source: toolbar
@@ -150,7 +150,12 @@ Page {
 
             function action(){
                 main_frame.finishCurrentConversation();
-                root.StackView.view.pop();
+                if(PLATFORM==="DESKTOP"){
+                    main.conversationStackView.reset();
+                }
+                else{
+                    main.mainStackView.pop();
+                }
             }
         }
 
@@ -192,7 +197,7 @@ Page {
 
             function action(){
                 main_frame.refreshContactGUI(contact.username_gui)
-                root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ConversationPage"})
             }
         }
@@ -231,7 +236,7 @@ Page {
 
             onClicked: {
                 main_frame.refreshContactGUI(contact.username_gui)
-                root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ConversationPage"})
             }
         }
@@ -277,15 +282,15 @@ Page {
         ListView {
             id: messages_view
             anchors.fill: parent
-            bottomMargin: (8/href)*root.height
+            bottomMargin: (8/href)*main.app_height
             displayMarginBeginning: 0
             displayMarginEnd: 0
             verticalLayoutDirection: ListView.BottomToTop
-            spacing: Constants.ConversationPage.Message.SEPARATION*root.height
+            spacing: Constants.ConversationPage.Message.SEPARATION*main.app_height
             model: MessageModel
             clip: true
 
-            property int messages_scrollbar_width   :  (Constants.ConversationPage.Message.PAD_OUTTER*root.width - Constants.ConversationPage.Message.BUBBLE_WIDTH*root.height)/2;
+            property int messages_scrollbar_width   :  (Constants.ConversationPage.Message.PAD_OUTTER*main.app_width - Constants.ConversationPage.Message.BUBBLE_WIDTH*main.app_height)/2;
 
             delegate: Rectangle{
                 id: message_delegate
@@ -297,28 +302,28 @@ Page {
                 readonly property bool new_day          :   model.modelData.first_of_its_day_gui;
                 readonly property bool first_of_group   :   model.modelData.first_of_group_gui;
                 readonly property bool mine             :   (contact.username_gui !== model.modelData.sender_gui)
-                readonly property int border_pad        :   Constants.ConversationPage.Message.PAD_OUTTER*root.width;
-                readonly property int text_pad          :   Constants.ConversationPage.Message.PAD_INNER*root.width;
-                readonly property int min_sep           :   Constants.ConversationPage.Message.MIN_PAD*root.width;
-                readonly property int time_pad          :   Constants.ConversationPage.Message.TIME_PAD*root.width;
+                readonly property int border_pad        :   Constants.ConversationPage.Message.PAD_OUTTER*main.app_width;
+                readonly property int text_pad          :   Constants.ConversationPage.Message.PAD_INNER*main.app_width;
+                readonly property int min_sep           :   Constants.ConversationPage.Message.MIN_PAD*main.app_width;
+                readonly property int time_pad          :   Constants.ConversationPage.Message.TIME_PAD*main.app_width;
 
                 readonly property int max_width             :   messages_view.width - border_pad - min_sep;
 
                 readonly property int max_text_width        :   max_width;
 
-                readonly property int messages_separation   :   Constants.ConversationPage.Message.SEPARATION*root.height;
+                readonly property int messages_separation   :   Constants.ConversationPage.Message.SEPARATION*main.app_height;
                 readonly property int timestamp_fits        :   (message.width - text_pad -  last_line_width) > (timestamp.paintedWidth)
 
 
                 readonly property int last_line_width       :   (message_text_unwrapped.paintedWidth > message_text.paintedWidth)?(message_text_unwrapped.paintedWidth%message_text.paintedWidth):(message_text.paintedWidth);
 
-                readonly property int box_radius            :   Constants.ConversationPage.Message.RADIUS*root.height;
+                readonly property int box_radius            :   Constants.ConversationPage.Message.RADIUS*main.app_height;
 
-                readonly property int new_day_pad           :   Constants.ConversationPage.Message.NEW_DAY_VPAD*root.height;
-                readonly property int first_of_group_separation :   Constants.ConversationPage.Message.FIRST_OF_GROUP_SEPARATION*root.height;
+                readonly property int new_day_pad           :   Constants.ConversationPage.Message.NEW_DAY_VPAD*main.app_height;
+                readonly property int first_of_group_separation :   Constants.ConversationPage.Message.FIRST_OF_GROUP_SEPARATION*main.app_height;
 
-                readonly property int bubble_width  :   Constants.ConversationPage.Message.BUBBLE_WIDTH*root.height;
-                readonly property int bubble_height :   Constants.ConversationPage.Message.BUBBLE_HEIGHT*root.height;
+                readonly property int bubble_width  :   Constants.ConversationPage.Message.BUBBLE_WIDTH*main.app_height;
+                readonly property int bubble_height :   Constants.ConversationPage.Message.BUBBLE_HEIGHT*main.app_height;
 
 
                 Rectangle{
@@ -371,7 +376,7 @@ Page {
                     width: Math.min(Math.max(message_text.implicitWidth, timestamp.implicitWidth), max_width)
                     height: message_text.height
                     color: (model.modelData.reliability_gui ? (mine ? Constants.ConversationPage.PERSONAL_MESSAGE_BACKGROUND : Constants.ConversationPage.CONTACT_MESSAGE_BACKGROUND) : Constants.ConversationPage.ERROR_MESSAGE_BACKGROUND)
-                    radius: Constants.ConversationPage.Message.RADIUS*root.height;
+                    radius: Constants.ConversationPage.Message.RADIUS*main.app_height;
                     layer.enabled: true
                     layer.effect: DropShadow{
                         width: message.width
@@ -665,13 +670,11 @@ Page {
             id: send_button_container
             anchors.bottom: parent.bottom
             anchors.bottomMargin: send_field_margin
-            anchors.left: message_field_container.right
-            anchors.leftMargin: send_field_margin
             anchors.right: parent.right
             anchors.rightMargin: send_field_margin
             height: send_button_size
-            //width: send_button_size
-            color: Constants.ConversationPage.SENDBUTTON_COLOR
+            width: send_button_size
+            color: Constants.VIBRANT_COLOR
             radius: width/2
             layer.enabled: true
             layer.effect: CustomElevation{
@@ -725,7 +728,7 @@ Page {
 
                 onClicked: {
                     main_frame.refreshContactGUI(contact.username_gui)
-                    root.StackView.view.push("qrc:/ContactProfilePage.qml",
+                    main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                              {previous_page : "ConversationPage"})
                     menu.close();
                 }
