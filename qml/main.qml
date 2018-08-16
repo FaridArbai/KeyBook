@@ -8,14 +8,15 @@ import "Constants.js" as Constants
 
 ApplicationWindow {
     id: window
-    width: (PLATFORM==="ANDROID")?(app_width):((2.5)*main_frame.getAppWidth());
-    height: (PLATFORM==="ANDROID")?(app_height):main_frame.getAppHeight() + titlebar_height;
+    width: (PLATFORM==="ANDROID")?(main_frame.getAppWidth()):((2.5)*main_frame.getAppWidth());
+    height: (PLATFORM==="ANDROID")?(main_frame.getAppHeight()):main_frame.getAppHeight() + titlebar_height;
     visible: true
-    flags:Qt.FramelessWindowHint | Qt.Window;
+    flags: (PLATFORM==="DESKTOP")?(Qt.FramelessWindowHint | Qt.Window):(window.flags);
     color: "transparent"
 
-    property alias main                     : window;
-    property alias conversationStackView    : conversationView;
+
+    property alias main                     :   window;
+    property alias conversationStackView    :   conversationView;
     property alias mainStackView            :   stackView;
 
     property int toolbar_height         :   (app_height/10);
@@ -62,7 +63,7 @@ ApplicationWindow {
         }
 
         onReceivedNewMessage:{
-            main_frame.refreshContactsGUI();
+            main_frame.refreshConversationsGUI();
         }
 
         onVkeyboardMeasured:{
@@ -115,8 +116,8 @@ ApplicationWindow {
     Rectangle{
         id: frame
         anchors.fill: parent
-        anchors.margins: 10
-        radius: width/128
+        anchors.margins: (PLATFORM==="DESKTOP")?elevation_margins:0
+        radius: (PLATFORM==="DESKTOP")?(width/128):0
         color: "transparent"
         layer.enabled: (PLATFORM==="DESKTOP")?true:false
         layer.effect: DropShadow {
@@ -139,6 +140,9 @@ ApplicationWindow {
             anchors.right: parent.right
             height: titlebar_height
             color: Constants.STATUSBAR_COLOR
+            visible: (PLATFORM==="DESKTOP")
+            enabled: (PLATFORM==="DESKTOP")
+            clip: true
 
             MouseArea{
                 id: controller
@@ -259,7 +263,7 @@ ApplicationWindow {
 
         StackView {
             id: stackView
-            anchors.top: titlebar.bottom
+            anchors.top: (PLATFORM==="DESKTOP")?(titlebar.bottom):(parent.top)
             anchors.left: parent.left
             width: app_width
             anchors.bottom: parent.bottom
@@ -368,10 +372,12 @@ ApplicationWindow {
 
         StackView {
             id: conversationView
-            anchors.top: titlebar.bottom
-            anchors.left: stackView.right
-            width: (window.width - stackView.width - 2*elevation_margins)
-            anchors.bottom: parent.bottom
+            anchors.top: (PLATFORM==="DESKTOP")?titlebar.bottom:undefined
+            anchors.left: (PLATFORM==="DESKTOP")?stackView.right: undefined
+            anchors.bottom: (PLATFORM==="DESKTOP")?parent.bottom:undefined
+            width: (PLATFORM==="DESKTOP")?(window.width - stackView.width - 2*elevation_margins):(0)
+            visible: (PLATFORM==="DESKTOP")
+            enabled: (PLATFORM==="DESKTOP")
             initialItem: PlaceholderPage {}
 
             pushEnter: Transition{
@@ -471,6 +477,10 @@ ApplicationWindow {
 
             function reset(){
                 replace("qrc:/PlaceholderPage.qml");
+            }
+
+            function inConversation(){
+                return (currentItem.toString().indexOf("ConversationPage")===0);
             }
 
             function startConversation(){
