@@ -28,7 +28,7 @@ This pproject is licensed under the [GNU General Public License Version 3](LICEN
 ### Platforms
 * Android (version 5.0+)
 * Windows (7, 8/8.1 and 10)
-* Linux (version 3.2+)
+* Linux (kernel 3.2+)
 
 ![Android](./d_trust_images/android.png)
 ![Windows](./d_trust_images/windows.png)
