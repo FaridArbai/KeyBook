@@ -112,26 +112,12 @@ ApplicationWindow {
         }
     }
 
-
     Rectangle{
         id: frame
         anchors.fill: parent
         anchors.margins: (PLATFORM==="DESKTOP")?elevation_margins:0
         radius: (PLATFORM==="DESKTOP")?(width/128):0
         color: "transparent"
-        layer.enabled: (PLATFORM==="DESKTOP")?true:false
-        layer.effect: DropShadow {
-            horizontalOffset: horizontal_offset
-            verticalOffset: vertical_offset
-            radius: normal_radius
-            samples: elevation_margins
-            source: frame
-            color: Constants.DROPSHADOW_COLOR
-            visible: (PLATFORM==="DESKTOP")
-            enabled: (PLATFORM==="DESKTOP")
-            cached: true
-        }
-
 
         Rectangle{
             id: titlebar
@@ -175,12 +161,13 @@ ApplicationWindow {
             CustomMask{
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.leftMargin: width/2;
-                anchors.topMargin: (parent.height-height)/2;
-                width: parent.height*(3/4);
+                anchors.leftMargin: Math.round(width/2);
+                anchors.topMargin: Math.round((parent.height-height)/2);
+                width: Math.round(parent.height*(3/4));
                 height: width
-                source: "icons/keys.png"
+                source: "icons/whitelogoicon.png"
                 color: Constants.GENERAL_TEXT_WHITE
+                smooth: true
             }
 
             CustomButton{
@@ -370,12 +357,21 @@ ApplicationWindow {
 
         }
 
+        Rectangle{
+            id: separator
+            anchors.left: mainStackView.right
+            anchors.top: mainStackView.top
+            anchors.bottom: mainStackView.bottom
+            width: (PLATFORM==="DESKTOP")?(1):(0)
+            color: "#edeef0";
+        }
+
         StackView {
             id: conversationView
             anchors.top: (PLATFORM==="DESKTOP")?titlebar.bottom:undefined
-            anchors.left: (PLATFORM==="DESKTOP")?stackView.right: undefined
+            anchors.left: (PLATFORM==="DESKTOP")?separator.right: undefined
             anchors.bottom: (PLATFORM==="DESKTOP")?parent.bottom:undefined
-            width: (PLATFORM==="DESKTOP")?(window.width - stackView.width - 2*elevation_margins):(0)
+            width: (PLATFORM==="DESKTOP")?(window.width - stackView.width - 2*elevation_margins-1):(0)
             visible: (PLATFORM==="DESKTOP")
             enabled: (PLATFORM==="DESKTOP")
             initialItem: PlaceholderPage {}
@@ -487,9 +483,18 @@ ApplicationWindow {
                 replace("qrc:/ConversationPage.qml");
             }
         }
+    }
 
-
-
+    DropShadow {
+        anchors.fill: frame
+        horizontalOffset: horizontal_offset
+        verticalOffset: vertical_offset
+        radius: controller.pressed ? pressed_radius : normal_radius
+        samples: elevation_margins
+        source: frame
+        color: Constants.DROPSHADOW_COLOR
+        visible: (PLATFORM==="DESKTOP")
+        enabled: (PLATFORM==="DESKTOP")
     }
 
     onClosing:{
