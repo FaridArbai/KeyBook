@@ -14,7 +14,7 @@ Page{
         anchors.fill: parent
         color: "#F8F9FB"
     }
-
+    /**
     CustomMask{
         id: icon
         anchors.top: parent.top
@@ -25,5 +25,28 @@ Page{
         height: parent.height/4
         source: "icons/whitelogoicon.png"
         color: Constants.TextInput.TEXT_COLOR
+    }**/
+
+    Image{
+        id: icon
+        anchors.top: parent.top
+        anchors.topMargin: (parent.height-height)/4
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width-width)/2
+        width: parent.height/2
+        height: parent.height/2
+        source: "icons/devices.png"
     }
+
+    /**
+    Rectangle{
+        id: bottom_line
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 5
+        color: Constants.TOOLBAR_COLOR
+    }
+    **/
+
 }
