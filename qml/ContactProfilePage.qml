@@ -41,7 +41,7 @@ Page{
 
     property int changestatusbutton_size    :   statustext_pixelsize;
 
-    property int shadow_offset      :   main.app_height/200;
+    property int shadow_offset              :   main.app_height/200;
 
     property int general_shadow_offset      :   main.app_height/400;
     property int relevant_shadow_offset     :   main.app_height/200;
@@ -51,7 +51,7 @@ Page{
     property int presence_top_margin    :   statustext_top_margin-(statusindicator_top_margin+statusindicator_pixelsize);
 
 
-    property int box_pixelsize  :   statusindicator_pixelsize;
+    property int box_pixelsize  :   Math.round((3/4)*statusindicator_pixelsize);
     property int box_height     :   3*box_pixelsize;
     property int boxes_spacing  :   remaining_height/16;
     property int box_top_margin :   box_pixelsize;
@@ -95,8 +95,17 @@ Page{
         onDone:{
             main_frame.changePTPKeyOf(contact.username_gui, text);
 
-            if(root.previous_page=="ConversationPage"){
-                main_frame.refreshMessagesGUI();
+            if(PLATFORM==="ANDROID"){
+                if(root.previous_page=="ConversationPage"){
+                    main_frame.refreshMessagesGUI();
+                }
+            }
+            else{
+                if(main.conversationStackView.inConversation()){
+                    if(collocutor.username_gui === contact.username_gui){
+                        main_frame.refreshMessagesGUI();
+                    }
+                }
             }
 
             latchkey_dialog.close();
@@ -338,7 +347,7 @@ Page{
                         id: latchkeyicon_bg
                         height: parent.height
                         width: parent.width
-                        color: theme_color
+                        color: Constants.ProfilePage.TEXT_COLOR
                         visible: false
                     }
 
@@ -360,7 +369,7 @@ Page{
                     anchors.leftMargin: boxtext_left_margin/2
                     height: box_icon_size
                     width: 1
-                    color: theme_color
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 Label{
@@ -370,8 +379,8 @@ Page{
                     anchors.leftMargin: boxtext_left_margin
                     padding: 0
                     font.pixelSize: box_pixelsize
-                    text: "Change latchkey"
-                    color: root.theme_color
+                    text: "Update key"
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 CustomButton{
@@ -414,7 +423,7 @@ Page{
                         id: conversationicon_bg
                         height: parent.height
                         width: parent.width
-                        color: theme_color
+                        color: Constants.ProfilePage.TEXT_COLOR
                         visible: false
                     }
 
@@ -436,7 +445,7 @@ Page{
                     anchors.leftMargin: boxtext_left_margin/2
                     height: box_icon_size
                     width: 1
-                    color: theme_color
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 Label{
@@ -447,7 +456,7 @@ Page{
                     font.pixelSize: box_pixelsize
                     padding: 0
                     text: "Text contact"
-                    color: root.theme_color
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 CustomButton{
@@ -489,7 +498,7 @@ Page{
                         id: clearicon_bg
                         height: parent.height
                         width: parent.width
-                        color: theme_color
+                        color: Constants.ProfilePage.TEXT_COLOR
                         visible: false
                     }
 
@@ -511,7 +520,7 @@ Page{
                     anchors.leftMargin: boxtext_left_margin/2
                     height: box_icon_size
                     width: 1
-                    color: theme_color
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 Label{
@@ -522,7 +531,7 @@ Page{
                     padding: 0
                     font.pixelSize: box_pixelsize
                     text: "Clear history"
-                    color: root.theme_color
+                    color: Constants.ProfilePage.TEXT_COLOR
                 }
 
                 CustomButton{
@@ -574,13 +583,27 @@ Page{
                 }
 
                 function action(){
-                    if(root.previous_page=="ConversationPage"){
-                        root.StackView.view.pop();
+                    if(PLATFORM==="ANDROID"){
+                        if(root.previous_page=="ConversationPage"){
+                            main.mainStackView.pop();
+                        }
+                        else{
+                            main_frame.loadConversationWith(contact.username_gui);
+                            main_frame.refreshCollocutorGUI(contact.username_gui);
+                            main.mainStackView.push("qrc:/ConversationPage.qml");
+                        }
                     }
                     else{
-                        main_frame.loadConversationWith(contact.username_gui);
-                        main_frame.refreshContactGUI(contact.username_gui);
-                        root.StackView.view.push("qrc:/ConversationPage.qml");
+                        if(root.previous_page=="ConversationPage"){
+                            main_frame.loadConversationWith(contact.username_gui);
+                            main_frame.refreshCollocutorGUI(contact.username_gui);
+                            main.conversationStackView.startConversation();
+                        }
+                        else{
+                            main_frame.loadConversationWith(contact.username_gui);
+                            main_frame.refreshCollocutorGUI(contact.username_gui);
+                            main.conversationStackView.startConversation();
+                        }
                     }
                 }
             }
@@ -590,7 +613,7 @@ Page{
                 name: "Update latchkey"
                 a: menu.a
                 onClicked: {
-                    root.StackView.view.pop();
+                    main.mainStackView.pop();
                     menu.close();
                 }
             }
@@ -598,7 +621,7 @@ Page{
     }
 
     function goBack(){
-        root.StackView.view.pop();
+        main.mainStackView.pop();
     }
 
     Keys.onBackPressed: {

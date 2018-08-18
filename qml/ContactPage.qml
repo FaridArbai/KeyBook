@@ -458,7 +458,7 @@ Page{
 
                     onClicked: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
-                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        main_frame.refreshCollocutorGUI(model.modelData.username_gui)
                         if(PLATFORM==="DESKTOP"){
                             main.conversationStackView.startConversation();
                         }
@@ -469,7 +469,7 @@ Page{
 
                     onPressAndHold: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
-                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        main_frame.refreshCollocutorGUI(model.modelData.username_gui)
                         if(PLATFORM==="DESKTOP"){
                             main.conversationStackView.startConversation();
                         }
@@ -635,7 +635,7 @@ Page{
 
                     onClicked: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
-                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        main_frame.refreshCollocutorGUI(model.modelData.username_gui)
                         if(PLATFORM==="DESKTOP"){
                             main.conversationStackView.startConversation();
                         }
@@ -646,7 +646,7 @@ Page{
 
                     onPressAndHold: {
                         main_frame.loadConversationWith(model.modelData.username_gui)
-                        main_frame.refreshContactGUI(model.modelData.username_gui)
+                        main_frame.refreshCollocutorGUI(model.modelData.username_gui)
                         if(PLATFORM==="DESKTOP"){
                             main.conversationStackView.startConversation();
                         }
