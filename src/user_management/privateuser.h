@@ -25,6 +25,8 @@ public:
     PrivateUser(const PrivateUser& orig) = delete;
     virtual ~PrivateUser();
 
+    void load(string code);
+
     string toString();
 
     void addContact(Contact* new_contact);
@@ -37,6 +39,11 @@ public:
     void updateAvatarOf(string username, Avatar avatar);
 
     QList<QObject*>& getContactsGUI();
+    QList<QObject*>& getContactsGUI(string filter);
+
+    QList<QObject*>& getConversationsGUI();
+    QList<QObject*>& getConversationsGUI(string filter);
+
     Contact* getContact(string username);
 
     vector<Contact*> getContacts() const;
@@ -49,9 +56,12 @@ public:
 
     void addMessage(string sender, string recipient, string date_str, string text);
 
+    void moveToMainThread();
+
 private:
     vector<Contact*> contacts;
     QList<QObject*> contacts_gui;
+    QList<QObject*> conversation_gui;
 
     bool in_conversation;
     string conversation_username;
