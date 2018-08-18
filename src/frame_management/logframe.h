@@ -15,6 +15,7 @@
 #include "src/frame_management/mainframe.h"
 #include "src/user_management/privateuser.h"
 #include "src/user_management/iomanager.h"
+#include "src/encryption_engines/publicengine.h"
 #include <QGuiApplication>
 
 using namespace std;

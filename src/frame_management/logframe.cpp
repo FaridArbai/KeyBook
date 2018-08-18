@@ -22,9 +22,10 @@ void LogFrame::logIn(const QString entered_username, const QString entered_passw
 }
 
 void LogFrame::logInImpl(string username, string password){
-    PM_logReq request_pm = PM_logReq(username,password);
+    string password_hash = PublicEngine::sha256(password);
+    PM_logReq request_pm = PM_logReq(username,password_hash);
     ProtocolMessage* response_pm;
-
+    qDebug() << request_pm.toString().c_str() << endl;
     response_pm = this->request_handler->recvResponseFor(&request_pm);
 
     bool log_result = ((PM_logRep*)response_pm)->getResult();
@@ -44,20 +45,10 @@ void LogFrame::logInImpl(string username, string password){
 
 void LogFrame::loadData(QString username){
     MainFrame::showProgressDialog("Loading data");
-    //QFuture<void> future = QtConcurrent::run(this, &LogFrame::loadDataImpl, username.toStdString());
-    PrivateUser* user = IOManager::loadUser(username.toStdString());
-
-    this->setPrivateUser(user);
-    this->spreadPrivateUser();
-
-    MainFrame::dismissProgressDialog();
-    emit userLoggedIn();
+    QFuture<void> future = QtConcurrent::run(this, &LogFrame::loadDataImpl, username.toStdString());
 }
 
 void LogFrame::loadDataImpl(string username){
-    //TODO: Figure out how to create the user inside of the
-    //main thread and still load it's data asynchronously.
-    /**
     PrivateUser* user = IOManager::loadUser(username);
 
     this->setPrivateUser(user);
@@ -65,7 +56,6 @@ void LogFrame::loadDataImpl(string username){
 
     MainFrame::dismissProgressDialog();
     emit userLoggedIn();
-    **/
 }
 
 void LogFrame::closeApp(){
