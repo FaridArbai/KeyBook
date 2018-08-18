@@ -42,11 +42,11 @@ Page {
     property int presence_top_padding   :   (2/3)*main.toolbar_height;
 
 
-    property int username_pixelsize     :   (32/href)*main.app_height;
-    property int presence_pixelsize     :   (24/href)*main.app_height;
-    property int message_pixelsize      :   (24/href)*main.app_height;
-    property int timestamp_pixelsize    :   (20/href)*main.app_height;
-    property int textarea_pixelsize     :   (30/href)*main.app_height;
+    property int username_pixelsize     :   Math.round((32/href)*main.app_height);
+    property int presence_pixelsize     :   Math.round((24/href)*main.app_height);
+    property int message_pixelsize      :   Math.round((24/href)*main.app_height);
+    property int timestamp_pixelsize    :   Math.round((20/href)*main.app_height);
+    property int textarea_pixelsize     :   Math.round((30/href)*main.app_height);
 
     property int options_pixelsize              :   0;
     property int options_pixelsize_closed       :   0;
@@ -99,7 +99,7 @@ Page {
         statusbar_color: main.decToColor(root.statusbar_color);
 
         onDone:{
-            main_frame.changePTPKeyOf(contact.username_gui, text);
+            main_frame.changePTPKeyOf(collocutor.username_gui, text);
             main_frame.refreshMessagesGUI();
             latchkey_dialog.close();
         }
@@ -173,7 +173,7 @@ Page {
             Image {
                 id: avatar
                 anchors.fill: parent
-                source: contact.avatar_path_gui
+                source: collocutor.avatar_path_gui
                 fillMode: Image.PreserveAspectCrop
                 mipmap: true
                 layer.enabled: true
@@ -196,7 +196,7 @@ Page {
             }
 
             function action(){
-                main_frame.refreshContactGUI(contact.username_gui)
+                main_frame.refreshContactGUI(collocutor.username_gui)
                 main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ConversationPage"})
             }
@@ -218,7 +218,7 @@ Page {
                 anchors.top: parent.top
                 anchors.topMargin: username_top_padding-height/2
                 anchors.left: parent.left
-                text: contact.username_gui
+                text: collocutor.username_gui
                 color: "white"
                 font.bold: true
                 font.pixelSize: username_pixelsize
@@ -229,13 +229,13 @@ Page {
                 anchors.top: parent.top
                 anchors.topMargin: presence_top_padding-height/2
                 anchors.left: parent.left
-                text: contact.presence_gui
+                text: collocutor.presence_gui
                 color: "white"
                 font.pixelSize: presence_pixelsize
             }
 
             onClicked: {
-                main_frame.refreshContactGUI(contact.username_gui)
+                main_frame.refreshContactGUI(collocutor.username_gui)
                 main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                          {previous_page : "ConversationPage"})
             }
@@ -301,7 +301,7 @@ Page {
                 readonly property bool reliable         :   model.modelData.reliability_gui;
                 readonly property bool new_day          :   model.modelData.first_of_its_day_gui;
                 readonly property bool first_of_group   :   model.modelData.first_of_group_gui;
-                readonly property bool mine             :   (contact.username_gui !== model.modelData.sender_gui)
+                readonly property bool mine             :   (collocutor.username_gui !== model.modelData.sender_gui)
                 readonly property int border_pad        :   Constants.ConversationPage.Message.PAD_OUTTER*main.app_width;
                 readonly property int text_pad          :   Constants.ConversationPage.Message.PAD_INNER*main.app_width;
                 readonly property int min_sep           :   Constants.ConversationPage.Message.MIN_PAD*main.app_width;
@@ -704,7 +704,7 @@ Page {
                 }
 
                 onClicked:{
-                    main_frame.sendMessage(contact.username_gui, message_field.text);
+                    main_frame.sendMessage(collocutor.username_gui, message_field.text);
                     message_field.refresh();
                 }
             }
@@ -727,7 +727,7 @@ Page {
                 a: menu.a
 
                 onClicked: {
-                    main_frame.refreshContactGUI(contact.username_gui)
+                    main_frame.refreshContactGUI(collocutor.username_gui)
                     main.mainStackView.push("qrc:/ContactProfilePage.qml",
                                              {previous_page : "ConversationPage"})
                     menu.close();
