@@ -21,7 +21,18 @@ PrivateUser* IOManager::loadUser(string username){
 
     PrivateUser* user = new PrivateUser(user_str);
 
+    user->moveToMainThread();
+
     return user;
+}
+
+void IOManager::loadDataIntoUser(string username, PrivateUser* user){
+    string path_to_user = IOManager::getPathToUser(username);
+    std::ifstream ifs(path_to_user);
+    std::string user_str;
+    user_str.assign(std::istreambuf_iterator<char>(ifs),std::istreambuf_iterator<char>());
+
+    user->load(user_str);
 }
 
 void IOManager::saveUser(PrivateUser* user){
@@ -156,17 +167,7 @@ void IOManager::init(){
     qDebug() << "Se entra en el init" << endl;
 
     if(!exists){
-        path_to_users = path_to_data + "/users";
-        path_to_images = path_to_data + "/images";
-        path_to_default = exec_path + "/default.png";
-#ifdef _WIN32
-        err_code = _mkdir(path_to_data.c_str());
-        err_code = _mkdir(path_to_users.c_str());
-        err_code = _mkdir(path_to_images.c_str());
-#else
-#endif
         qDebug() << "Se va a crear la imagen" << endl;
-
         string image_bin = Base64::decode(IOManager::DEFAULT_IMAGE);
         IOManager::saveImage("default.png",image_bin);
     }

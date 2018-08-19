@@ -32,6 +32,9 @@ public:
     IOManager() = delete;
 
     static PrivateUser* loadUser(string username);
+    static void loadDataIntoUser(string username, PrivateUser* user);
+
+
     static void saveUser(PrivateUser* user);
 
     static void saveImage(string image_path, string image_bin);
