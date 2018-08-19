@@ -121,7 +121,7 @@ int Avatar::extractMedianColor(string source){
     int final_color;
 
     if(image.isNull()==false){
-        height = (image.height()>64)?(64):(image.height());
+        height = (image.height()>128)?(128):(image.height());
         width = image.width();
 
         for(int y=0; y<height; y++){
