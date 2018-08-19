@@ -7,7 +7,7 @@
 Formerly called D-Trust before EU GDPR update on July 20, KeyBook Messaging is the first open source cross-platform messaging app with a decentralized trust mechanism.
 
 ### License
-This pproject is licensed under the [GNU General Public License Version 3](LICENSE)
+This project is licensed under the [GNU General Public License Version 3](LICENSE)
 
 ![GNU GPL v3](./d_trust_images/gpl_v3.png)
 
