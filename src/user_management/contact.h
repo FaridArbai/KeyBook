@@ -28,6 +28,7 @@ class Contact : public QObject, public User{
     Q_PROPERTY(int avatar_color_gui READ getAvatarColorGUI NOTIFY avatarChanged)
     Q_PROPERTY(QString status_gui READ getStatusGUI NOTIFY statusChanged)
     Q_PROPERTY(QString status_date_gui READ getStatusDateGUI NOTIFY statusChanged)
+    Q_PROPERTY(bool last_message_reliability READ getLastMessageReliability NOTIFY lastMessageChanged)
 
 public:
     static const string FIELDS_SEP;
@@ -65,6 +66,7 @@ public:
 
     Latchword* getLatchword();
     void setLatchword(Latchword latchword);
+    void updateLatchword(Latchword latchword);
 
     QString getPresenceGUI();
     QString getShortPresenceGUI();
@@ -79,6 +81,7 @@ public:
     QString getStatusGUI();
     QString getStatusDateGUI();
     QString getLastMessageGUI();
+    bool getLastMessageReliability();
     int getAvatarColorGUI();
 
     void pushMessage(string sender, string recipient, string date_str, string text);
@@ -104,6 +107,10 @@ private:
 
     string messagesToString();
 
+    static void computeDiffMessagesValues(vector<Message*>& messages);
+
+    void computeMessagesGUI();
+    void initMessagesGUI();
 };
 
 #endif // CONTACT_H

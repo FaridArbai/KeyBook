@@ -15,7 +15,15 @@ Contact::Contact():
 }
 
 Contact::~Contact(){
+    /**
+    for(Message* message : this->messages){
+        delete message;
+    }
 
+    for(QObject* message_gui : this->messages){
+        delete message_gui;
+    }
+    **/
 }
 
 Contact::Contact(string username, string status_text, string status_date,
@@ -138,9 +146,38 @@ void Contact::setMessages(string messages_str){
 
         message = new Message(message_str);
         messages.push_back(message);
+
+
     }
 
+    Contact::computeDiffMessagesValues(messages);
     this->setMessages(messages);
+    this->initMessagesGUI();
+    this->computeMessagesGUI();
+}
+
+void Contact::initMessagesGUI(){
+    int n_messages = this->messages.size();
+    Message* message;
+
+    this->messages_gui.reserve(n_messages);
+
+    for(int i=0; i<n_messages; i++){
+        message = new Message();
+        this->messages_gui.insert(i,message);
+    }
+}
+
+void Contact::computeMessagesGUI(){
+    int n_messages = this->messages.size();
+    Message* message;
+    Message* decrypted;
+
+    for(int i=0; i<n_messages; i++){
+        message = this->messages.at(i);
+        decrypted = (Message*)this->messages_gui.at(i);
+        this->getLatchword()->decrypt(message, decrypted);
+    }
 }
 
 void Contact::setPresence(string presence_str){
@@ -291,30 +328,32 @@ QString Contact::getStatusDateGUI(){
 }
 
 void Contact::pushMessage(string sender, string recipient, string date_str, string text){
-    Message* message = new Message(sender,date_str,text);
+    Message* last = new Message(sender,date_str,text);
+    int n_messages = this->messages.size();
 
-    messages.insert(messages.begin(),message);
+    if(n_messages==0){
+        last->setFirstOfGroup(true);
+        last->setFirstOfItsDay(true);
+    }
+    else{
+        Message* previous = this->messages.at(0);
+
+        last->setFirstOfGroup(previous);
+        last->setFirstOfItsDay(previous);
+    }
+
+    this->messages.insert(messages.begin(),last);
+
+    Message* decrypted = new Message();
+
+    this->getLatchword()->decrypt(last, decrypted);
+    this->messages_gui.push_front(decrypted);
 
     emit this->lastMessageChanged();
 }
 
 QList<QObject*>& Contact::getMessagesGUI(){
-    QList<QObject*> messages_list;
-    vector<Message*> messages = this->getMessages();
-    int n_messages = messages.size();
-    QObject* message;
-    Latchword* latchword = this->getLatchword();
-
-    messages_list.reserve(messages.size());
-
-    for(int i=0; i<n_messages; i++){
-        message = latchword->decrypt(messages.at(i));
-        messages_list.insert(i,message);
-    }
-
-    this->messages_gui = messages_list;
-
-    QList<QObject*>& ref = messages_gui;
+    QList<QObject*>& ref = (this->messages_gui);
 
     return ref;
 }
@@ -337,14 +376,28 @@ QString Contact::getLastMessageGUI(){
         last_message_gui = QString::fromStdString("");
     }
     else{
-        Latchword* latchword = this->getLatchword();
-        Message* last_message_encr = this->messages.at(0);
-        Message* last_message = latchword->decrypt(last_message_encr);
+        Message* last_message = (Message*)this->messages_gui.at(0);
         last_message_gui = last_message->getTextGUI();
     }
 
     return last_message_gui;
 }
+
+bool Contact::getLastMessageReliability(){
+    bool reliability;
+    int n_messages = this->messages.size();
+
+    if(n_messages==0){
+        reliability = true;
+    }
+    else{
+        Message* last_message = (Message*)this->messages_gui.at(0);
+        reliability = last_message->getReliability();
+    }
+
+    return reliability;
+}
+
 
 Latchword* Contact::getLatchword(){
     return &(this->latchword);
@@ -354,7 +407,29 @@ void Contact::setLatchword(Latchword latchword){
     this->latchword = latchword;
 }
 
+void Contact::updateLatchword(Latchword latchword){
+    this->setLatchword(latchword);
+    this->computeMessagesGUI();
+}
 
+void Contact::computeDiffMessagesValues(vector<Message*>& messages){
+    int n_messages = messages.size();
+    Message* current;
+    Message* previous;
+
+    if(n_messages>0){
+        for(int i=0; i<(n_messages-1); i++){
+            current = messages.at(i);
+            previous = messages.at(i+1);
+            current->setFirstOfGroup(previous);
+            current->setFirstOfItsDay(previous);
+        }
+
+        Message* first = messages.at(n_messages-1);
+        first->setFirstOfGroup(true);
+        first->setFirstOfItsDay(true);
+    }
+}
 
 
 
