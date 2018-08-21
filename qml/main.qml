@@ -10,6 +10,9 @@ ApplicationWindow {
     id: window
     width: (PLATFORM==="ANDROID")?(main_frame.getAppWidth()):((2.5)*main_frame.getAppWidth());
     height: (PLATFORM==="ANDROID")?(main_frame.getAppHeight()):main_frame.getAppHeight() + titlebar_height;
+    maximumHeight: window.screen_height
+    maximumWidth: window.screen_width
+
     visible: true
     flags: (PLATFORM==="DESKTOP")?(Qt.FramelessWindowHint | Qt.Window):(window.flags);
     color: "transparent"
@@ -53,6 +56,8 @@ ApplicationWindow {
                 stackView.replace("qrc:/LogPage.qml");
             }
         }
+
+        console.log(screen_height);
     }
 
     Connections{
@@ -212,11 +217,13 @@ ApplicationWindow {
                 }
 
                 onClicked: {
-                    if(window.visibility===Window.FullScreen){
+                    if(window.visibility===Window.Maximized){
                         window.showNormal();
+                        window.elevation_margins = 10;
                     }
                     else{
-                        window.showFullScreen();
+                        window.elevation_margins = 0;
+                        window.showMaximized();
                     }
                 }
             }
@@ -360,18 +367,19 @@ ApplicationWindow {
         Rectangle{
             id: separator
             anchors.left: mainStackView.right
+            anchors.leftMargin: -width
             anchors.top: mainStackView.top
             anchors.bottom: mainStackView.bottom
             width: (PLATFORM==="DESKTOP")?(1):(0)
-            color: "#edeef0";
+            color: "#4FF0F0F0";
         }
 
         StackView {
             id: conversationView
             anchors.top: (PLATFORM==="DESKTOP")?titlebar.bottom:undefined
-            anchors.left: (PLATFORM==="DESKTOP")?separator.right: undefined
+            anchors.left: (PLATFORM==="DESKTOP")?mainStackView.right: undefined
             anchors.bottom: (PLATFORM==="DESKTOP")?parent.bottom:undefined
-            width: (PLATFORM==="DESKTOP")?(window.width - stackView.width - 2*elevation_margins-1):(0)
+            width: (PLATFORM==="DESKTOP")?(window.width - stackView.width - 2*elevation_margins):(0)
             visible: (PLATFORM==="DESKTOP")
             enabled: (PLATFORM==="DESKTOP")
             initialItem: PlaceholderPage {}
