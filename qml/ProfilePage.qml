@@ -363,7 +363,7 @@ Page {
         title_text: "Update status"
         initial_text: main_frame.getCurrentStatus();
         hint: "Enter new status"
-        max_chars: 50
+        max_chars: 150
         min_chars: 1
         minchars_errstr: "Status cannot be void"
         counter_visible: true
