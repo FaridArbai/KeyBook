@@ -17,7 +17,10 @@ Button {
     property bool asynchronous      :   false;
 
     MouseArea{
+        id: mouse_area
         anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
 
         onClicked: {
             var max_hor = Math.max(mouseX, button.width-mouseX);
@@ -39,6 +42,31 @@ Button {
             bubble.max_radius = size;
             bubble.start();
             click_delay.start();
+        }
+
+        onEntered: {
+            expansion_area.animateEnter();
+            exit_handler.start();
+        }
+
+        onExited: {
+            expansion_area.animateExit();
+        }
+    }
+
+    Timer{
+        id: exit_handler
+        interval: 250
+        repeat: true
+        onTriggered: {
+            if((!mouse_area.containsMouse)){
+                if(!expansion_area.exitAnimation.running){
+                   if(expansion_area.bg_transparency>0){
+                        expansion_area.exitAnimation.start();
+                   }
+                }
+                stop();
+            }
         }
     }
 
@@ -70,7 +98,33 @@ Button {
 
         property int bg_transparency    :   0;
         property int max_transparency   :  0;
+        property alias exitAnimation    :   exit_animation;
 
+        function animateEnter(){
+            enter_animation.start();
+        }
+
+        function animateExit(){
+            exit_animation.start();
+        }
+
+        PropertyAnimation{
+            id: enter_animation
+            target: expansion_area
+            property: "bg_transparency"
+            to: 32
+            duration: 250
+            easing.type: Easing.Linear
+        }
+
+        PropertyAnimation{
+            id: exit_animation
+            target: expansion_area
+            property: "bg_transparency"
+            to: 0
+            duration: 250
+            easing.type: Easing.Linear
+        }
 
         Rectangle{
             id: bubble
@@ -92,28 +146,6 @@ Button {
 
             ParallelAnimation{
                 id: bubble_animation
-
-                SequentialAnimation{
-                    PropertyAnimation{
-                        target: expansion_area
-                        property: "bg_transparency"
-                        from: 0
-                        to: expansion_area.max_transparency
-                        duration: button.animationDuration/8
-                    }
-
-                    PauseAnimation{
-                        duration: (3/4)*button.animationDuration
-                    }
-
-                    PropertyAnimation{
-                        target: expansion_area
-                        property: "bg_transparency"
-                        from: expansion_area.max_transparency
-                        to: 0
-                        duration: button.animationDuration/8
-                    }
-                }
 
                 PropertyAnimation{
                     target: bubble
