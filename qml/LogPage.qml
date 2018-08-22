@@ -38,11 +38,11 @@ Page{
 
     property real density               :   main.density;
 
-    property int input_pixelsize        :   (36/href)*log_height;
+    property int input_pixelsize        :   Math.round((36/href)*log_height);
     property int input_bottom_pad       :   (12/href)*log_height;
-    property int errorlabel_pixelsize   :   (12/18)*input_pixelsize;
-    property int buttons_pixelsize      :   (14/18)*input_pixelsize;
-    property int infolabel_pixelsize    :   (13/18)*input_pixelsize;
+    property int errorlabel_pixelsize   :   Math.round((12/18)*input_pixelsize);
+    property int buttons_pixelsize      :   Math.round((14/18)*input_pixelsize);
+    property int infolabel_pixelsize    :   Math.round((13/18)*input_pixelsize);
     property int placeicons_size        :   input_pixelsize;
     property int icons_bottom_pad       :   (3/2)*input_bottom_pad;
 
@@ -182,6 +182,10 @@ Page{
                 main_frame.measureVKeyboardHeight(main.app_height);
             }
         }
+
+        onEnterPressed: {
+            login_button.clicked();
+        }
     }
 
     CustomTextInput{
@@ -199,6 +203,11 @@ Page{
         hint: "Password"
         counter_visible: false
         echo_mode: TextInput.Password
+        tabTarget: username_input.inputAlias
+
+        onEnterPressed: {
+            login_button.clicked();
+        }
     }
 
     Label{
@@ -318,8 +327,8 @@ Page{
         anchors.top: info_label.top
         anchors.left: info_label.right
         leftPadding: 0
-        font.bold: true
         font.pixelSize: infolabel_pixelsize
+        font.weight: Font.Bold
         color: Constants.LINES_WHITE
         text: "Find out here"
     }
