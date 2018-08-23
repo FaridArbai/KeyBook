@@ -1,6 +1,6 @@
 # KeyBook Messaging
-> Farid Arbai
->> www.faridarbai.com/keybook
+> Developer: Farid Arbai
+>> Website: www.faridarbai.com/keybook
 
 ![KeyBook icon](./d_trust_images/keybook_128.png)
 
