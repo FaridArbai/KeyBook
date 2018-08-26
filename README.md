@@ -63,48 +63,30 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 ## Desktop version, KeyBook 7.0 (latest), August 15
 
 ### Main page
-![](d_trust_images/desktop.jpg)
+![](d_trust_imagesdesktop.jpg)
 
-## Mobile version, KeyBook 6.0 (old), August 1
+## Mobile version, KeyBook 7.0 (latest), August 15
 
-### Loading screen while connecting to server
-![](d_trust_images/1_loading_screen.png)
+### Contacts page
+![](d_trust_images/1_contacts.png)
 
-### Logging page
-![](d_trust_images/2_login_screen.png)
+### Contact search
+![](d_trust_images/2_searching.png)
 
-### Contact page
-![](d_trust_images/3_contacts_view.png)
+### Contact profile
+![](d_trust_images/3_found.png)
 
-### Wrong latchkey
-![](d_trust_images/4_wrong_latchkey.png)
-
-### Latchkey update
-![](d_trust_images/5_latchkey_box.png)
-
-### Latchkey input
-![](d_trust_images/6_introducing_latchkey.png)
-
-### Decrypted conversation
-![](d_trust_images/7_correct_latchkey.png)
-
-### Fluent conversation upon latchkey update
-![](d_trust_images/7_reply.png)
-
-### Adding a new contact
-![](d_trust_images/10_new_contact.png)
-
-### New contact added
-![](d_trust_images/11_new_contact_page.png)
+### Contact addition
+![](d_trust_images/4_adding.png)
 
 ### New contact profile
-![](d_trust_images/12_new_contact_profile.png)
+![](d_trust_images/5_new.png)
 
-### Profile image cropping
-![](d_trust_images/13_image_processing.png)
+### Avatar processing
+![](d_trust_images/6_processing.png)
 
-### Personal profile
-![](d_trust_images/14_personal_profile.png)
+### Conversation
+![](d_trust_images/7_conversation.png)
 
 ## 4. Security mechanism
 This app works with a two-layer encryption mechanishm: a point-to-server and a point-to-point layer. The point-to-server layer is intended to establish a secure channel between the server and the client wereas the point-to-point allows the clients to exchange fully encrypted messages.
