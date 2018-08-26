@@ -49,14 +49,7 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 
 ## 2. Demo
 
-### Adding a new contact
-![](d_trust_images/add_contact.gif)
-
-### Conversation
-![](d_trust_images/conversation.gif)
-
-### Changing profile image
-![](d_trust_images/change_image.gif)
+//Put video here
 
 ## 3. Snapshots
 
