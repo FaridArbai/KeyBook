@@ -47,9 +47,9 @@ KeyBook Messaging allows you to chat in the most reliable way. It does so by usi
 
 The mechanism used by KeyBook solves the well known man-in-the-middle threat that nowadays leading messaging platforms have. As opposed to Whatsapp or Telegram, you can use KeyBook without even trusting on the server since it does not collaborate in the key-exchange process. In fact, users are responsible for manually creating the point-to-point keys that they will be sharing with their contacts. Henceforth, this is the most secure messaging service that can be provided to the community at a zero cost, aimed for entrepreneurs who need to exchange confidential information about their ideas but available for anyone to use under the new EU data privacy policy (GDPR, 20-Jul-18).
 
-## 2. Demo
+## 2. Video Demo
 
-[![IMAGE ALT TEXT](https://i.ytimg.com/vi/cVnN4KPDy1Y/hqdefault.jpg)](https://www.youtube.com/watch?v=cVnN4KPDy1Y "KeyBook Messaging")
+[![IMAGE ALT TEXT](https://img.youtube.com/vi/cVnN4KPDy1Y/0.jpg)](https://www.youtube.com/watch?v=cVnN4KPDy1Y "KeyBook Messaging")
 
 ## 3. Snapshots
 
