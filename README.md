@@ -56,7 +56,7 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 ## Desktop version, KeyBook 7.0 (latest), August 15
 
 ### Main page
-![](d_trust_imagesdesktop.jpg)
+![](d_trust_images/desktop.jpg)
 
 ## Mobile version, KeyBook 7.0 (latest), August 15
 
@@ -64,22 +64,22 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 <img src="d_trust_images/1_contacts.png" width="50%" height="50%">
 
 ### Contact search
-![](d_trust_images/2_searching.png)
+<img src="d_trust_images/2_searching.png" width="50%" height="50%">
 
 ### Contact profile
-![](d_trust_images/3_found.png)
+<img src="d_trust_images/3_found.png" width="50%" height="50%">
 
 ### Contact addition
-![](d_trust_images/4_adding.png)
+<img src="d_trust_images/4_adding.png" width="50%" height="50%">
 
 ### New contact profile
-![](d_trust_images/5_new.png)
+<img src="d_trust_images/5_new.png" width="50%" height="50%">
 
 ### Avatar processing
-![](d_trust_images/6_processing.png)
+<img src="d_trust_images/6_processing.png" width="50%" height="50%">
 
 ### Conversation
-![](d_trust_images/7_conversation.png)
+<img src="d_trust_images/7_conversation.png" width="50%" height="50%">
 
 ## 4. Security mechanism
 This app works with a two-layer encryption mechanishm: a point-to-server and a point-to-point layer. The point-to-server layer is intended to establish a secure channel between the server and the client wereas the point-to-point allows the clients to exchange fully encrypted messages.
