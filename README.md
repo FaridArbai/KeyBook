@@ -61,7 +61,7 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 ## Mobile version, KeyBook 7.0 (latest), August 15
 
 ### Contacts page
-<img source="d_trust_images/1_contacts.png" width="50%" height="50%">
+<img src="d_trust_images/1_contacts.png" width="50%" height="50%">
 
 ### Contact search
 ![](d_trust_images/2_searching.png)
