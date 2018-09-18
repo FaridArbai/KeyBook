@@ -114,8 +114,8 @@ To prevent this we built a distributed point-to-point key exchange mechanism tha
 
 ## 5. Download
 [1] [Mobile version for Android](https://play.google.com/store/apps/details?id=org.qtproject.example.EncrypTalkBeta3)<br/>
-[2] [Desktop version for Windows (Unavailable, currently updating)]()<br/>
-[3] [Desktop version for Linux (Unavailable, currently updating)]()<br/>
+[1] [Desktop version for Windows](http://www.faridarbai.com/keybook/KeyBook_windows_universal.exe)<br/>
+[1] [Desktop version for Linux](http://www.faridarbai.com/keybook/KeyBook_linux_x86_64_appimage.tar.gz)<br/>
 
 #### Upcoming downloads
 [4] [Desktop version for MAC (Currently building)]()<br/>
