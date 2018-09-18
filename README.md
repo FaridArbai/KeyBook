@@ -120,5 +120,3 @@ To prevent this we built a distributed point-to-point key exchange mechanism tha
 #### Upcoming downloads
 [4] [Desktop version for MAC (Currently building)]()<br/>
 [5] [Mobile version for IOS (Currently building)]()<br/>
-
-###### Links for Windows and Linux versions have been removed until August 24th while the new security architecture for them is being tested out.
