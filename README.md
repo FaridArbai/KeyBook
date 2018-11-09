@@ -49,7 +49,7 @@ The mechanism used by KeyBook solves the well known man-in-the-middle threat tha
 
 ## 2. Demo
 
-[![IMAGE ALT TEXT](https://i.ytimg.com/vi/QujyFWLS8GQ/hqdefault.jpg?sqp=-oaymwEZCPYBEIoBSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLAePwBIEHUHmEBZQ0HP2S7xDhpqOA)](https://www.youtube.com/watch?v=QujyFWLS8GQ "KeyBook Messaging")
+[![IMAGE ALT TEXT](http://i3.ytimg.com/vi/QujyFWLS8GQ/hqdefault.jpg "KeyBook Messaging")
 
 ## 3. Snapshots
 
